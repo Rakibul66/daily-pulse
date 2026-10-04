@@ -8,6 +8,12 @@ import { CRMDashboardPage } from "@/components/pages/CRMDashboardPage";
 import { CRMLeadsPage } from "@/components/pages/CRMLeadsPage";
 import { CRMRecentLeadsPage } from "@/components/pages/CRMRecentLeadsPage";
 import { CRMAILeadPage } from "@/components/pages/CRMAILeadPage";
+import { CustomersPage } from "@/components/pages/CustomersPage";
+import { PromotionsPage } from "@/components/pages/PromotionsPage";
+import { CustomerFeedbackPage } from "@/components/pages/CustomerFeedbackPage";
+import { LostAndFoundPage } from "@/components/pages/LostAndFoundPage";
+import { SystemPage } from "@/components/pages/SystemPage";
+import { PartnershipPage } from "@/components/pages/PartnershipPage";
 import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
 import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
 import { HRMPayrollPage } from "@/components/pages/HRMPayrollPage";
@@ -189,6 +195,23 @@ export default function Home() {
             <CRMAILeadPage showToast={showToast} />
           )}
 
+          {/* Customers Page */}
+          {activeAdminPage === "customers-list" && (
+            <CustomersPage showToast={showToast} />
+          )}
+          {activeAdminPage === "customers-promotions" && (
+            <PromotionsPage showToast={showToast} />
+          )}
+          {activeAdminPage === "customers-feedback" && (
+            <CustomerFeedbackPage showToast={showToast} />
+          )}
+          {activeAdminPage === "lost-and-found" && (
+            <LostAndFoundPage showToast={showToast} />
+          )}
+          {activeAdminPage === "finance-partnership" && (
+            <PartnershipPage showToast={showToast} />
+          )}
+
           {/* HRM Pages */}
           {activeAdminPage === "hrm-attendance" && (
             <HRMAttendancePage showToast={showToast} />
@@ -201,6 +224,12 @@ export default function Home() {
           )}
           {activeAdminPage === "settings" && (
             <HRMSettingsPage showToast={showToast} />
+          )}
+          {activeAdminPage === "system" && (
+            <SystemPage showToast={showToast} />
+          )}
+          {activeAdminPage === "finance-partnership" && (
+            <PartnershipPage showToast={showToast} />
           )}
         </>
       )}

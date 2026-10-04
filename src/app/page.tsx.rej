@@ -1,0 +1,4 @@
+@@ -14,2 +14,3 @@
+ import { SystemPage } from "@/components/pages/SystemPage";
++import { PartnershipPage } from "@/components/pages/PartnershipPage";
+ import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";

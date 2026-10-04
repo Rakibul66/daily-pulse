@@ -26,6 +26,18 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "AI Prospecting",
     subtitle: "Discover and generate new sales leads using AI",
   },
+  "customers-list": {
+    title: "Customer Directory",
+    subtitle: "Manage customers and loyalty memberships",
+  },
+  "customers-promotions": {
+    title: "Offers & Promos",
+    subtitle: "Manage Happy Hours, Time-based discounts, and special offers",
+  },
+  "customers-feedback": {
+    title: "Guest Feedback",
+    subtitle: "Monitor customer ratings and reviews",
+  },
   "hrm-attendance": {
     title: "Attendance Register",
     subtitle: "Track employee attendance",
@@ -38,9 +50,17 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "Payroll & Salary",
     subtitle: "Manage monthly salary payouts",
   },
-  "hrm-settings": {
-    title: "HRM Settings",
-    subtitle: "Configure automated attendance behaviors",
+  "settings": {
+    title: "Settings & AI",
+    subtitle: "Configure workspace preferences and AI integrations",
+  },
+  "system": {
+    title: "System Status",
+    subtitle: "Monitor workspace health and configurations",
+  },
+  "finance-partnership": {
+    title: "Partnership & Investments",
+    subtitle: "Manage investors, capital, and dividend distribution",
   },
 };
 

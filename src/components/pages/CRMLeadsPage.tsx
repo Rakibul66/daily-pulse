@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Lead } from '@/types/crm';
 import { getLeads, addLead, updateLead, deleteLead } from '@/lib/crmStorage';
+import { addCustomer } from '@/lib/customerStorage';
 import { LeadTable } from '../crm/LeadTable';
 import { LeadFormModal } from '../crm/LeadFormModal';
 import { Plus } from 'lucide-react';
@@ -67,6 +68,31 @@ export const CRMLeadsPage: React.FC<Props> = ({ showToast }) => {
     }
   };
 
+  const handleConvertLead = async (lead: Lead) => {
+    if (!user) return;
+    if (!window.confirm(`Are you sure you want to convert "${lead.businessName}" to a Customer?`)) return;
+    
+    try {
+      await addCustomer({
+        userId: user.uid,
+        businessName: lead.businessName,
+        ownerName: lead.ownerName || '',
+        phone: lead.phone || '',
+        email: '',
+        address: lead.locationArea || '',
+        businessType: lead.businessType || 'Other',
+        customerSince: new Date().toISOString().split('T')[0],
+        totalSpent: 0,
+        loyaltyPoints: 0,
+        loyaltyTier: 'Member'
+      });
+      showToast('Lead converted to Customer successfully!', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to convert to customer.', 'error');
+    }
+  };
+
   const openNewModal = () => {
     setEditingLead(null);
     setIsModalOpen(true);
@@ -103,7 +129,7 @@ export const CRMLeadsPage: React.FC<Props> = ({ showToast }) => {
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <LeadTable leads={leads} onEdit={openEditModal} onDelete={handleDeleteLead} />
+          <LeadTable leads={leads} onEdit={openEditModal} onDelete={handleDeleteLead} onConvert={handleConvertLead} />
         </div>
       )}
 

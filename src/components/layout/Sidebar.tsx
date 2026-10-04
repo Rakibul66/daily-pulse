@@ -7,7 +7,11 @@ import {
   Share2,
   Settings,
   LogOut,
+  MonitorSmartphone,
+  Briefcase,
+  Archive,
   Sparkles,
+  Users,
   X,
   ChevronRight,
 } from "lucide-react";
@@ -18,10 +22,16 @@ export type AdminPageId =
   | "crm-leads"
   | "crm-recent-leads"
   | "crm-ai-lead"
+  | "customers-list"
+  | "customers-promotions"
+  | "customers-feedback"
   | "hrm-attendance"
   | "hrm-employees"
   | "hrm-payroll"
-  | "settings";
+  | "settings"
+  | "system"
+  | "finance-partnership"
+  | "lost-and-found";
 
 interface SidebarProps {
   activePage: AdminPageId;
@@ -37,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const { user, signOutUser } = useAuth();
+  const [isCustomersOpen, setIsCustomersOpen] = React.useState(true);
   const [isCrmOpen, setIsCrmOpen] = React.useState(true);
   const [isHrmOpen, setIsHrmOpen] = React.useState(true);
 
@@ -57,6 +68,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: "hrm-attendance", label: "Attendance" },
     { id: "hrm-employees", label: "Employees" },
     { id: "hrm-payroll", label: "Payroll" },
+  ];
+
+  const customerNavItems: {
+    id: AdminPageId;
+    label: string;
+  }[] = [
+    { id: "customers-list", label: "Directory & Loyalty" },
+    { id: "customers-promotions", label: "Offers & Promos" },
+    { id: "customers-feedback", label: "Guest Feedback" },
   ];
 
   const handleSelect = (pageId: AdminPageId) => {
@@ -146,6 +166,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
+          {/* Customers Directory */}
+          <div className="pt-2">
+            <button
+              onClick={() => setIsCustomersOpen(!isCustomersOpen)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-4 h-4 transition-colors group-hover:text-white" />
+                <span>Customers</span>
+              </div>
+              <ChevronRight
+                className={`w-3.5 h-3.5 transition-transform ${isCustomersOpen ? "rotate-90 text-white" : ""}`}
+              />
+            </button>
+            
+            {isCustomersOpen && (
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+                {customerNavItems.map((item) => {
+                  const isActive = activePage === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-indigo-500/10 text-indigo-400"
+                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <div className="pt-2">
             <button
               onClick={() => setIsHrmOpen(!isHrmOpen)}
@@ -182,6 +239,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
+          {/* Lost & Found */}
+          <div className="pt-2">
+            <button
+              onClick={() => handleSelect("lost-and-found")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                activePage === "lost-and-found"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/40 font-bold"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <Archive className={`w-4 h-4 transition-colors ${activePage === "lost-and-found" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
+              <span>Lost & Found</span>
+            </button>
+          </div>
+
+          {/* Finance & Accounts */}
+          <div className="pt-2">
+            <button
+              onClick={() => handleSelect("finance-partnership")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                activePage === "finance-partnership"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/40 font-bold"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <Briefcase className={`w-4 h-4 transition-colors ${activePage === "finance-partnership" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
+              <span>Partnerships</span>
+            </button>
+          </div>
+
           {/* Global Settings */}
           <div className="pt-4 mt-4 border-t border-slate-800/50">
             <button
@@ -194,6 +281,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <Settings className={`w-4 h-4 transition-colors ${activePage === "settings" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
               <span>Settings & AI</span>
+            </button>
+
+            <button
+              onClick={() => handleSelect("system")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group mt-1 ${
+                activePage === "system"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/40 font-bold"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <MonitorSmartphone className={`w-4 h-4 transition-colors ${activePage === "system" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
+              <span>System Status</span>
             </button>
           </div>
         </div>

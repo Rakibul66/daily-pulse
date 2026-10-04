@@ -40,7 +40,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
         getAttendanceByMonth(uid, ym),
         getHRMSettings(uid)
       ]);
-      setEmployees(emps.filter(e => e.isActive));
+      setEmployees(emps.filter((e: any) => e.isActive));
       setRecords(recs);
       if (settings) setWeekendDays(settings.weekendDays || []);
     } catch (err) {

@@ -1,0 +1,12 @@
+@@ -57,2 +59,11 @@
+                 <td className="px-5 py-4 text-right">
+                   <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
++                    {onConvert && (lead.leadStatus === 'WON' || lead.salesStatus === 'Won') && (
++                      <button 
++                        onClick={() => onConvert(lead)} 
++                        className="p-1.5 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 rounded transition-colors flex items-center gap-1"
++                        title="Convert to Customer"
++                      >
++                        <Users className="w-4 h-4" />
++                      </button>
++                    )}

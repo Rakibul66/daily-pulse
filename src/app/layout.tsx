@@ -23,7 +23,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen">
+      <body suppressHydrationWarning className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen">
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -1,6 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, orderBy } from 'firebase/firestore';
-import { Employee, AttendanceRecord, SalaryPayment } from '@/types/hrm';
+import { Employee, AttendanceRecord, SalaryPayment, HRMSettings } from '@/types/hrm';
 
 const EMPLOYEES_COLLECTION = 'employees';
 const ATTENDANCE_COLLECTION = 'attendance';
