@@ -38,9 +38,9 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "Payroll & Salary",
     subtitle: "Manage monthly salary payouts",
   },
-  "settings": {
-    title: "Settings & AI",
-    subtitle: "Configure workspace preferences and AI integrations",
+  "hrm-settings": {
+    title: "HRM Settings",
+    subtitle: "Configure automated attendance behaviors",
   },
 };
 

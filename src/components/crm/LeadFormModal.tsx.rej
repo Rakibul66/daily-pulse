@@ -1,0 +1,5 @@
+@@ -2,2 +2,3 @@
+ import { Lead } from '@/types/crm';
+-import { X } from 'lucide-react';
++import { X, Sparkles, Loader2 } from 'lucide-react';
++import { useAuth } from '@/context/AuthContext';

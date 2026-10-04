@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read and write only their own data
+    match /leads/{leadId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Allow create if they set themselves as the owner
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Existing data (assuming there's a daily_records or similar)
+    match /daily_records/{recordId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+  }
+}

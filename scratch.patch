@@ -1,0 +1,9 @@
+--- src/components/layout/AdminTopBar.tsx
++++ src/components/layout/AdminTopBar.tsx
+@@ -37,3 +37,3 @@
+-  "hrm-settings": {
+-    title: "HRM Settings",
+-    subtitle: "Configure automated attendance behaviors",
++  "settings": {
++    title: "Settings & AI",
++    subtitle: "Configure workspace preferences and AI integrations",

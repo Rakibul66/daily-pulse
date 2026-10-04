@@ -7,7 +7,6 @@ import { AdminPageId } from "@/components/layout/Sidebar";
 import { CRMDashboardPage } from "@/components/pages/CRMDashboardPage";
 import { CRMLeadsPage } from "@/components/pages/CRMLeadsPage";
 import { CRMRecentLeadsPage } from "@/components/pages/CRMRecentLeadsPage";
-import { CRMAILeadPage } from "@/components/pages/CRMAILeadPage";
 import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
 import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
 import { HRMPayrollPage } from "@/components/pages/HRMPayrollPage";
@@ -185,9 +184,6 @@ export default function Home() {
           {activeAdminPage === "crm-recent-leads" && (
             <CRMRecentLeadsPage showToast={showToast} />
           )}
-          {activeAdminPage === "crm-ai-lead" && (
-            <CRMAILeadPage showToast={showToast} />
-          )}
 
           {/* HRM Pages */}
           {activeAdminPage === "hrm-attendance" && (
@@ -199,7 +195,7 @@ export default function Home() {
           {activeAdminPage === "hrm-payroll" && (
             <HRMPayrollPage showToast={showToast} />
           )}
-          {activeAdminPage === "settings" && (
+          {activeAdminPage === "hrm-settings" && (
             <HRMSettingsPage showToast={showToast} />
           )}
         </>
