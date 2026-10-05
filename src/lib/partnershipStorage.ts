@@ -1,15 +1,15 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, runTransaction } from 'firebase/firestore';
-import { Partner, PartnerTransaction } from '@/types/partnership';
+import { Partner, PartnerTransaction, TransactionType } from '@/types/partnership';
 
 const PARTNERS_COLLECTION = 'partners';
 const PARTNER_TX_COLLECTION = 'partner_transactions';
 
-export const getPartners = async (userId: string): Promise<Partner[]> => {
+export const getPartners = async (companyId: string): Promise<Partner[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
-  const q = query(collection(db, PARTNERS_COLLECTION), where('userId', '==', userId));
+  const q = query(collection(db, PARTNERS_COLLECTION), where('companyId', '==', companyId));
   const snapshot = await getDocs(q);
   const items: Partner[] = [];
   snapshot.forEach((docSnap) => items.push(docSnap.data() as Partner));
@@ -36,7 +36,7 @@ export const addPartner = async (partner: Omit<Partner, 'id' | 'createdAt' | 'up
   return docRef.id;
 };
 
-export const updatePartner = async (id: string, updates: Partial<Omit<Partner, 'id' | 'userId' | 'createdAt'>>): Promise<void> => {
+export const updatePartner = async (id: string, updates: Partial<Omit<Partner, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   
@@ -51,13 +51,30 @@ export const deletePartner = async (id: string): Promise<void> => {
   await deleteDoc(doc(db, PARTNERS_COLLECTION, id));
 };
 
-export const getPartnerTransactions = async (userId: string, partnerId: string): Promise<PartnerTransaction[]> => {
+
+export const getGlobalTransactions = async (companyId: string, type?: TransactionType): Promise<PartnerTransaction[]> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const conditions = [where('companyId', '==', companyId)];
+  if (type) conditions.push(where('type', '==', type));
+
+  const q = query(collection(db, PARTNER_TX_COLLECTION), ...conditions);
+  const snapshot = await getDocs(q);
+  const items: PartnerTransaction[] = [];
+  snapshot.forEach((docSnap) => items.push(docSnap.data() as PartnerTransaction));
+  
+  items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return items;
+};
+
+export const getPartnerTransactions = async (companyId: string, partnerId: string): Promise<PartnerTransaction[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   const q = query(
     collection(db, PARTNER_TX_COLLECTION),
-    where('userId', '==', userId),
+    where('companyId', '==', companyId),
     where('partnerId', '==', partnerId)
   );
   const snapshot = await getDocs(q);

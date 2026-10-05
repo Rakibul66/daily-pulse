@@ -50,9 +50,9 @@ export const LogItemModal: React.FC<Props> = ({ isOpen, onClose, onSave, userId 
     }
   };
 
-  const inputClasses = "w-full text-sm font-medium text-white bg-slate-950 px-3 py-2.5 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-medium text-white bg-slate-950 px-3 py-2.5 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5";
-  const helperClasses = "text-[10px] text-slate-500 mt-1";
+  const helperClasses = "text-[10px] text-slate-500 dark:text-slate-400 mt-1";
 
   const categories = ['Phone', 'Jewellery', 'Wallet/Purse', 'Keys', 'Clothing', 'Bag/Luggage', 'Electronics', 'Other'];
 
@@ -70,14 +70,6 @@ export const LogItemModal: React.FC<Props> = ({ isOpen, onClose, onSave, userId 
         <div className="p-6 overflow-y-auto custom-scrollbar">
           <form id="log-item-form" onSubmit={handleSubmit} className="space-y-5">
             
-            <div>
-              <label className={labelClasses}>Photo</label>
-              <div className="w-full border-2 border-dashed border-slate-700 rounded-lg p-6 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-800/50 hover:border-slate-500 transition-colors cursor-pointer">
-                <UploadCloud className="w-6 h-6 mb-2" />
-                <p className="text-xs text-center px-4">One clear photo. It is what the owner will recognise on the public page, so shoot the whole object, not the serial number.</p>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className={labelClasses}>What was found*</label>
@@ -124,13 +116,21 @@ export const LogItemModal: React.FC<Props> = ({ isOpen, onClose, onSave, userId 
               <p className={helperClasses}>Staff only. Never appears on the public page.</p>
             </div>
 
+            <div>
+              <label className={labelClasses}>Photo (Optional)</label>
+              <div className="w-full border-2 border-dashed border-slate-700 rounded-lg p-6 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-800/50 hover:border-slate-500 transition-colors cursor-pointer">
+                <UploadCloud className="w-6 h-6 mb-2" />
+                <p className="text-xs text-center px-4">One clear photo. It is what the owner will recognise on the public page, so shoot the whole object, not the serial number.</p>
+              </div>
+            </div>
+
             <div className="flex items-start gap-3 p-4 bg-slate-950 border border-slate-800 rounded-lg">
               <input 
                 type="checkbox" 
                 id="showPublicly" 
                 checked={showPublicly}
                 onChange={(e) => setShowPublicly(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-slate-700 text-indigo-600 focus:ring-indigo-600 focus:ring-offset-slate-950 bg-slate-900"
+                className="mt-1 w-4 h-4 rounded border-slate-700 text-primary-600 focus:ring-primary-600 focus:ring-offset-slate-950 bg-slate-900"
               />
               <div>
                 <label htmlFor="showPublicly" className="text-sm font-bold text-white cursor-pointer">Show on the public page</label>
@@ -145,7 +145,7 @@ export const LogItemModal: React.FC<Props> = ({ isOpen, onClose, onSave, userId 
           <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-semibold text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 transition-colors">
             Cancel
           </button>
-          <button type="submit" form="log-item-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-50 transition-colors shadow-md">
+          <button type="submit" form="log-item-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors shadow-md">
             {isSubmitting ? 'Saving...' : 'Log item'}
           </button>
         </div>

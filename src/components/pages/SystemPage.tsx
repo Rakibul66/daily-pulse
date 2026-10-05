@@ -14,7 +14,7 @@ export const SystemPage: React.FC<Props> = ({ showToast }) => {
   // Just mock data for system status
   const systemMetrics = [
     { label: "Firebase Status", value: "Online", icon: <Database className="w-5 h-5 text-emerald-400" />, color: "emerald" },
-    { label: "Server Load", value: "14%", icon: <Cpu className="w-5 h-5 text-indigo-400" />, color: "indigo" },
+    { label: "Server Load", value: "14%", icon: <Cpu className="w-5 h-5 text-primary-400" />, color: "indigo" },
     { label: "Active Sessions", value: "3", icon: <MonitorSmartphone className="w-5 h-5 text-amber-400" />, color: "amber" },
     { label: "Storage Used", value: "1.2 GB", icon: <HardDrive className="w-5 h-5 text-sky-400" />, color: "sky" }
   ];
@@ -81,21 +81,21 @@ export const SystemPage: React.FC<Props> = ({ showToast }) => {
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-950 rounded-md border border-slate-800/50">
               <span className="text-sm font-semibold text-slate-300">Environment</span>
-              <span className="px-2 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[10px] font-bold tracking-wider uppercase">Production</span>
+              <span className="px-2 py-1 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded text-[10px] font-bold tracking-wider uppercase">Production</span>
             </div>
           </div>
         </div>
 
         <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Server className="w-5 h-5 text-indigo-400" />
+            <Server className="w-5 h-5 text-primary-400" />
             <h3 className="text-base font-bold text-white">System Logs</h3>
           </div>
           
           <div className="space-y-2 h-[200px] overflow-y-auto custom-scrollbar font-mono text-xs p-3 bg-slate-950 rounded-md border border-slate-800">
-            <p className="text-slate-400"><span className="text-indigo-400">[{new Date().toISOString().split('T')[0]}]</span> INFO: User ({user?.email}) accessed System Dashboard.</p>
+            <p className="text-slate-400"><span className="text-primary-400">[{new Date().toISOString().split('T')[0]}]</span> INFO: User ({user?.email}) accessed System Dashboard.</p>
             <p className="text-slate-400"><span className="text-emerald-400">[{new Date().toISOString().split('T')[0]}]</span> SUCCESS: Database synced successfully.</p>
-            <p className="text-slate-400"><span className="text-indigo-400">[{new Date().toISOString().split('T')[0]}]</span> INFO: Routine backup completed.</p>
+            <p className="text-slate-400"><span className="text-primary-400">[{new Date().toISOString().split('T')[0]}]</span> INFO: Routine backup completed.</p>
             <p className="text-slate-400"><span className="text-emerald-400">[{new Date().toISOString().split('T')[0]}]</span> SUCCESS: All services operational. Uptime {uptime}</p>
           </div>
         </div>

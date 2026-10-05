@@ -46,14 +46,14 @@ export const LeadTable: React.FC<Props> = ({ leads, onEdit, onDelete, onConvert 
                   {lead.dateAdded.split('T')[0]}
                 </td>
                 <td className="px-5 py-4">
-                  <div className="font-bold text-white mb-0.5 group-hover:text-indigo-300 transition-colors">
+                  <div className="font-bold text-white mb-0.5 group-hover:text-primary-300 transition-colors">
                     {lead.businessName || (lead as any).restaurantName}
                   </div>
-                  <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">{lead.businessType || 'No Type'} • {lead.locationArea || 'No Area'}</div>
+                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{lead.businessType || 'No Type'} • {lead.locationArea || 'No Area'}</div>
                 </td>
                 <td className="px-5 py-4">
                   <div className="text-slate-300 font-medium text-xs mb-0.5">{lead.phone || lead.messenger || 'No contact'}</div>
-                  <div className="text-[11px] text-slate-500">{lead.ownerName || 'Unknown Contact'}</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">{lead.ownerName || 'Unknown Contact'}</div>
                 </td>
                 <td className="px-5 py-4">
                   <LeadStatusBadge status={lead.leadStatus} />
@@ -62,7 +62,7 @@ export const LeadTable: React.FC<Props> = ({ leads, onEdit, onDelete, onConvert 
                   <LeadPriorityBadge priority={lead.leadPriority} />
                 </td>
                 <td className="px-5 py-4 text-slate-300">
-                  <div className="text-[11px] font-bold text-indigo-400 mb-0.5 uppercase tracking-wide">
+                  <div className="text-[11px] font-bold text-primary-400 mb-0.5 uppercase tracking-wide">
                     {lead.followUpDate ? `Follow up: ${lead.followUpDate}` : 'No Action'}
                   </div>
                   <div className="text-xs text-slate-400 line-clamp-1">{lead.nextAction}</div>

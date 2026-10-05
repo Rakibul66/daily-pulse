@@ -126,7 +126,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
       {/* Top Header: Current Month, Year, Navigation & Today Jump */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-indigo-950/80 text-indigo-400 border border-indigo-800/80 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-primary-950/80 text-primary-400 border border-primary-800/80 flex items-center justify-center">
             <CalendarIcon className="w-4 h-4" />
           </div>
           <div>
@@ -134,7 +134,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
               <h3 className="text-base font-bold text-white tracking-tight">
                 {headerTitle}
               </h3>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800/80">
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary-950 text-primary-300 border border-primary-800/80">
                 15-Day View
               </span>
             </div>
@@ -155,7 +155,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
             onClick={handleJumpToToday}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 flex items-center gap-1 ${
               selectedDate === TODAY_STR
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                ? "bg-primary-600 text-white shadow-lg shadow-primary-600/30"
                 : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
             }`}
           >
@@ -217,9 +217,9 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                       ? "bg-emerald-950/90 border-2 border-emerald-500 text-emerald-100 hover:bg-emerald-900/90 shadow-md shadow-emerald-950/60"
                       : "bg-emerald-950/60 border border-emerald-500/70 text-emerald-200 hover:bg-emerald-900/70 shadow-xs shadow-emerald-950/40"
                     : isSelected
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/60 ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900"
+                    ? "bg-primary-600 text-white shadow-lg shadow-primary-900/60 ring-2 ring-primary-400 ring-offset-2 ring-offset-slate-900"
                     : isToday
-                    ? "bg-indigo-950/70 border border-indigo-700/80 text-indigo-200 hover:bg-indigo-900/60"
+                    ? "bg-primary-950/70 border border-primary-700/80 text-primary-200 hover:bg-primary-900/60"
                     : "bg-slate-950/80 border border-slate-800 text-slate-200 hover:bg-slate-800 hover:border-slate-700"
                 }`}
               >
@@ -236,9 +236,9 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                         ? "text-emerald-100"
                         : "text-emerald-400 font-black"
                       : isSelected
-                      ? "text-indigo-100"
+                      ? "text-primary-100"
                       : isToday
-                      ? "text-indigo-300"
+                      ? "text-primary-300"
                       : "text-slate-400"
                   }`}
                 >
@@ -259,7 +259,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                   <span
                     className={`mt-1 text-[8.5px] font-black uppercase px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
                       isSelected
-                        ? "bg-white/20 text-white"
+                        ? "bg-white dark:bg-slate-900/20 text-white"
                         : isToday
                         ? "bg-emerald-500 text-slate-950 font-extrabold"
                         : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
@@ -270,7 +270,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                 ) : isToday ? (
                   <span
                     className={`mt-1 text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full ${
-                      isSelected ? "bg-white/20 text-white" : "bg-indigo-600 text-white"
+                      isSelected ? "bg-white dark:bg-slate-900/20 text-white" : "bg-primary-600 text-white"
                     }`}
                   >
                     Today{pct > 0 ? ` ${pct}%` : ""}
@@ -278,7 +278,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                 ) : pct > 0 ? (
                   <span
                     className={`mt-1 text-[8.5px] font-bold px-1.5 py-0.2 rounded-full ${
-                      isSelected ? "text-indigo-200" : "text-amber-400/90"
+                      isSelected ? "text-primary-200" : "text-amber-400/90"
                     }`}
                   >
                     {pct}%
@@ -286,7 +286,7 @@ export const HorizontalCalendar: React.FC<HorizontalCalendarProps> = ({
                 ) : (
                   <span
                     className={`mt-1 text-[9px] font-semibold truncate ${
-                      isSelected ? "text-indigo-200" : "text-slate-500"
+                      isSelected ? "text-primary-200" : "text-slate-500 dark:text-slate-400"
                     }`}
                   >
                     {item.monthName.slice(0, 3)}

@@ -1,302 +1,384 @@
-"use client";
-
-import React from "react";
-import {
-  Sparkles,
-  ArrowRight,
-  Target,
-  Copy,
-  Printer,
-  BarChart3,
-  CheckCircle2,
-  Users,
-  Search,
-  Headphones,
+import React from 'react';
+import { 
+  ArrowRight, FileText, 
+  CheckCircle, 
+  TrendingUp, 
+  ShoppingCart, 
+  Briefcase, 
+  PieChart, 
+  Store, 
+  MapPin, 
+  Users, 
+  Globe, 
+  Headset, 
+  Code,
   ShieldCheck,
-  Zap,
-} from "lucide-react";
+  Smartphone,
+  CloudLightning
+} from 'lucide-react';
 
-interface LandingPageProps {
+interface Props {
   onGetStarted: () => void;
-  onSignIn: () => void;
+  onSignIn?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({
-  onGetStarted,
-  onSignIn,
-}) => {
+export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-indigo-100">
-      {/* Navbar */}
-      <nav className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
-              <Sparkles className="w-5 h-5" />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-primary-500/30">
+      
+      {/* Top Navbar */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-fuchsia-600 to-indigo-600 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-fuchsia-500/30">
+                A
+              </div>
+              <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-fuchsia-600 to-indigo-600 tracking-tight drop-shadow-sm">
+                ApnarSoftware
+              </span>
             </div>
-            <span className="text-lg font-bold tracking-tight text-slate-900">
-              DailyPulse
-            </span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-8 text-xs font-semibold text-slate-600">
-            <a href="#features" className="hover:text-indigo-600 transition-colors">
-              Features
-            </a>
-            <a href="#workflow" className="hover:text-indigo-600 transition-colors">
-              Daily Workflow
-            </a>
-            <a href="#reporting" className="hover:text-indigo-600 transition-colors">
-              Reporting & PDF
-            </a>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onSignIn}
-              className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={onGetStarted}
-              className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs shadow-indigo-100 transition-all active:scale-95 flex items-center gap-1.5"
-            >
-              Get Started Free <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="hidden md:flex gap-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+              <a href="#about" className="hover:text-primary-600 transition-colors">About</a>
+              <a href="#features" className="hover:text-primary-600 transition-colors">Features</a>
+              <a href="#industries" className="hover:text-primary-600 transition-colors">Industries</a>
+            </div>
+            <div className="flex gap-4">
+              <button 
+                onClick={onGetStarted}
+                className="px-5 py-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl shadow-md transition-all active:scale-95"
+              >
+                Login / Demo
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold mb-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
-            <Zap className="w-3.5 h-3.5" />
-            Automated Daily Work OS for High-Performance Teams
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight md:leading-none">
-            Set Morning Goals. Log Evening Wins.{" "}
-            <span className="text-indigo-600">Export Instant Reports.</span>
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100 via-slate-50 to-slate-50 dark:from-primary-950 dark:via-slate-950 dark:to-slate-950 -z-10"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-6">
+            The Ultimate <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-500">POS & ERP Software</span>
+            <br className="hidden sm:block" /> for Your Business
           </h1>
-
-          <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Eliminate standup chaos. Track lead generation targets, client onboarding,
-            customer support resolutions, and competitor intelligence with 1-click formatted
-            text for WhatsApp/Slack and printable executive PDF reports.
+          <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+            Fast, reliable, and user-friendly tools that empower businesses to operate efficiently, manage inventory flawlessly, and maximize profits in real-time.
           </p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
               onClick={onGetStarted}
-              className="px-7 py-3.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2"
+              className="px-8 py-3.5 text-base font-bold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
             >
-              Get Started Free <ArrowRight className="w-4 h-4" />
+              Get Free Consultancy <ArrowRight className="w-4 h-4" />
             </button>
-            <button
-              onClick={onSignIn}
-              className="px-7 py-3.5 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl shadow-xs transition-all active:scale-95"
-            >
-              Live Demo / Sign In
+            <button className="px-8 py-3.5 text-base font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-2xl shadow-sm transition-all flex items-center justify-center">
+              Watch Demo
             </button>
-          </div>
-
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-slate-500 font-medium">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Firebase Cloud Sync
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> 1-Click WhatsApp / Slack Copy
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Export Clean PDF
-            </span>
           </div>
         </div>
       </section>
 
-      {/* Visual Product Showcase */}
-      <section id="workflow" className="py-12 bg-white border-y border-slate-200">
+      {/* Stats Section */}
+      <section className="py-12 bg-primary-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-2">
-              End-to-End Daily Rhythm
-            </h2>
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Designed for Daily Velocity & Accountability
-            </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <Store className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">1400+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Shops</div>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <Users className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">3600+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Users</div>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <MapPin className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">64+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Districts</div>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <Globe className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">11+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Countries</div>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <Headset className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">7+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Support Team</div>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+              <Code className="w-8 h-8 mb-3 text-cyan-300" />
+              <div className="text-2xl font-black mb-1">5+</div>
+              <div className="text-[10px] font-bold tracking-widest uppercase text-primary-200">Tech Team</div>
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Step 1: Morning Goal */}
-            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 hover:border-indigo-200 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm mb-4 shadow-md shadow-indigo-100">
-                01
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">
-                Morning Work Goal
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Define pre-set targets for 15–20 leads, 5 qualified contacts, 10–15 follow-ups,
-                and support tickets. Save custom defaults for every new day in 1 click.
+      {/* Why Choose Us & About */}
+      <section id="about" className="py-20 bg-white dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-primary-600 mb-2">About Us</h2>
+              <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-6">
+                Cutting-Edge Solutions Recognized by Industry Leaders
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                With years of expertise in software development and business automation, we understand the challenges faced by retailers, restaurants, and service providers. Our POS system is designed to be seamless, secure, and scalable—ensuring businesses of all sizes benefit from real-time analytics.
               </p>
-              <div className="p-3 bg-white rounded-xl border border-slate-200 text-[11px] font-mono text-slate-700 space-y-1">
-                <div>• Find 15–20 e-commerce leads</div>
-                <div>• Contact 5 qualified prospects</div>
-                <div>• Follow up with 10–15 previous leads</div>
-              </div>
+              
+              <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Why Choose Us?</h4>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="mt-0.5"><CheckCircle className="w-5 h-5 text-emerald-500" /></div>
+                  <div><strong className="text-slate-900 dark:text-white">Easy to Use:</strong> <span className="text-slate-600 dark:text-slate-400">Intuitive interface with a smooth user experience.</span></div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-0.5"><ShieldCheck className="w-5 h-5 text-emerald-500" /></div>
+                  <div><strong className="text-slate-900 dark:text-white">Secure & Reliable:</strong> <span className="text-slate-600 dark:text-slate-400">Advanced security features to protect your business data.</span></div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-0.5"><CloudLightning className="w-5 h-5 text-emerald-500" /></div>
+                  <div><strong className="text-slate-900 dark:text-white">Cloud & Offline Support:</strong> <span className="text-slate-600 dark:text-slate-400">Work seamlessly online and offline without interruption.</span></div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-0.5"><Headset className="w-5 h-5 text-emerald-500" /></div>
+                  <div><strong className="text-slate-900 dark:text-white">24/7 Support:</strong> <span className="text-slate-600 dark:text-slate-400">We are always here to help when you need us.</span></div>
+                </li>
+              </ul>
             </div>
-
-            {/* Step 2: EOD Report */}
-            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 hover:border-emerald-200 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm mb-4 shadow-md shadow-emerald-100">
-                02
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">
-                End-of-Day Results & Actuals
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Log actual leads found, positive responses, client onboarding discussions, support
-                resolution counts, and tomorrow&apos;s primary focus.
-              </p>
-              <div className="p-3 bg-white rounded-xl border border-slate-200 text-[11px] font-mono text-slate-700 space-y-1">
-                <div>🎯 Leads Found: 18 / 20</div>
-                <div>🔥 Positive Responses: 3</div>
-                <div>💼 Onboardings: 1 converted</div>
-              </div>
-            </div>
-
-            {/* Step 3: 1-Click Copy & Export */}
-            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 hover:border-indigo-200 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm mb-4 shadow-md shadow-indigo-100">
-                03
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">
-                1-Click Beautiful Export
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Generate formatted markdown text with clean emojis ready for WhatsApp/Slack, or
-                print executive PDF reports for management.
-              </p>
-              <div className="p-3 bg-white rounded-xl border border-slate-200 text-[11px] font-mono text-indigo-700 space-y-1">
-                <div>🎯 **Lead Generation**</div>
-                <div>* Leads found: 18</div>
-                <div>* Positive responses: 3</div>
-                <div>Tomorrow&apos;s priority: Close 2 deals</div>
+            <div className="relative">
+              <div className="aspect-square sm:aspect-[4/3] bg-gradient-to-tr from-primary-100 to-slate-100 dark:from-primary-900/30 dark:to-slate-800 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-2xl flex items-center justify-center p-8">
+                 <div className="text-center">
+                    <h3 className="text-3xl font-black text-primary-700 dark:text-primary-400 mb-4">Your Ultimate Business Partner</h3>
+                    <div className="space-y-3 font-semibold text-slate-700 dark:text-slate-300 text-lg">
+                      <p>✓ Fast & Easy Billing</p>
+                      <p>✓ Inventory Management</p>
+                      <p>✓ Sales Reports & Analysis</p>
+                      <p>✓ Business Digitalization</p>
+                    </div>
+                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Feature Grid */}
-      <section id="features" className="py-16">
+      {/* Key Features */}
+      <section id="features" className="py-20 bg-slate-50 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-2">
-              Engineered for Results
-            </h2>
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Everything Needed to Drive Daily Operations
-            </h3>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Key Features</h2>
+            <p className="text-slate-600 dark:text-slate-400">Everything you need to run your daily operations flawlessly from a single dashboard.</p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Target className="w-5 h-5" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-orange-100/50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 p-6 rounded-3xl">
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm text-orange-500">
+                <ShoppingCart className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">Target vs. Actuals</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Compare morning intentions with evening reality side-by-side to maintain
-                relentless daily momentum.
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Purchase Management</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Effortlessly manage procurement by tracking supplier transactions, purchase orders, and payment statuses. Automate stock updates upon receiving goods.
+              </p>
+            </div>
+            
+            <div className="bg-purple-100/50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 p-6 rounded-3xl">
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm text-purple-500">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Sales Management</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Speed up transactions with a seamless sales module, including quick billing, invoice generation, discount management, and multi-payment options.
+              </p>
+            </div>
+            
+            <div className="bg-pink-100/50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800/50 p-6 rounded-3xl">
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm text-pink-500">
+                <Briefcase className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Account Management</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Keep financial records organized with automated tracking of expenses, revenues, and ledger management. Gain a clear financial overview.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Search className="w-5 h-5" />
+            <div className="bg-blue-100/50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 p-6 rounded-3xl">
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm text-blue-500">
+                <PieChart className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">Competitor Intelligence</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Log competitor posting tactics, short-form reels, promotional discounts, and
-                organic lead-gen ideas to test.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Copy className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">1-Click Chat Ready Copy</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Formatted with clean markdown and emojis, instantly ready to paste into Slack
-                channels, WhatsApp groups, or Notion logs.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <Printer className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Executive PDF Reports</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Generate clean, print-ready PDF summaries formatted with executive KPI cards and
-                clean borders.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Weekly & Monthly Analytics</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Aggregated conversion rates, total contacts, resolution percentages, and
-                historical trends across any custom date range.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Firebase Cloud Partitioning</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Your data is securely isolated by user account in Firestore, backed by zero-setup
-                offline local fallback.
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Reports Management</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Generate real-time reports on sales, purchases, inventory, and financials. Analyze trends, monitor performance, and make data-driven decisions.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA Banner */}
-      <section className="py-16 bg-white border-t border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h3 className="text-3xl font-extrabold text-slate-900">
-            Ready to Streamline Your Daily Work Rhythm?
-          </h3>
-          <p className="mt-3 text-sm text-slate-500">
-            Join now to set your daily goals, log your progress, and automate reporting in seconds.
-          </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <button
-              onClick={onGetStarted}
-              className="px-8 py-3.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2"
-            >
-              Get Started Now <ArrowRight className="w-4 h-4" />
-            </button>
+      {/* Industries We Serve */}
+      <section id="industries" className="py-20 bg-white dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Industries We Serve</h2>
+            <p className="text-slate-600 dark:text-slate-400">
+              Our ERP and POS software is designed to cater to a wide range of industries, providing seamless sales management, inventory tracking, and business automation.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              "Retail & E-Commerce", "Supermarkets & Grocery", "Fashion & Apparel",
+              "Electronics & Mobile", "Pharmacy & Healthcare", "Restaurants & Cafes",
+              "Fast Food & Takeaways", "SME & F-Commerce", "Salons & Laundry",
+              "Gyms & Fitness Centers", "Hotels & Resorts", "Auto Mobiles & Parts"
+            ].map(ind => (
+              <div key={ind} className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-6 text-center font-bold text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-primary-500 transition-colors shadow-sm cursor-pointer">
+                {ind}
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      
+      {/* Happy Clients */}
+      <section className="py-20 bg-slate-50 dark:bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Happy Clients</h2>
+            <p className="text-slate-600 dark:text-slate-400">Join thousands of businesses who trust our POS & ERP software for their daily operations.</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[1,2,3,4,5,6,7,8,9,10].map(i => (
+              <div key={i} className="aspect-square bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500">
+                <Store className="w-8 h-8 opacity-50" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Still Confused CTA */}
+      <section className="py-16 bg-[#1A4F2E] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="max-w-xl">
+              <h2 className="text-3xl font-black mb-4">Still Confused About Our Software !!!!</h2>
+              <p className="text-emerald-100 mb-8 font-medium">Contact us for Free Consultation.</p>
+              <div className="flex gap-4">
+                <button 
+                  onClick={onGetStarted}
+                  className="px-6 py-3 bg-white text-[#1A4F2E] hover:bg-slate-100 rounded-full font-bold transition-colors"
+                >
+                  Get Free Consultation
+                </button>
+                <button className="px-6 py-3 bg-white text-[#1A4F2E] hover:bg-slate-100 rounded-full font-bold transition-colors">
+                  Call Now
+                </button>
+              </div>
+            </div>
+            <div className="hidden md:block w-64 h-64 bg-emerald-800/50 rounded-full border-4 border-dashed border-emerald-500/30">
+               {/* Decorative element replacing the image */}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Blogs */}
+      <section className="py-20 bg-white dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12">Latest Blogs</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { title: "Complete Guide to Choosing the Right POS System in 2026", date: "August 29, 2026" },
+              { title: "Best Inventory Management Software in Bangladesh", date: "December 24, 2025" },
+              { title: "Why Businesses Need POS Software", date: "April 30, 2026" }
+            ].map((blog, idx) => (
+              <div key={idx} className="bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                <div className="h-48 bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-slate-400" />
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4 line-clamp-2">{blog.title}</h3>
+                  <div className="flex justify-between items-center">
+                    <button className="text-red-500 font-bold text-sm hover:text-red-600 uppercase">Read More »</button>
+                    <span className="text-xs text-slate-500">{blog.date}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-medium text-slate-600">DailyPulse © 2026</span>
-          <span>Next.js • TypeScript • Tailwind CSS • Firebase Firestore</span>
+      <footer className="bg-black text-white pt-16 pb-8 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-12 mb-12">
+            
+            {/* Brand Area */}
+            <div>
+              <div className="flex items-center gap-2 mb-6">
+                  <div className="w-10 h-10 rounded bg-gradient-to-br from-rose-500 via-fuchsia-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-lg">A</div>
+                  <span className="font-extrabold text-3xl tracking-tight text-white">Apnar<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-fuchsia-500">Software</span></span>
+              </div>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                At <strong className="text-white">ApnarSoftware</strong>, we are redefining the way businesses manage sales, inventory, and customer interactions with our cutting-edge <strong className="text-white">POS software</strong>. Our mission is to provide <strong className="text-white">fast, reliable, and user-friendly solutions</strong> that empower businesses to operate efficiently and maximize profits.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-xl font-bold mb-6">Quick Links</h3>
+              <ul className="space-y-3 text-sm font-semibold text-slate-300">
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> About Us</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Price Plan</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Contact Us</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Video Guideline</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Client Story</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Gallery</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Career</a></li>
+                <li><a href="#" className="hover:text-red-500 transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3" /> Blog</a></li>
+              </ul>
+            </div>
+
+            {/* Contact Us */}
+            <div>
+              <h3 className="text-xl font-bold mb-6">Contact Us</h3>
+              <ul className="space-y-4 text-sm text-slate-300 font-semibold mb-8">
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 shrink-0 text-slate-400" />
+                  <span>4th Floor, 5A, House: 202/D, Haji SolimUddin Ln, Middle Badda, Dhaka 1212</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Headset className="w-5 h-5 shrink-0 text-slate-400" />
+                  <span>01998 683666</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Headset className="w-5 h-5 shrink-0 text-slate-400" />
+                  <span>01602 942375</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Globe className="w-5 h-5 shrink-0 text-slate-400" />
+                  <span>hello@omnibiz.com</span>
+                </li>
+              </ul>
+              <button className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition-colors text-center">
+                Download Our App Now
+              </button>
+            </div>
+          </div>
+          
+          <div className="border-t border-slate-800 pt-8 text-center text-xs text-slate-500">
+            © {new Date().getFullYear()} ApnarSoftware. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>

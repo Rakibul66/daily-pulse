@@ -58,9 +58,45 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "System Status",
     subtitle: "Monitor workspace health and configurations",
   },
+  "hrm-loans": {
+    title: "Employee Loan Management",
+    subtitle: "Track salary advances and personal loans",
+  },
+  "hrm-overtime": {
+    title: "Employee Overtime Management",
+    subtitle: "Track extra hours and overtime payouts",
+  },
+  "sales-clients": {
+    title: "Client Setup",
+    subtitle: "Manage B2B clients and sales territories",
+  },
+  "sales-invoices": {
+    title: "Daily Sales",
+    subtitle: "Manage invoices, POS billing, and chalans",
+  },
   "finance-partnership": {
     title: "Partnership & Investments",
     subtitle: "Manage investors, capital, and dividend distribution",
+  },
+  "lost-and-found": {
+    title: "Lost & Found",
+    subtitle: "Manage and return found guest property",
+  },
+  "inventory": {
+    title: "Inventory Management",
+    subtitle: "Track products and stock levels",
+  },
+  "sales": {
+    title: "Sales & POS",
+    subtitle: "Record transactions and manage daily sales",
+  },
+  "purchases": {
+    title: "Purchase Management",
+    subtitle: "Manage suppliers and restock inventory",
+  },
+  "accounts": {
+    title: "Ledger & Accounts",
+    subtitle: "Track daily expenses and revenue",
   },
 };
 

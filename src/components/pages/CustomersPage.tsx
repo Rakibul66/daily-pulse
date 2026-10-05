@@ -123,9 +123,9 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
 
   const tierColors = {
     Member: 'bg-slate-700 text-slate-200',
-    Silver: 'bg-slate-300 text-slate-800 shadow-sm shadow-slate-200/20',
+    Silver: 'bg-slate-300 text-slate-800 dark:text-slate-200 shadow-sm shadow-slate-200/20',
     Gold: 'bg-amber-400 text-amber-950 shadow-sm shadow-amber-400/20',
-    Platinum: 'bg-indigo-300 text-indigo-950 shadow-sm shadow-indigo-300/20',
+    Platinum: 'bg-primary-300 text-primary-950 shadow-sm shadow-primary-300/20',
   };
 
   const filtered = customers.filter(c => 
@@ -138,7 +138,7 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">Customers & Loyalty</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage your clients and their membership points.</p>
@@ -154,7 +154,7 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
           </label>
           <button 
             onClick={() => { setEditingCustomer(null); setIsFormOpen(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors text-xs font-bold shadow-md shadow-indigo-950"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
           >
             <Plus className="w-4 h-4" /> Add Customer
           </button>
@@ -164,13 +164,13 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md overflow-hidden">
         <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex flex-wrap gap-4 items-center justify-between">
           <div className="relative max-w-sm w-full">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
             <input 
               type="text" 
               placeholder="Search customers..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full text-sm font-medium text-white bg-slate-950 pl-9 pr-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600"
+              className="w-full text-sm font-medium text-white bg-slate-950 pl-9 pr-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600"
             />
           </div>
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{filtered.length} total</p>
@@ -192,7 +192,7 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
                 <tr>
                   <td colSpan={5} className="px-5 py-10 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                      <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
                       <p className="text-sm text-slate-400">Loading customers...</p>
                     </div>
                   </td>
@@ -201,7 +201,7 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
                 <tr>
                   <td colSpan={5} className="px-5 py-10 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <Users className="w-10 h-10 text-slate-600" />
+                      <Users className="w-10 h-10 text-slate-600 dark:text-slate-400" />
                       <p className="text-sm font-semibold text-slate-400">No customers found.</p>
                     </div>
                   </td>
@@ -211,11 +211,11 @@ export const CustomersPage: React.FC<Props> = ({ showToast }) => {
                   <tr key={customer.id} className="hover:bg-slate-800/20 transition-colors">
                     <td className="px-5 py-4">
                       <p className="text-sm font-bold text-white mb-0.5">{customer.businessName}</p>
-                      <p className="text-[10px] text-indigo-400 uppercase tracking-wider font-semibold">{customer.businessType}</p>
+                      <p className="text-[10px] text-primary-400 uppercase tracking-wider font-semibold">{customer.businessType}</p>
                     </td>
                     <td className="px-5 py-4">
                       <p className="text-sm text-slate-300">{customer.phone}</p>
-                      {customer.ownerName && <p className="text-[11px] text-slate-500">{customer.ownerName}</p>}
+                      {customer.ownerName && <p className="text-[11px] text-slate-500 dark:text-slate-400">{customer.ownerName}</p>}
                     </td>
                     <td className="px-5 py-4 text-center">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${tierColors[customer.loyaltyTier]}`}>

@@ -188,14 +188,14 @@ export const LeadFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initia
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <div className="flex items-center gap-2 mt-6 mb-3 pb-2 border-b border-slate-800">
-      <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
-      <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+      <span className="w-2 h-2 rounded-full bg-primary-500"></span>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-primary-400">
         {children}
       </h3>
     </div>
   );
 
-  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5";
 
   const currentSubTypes = BUSINESS_CATEGORIES[formData.businessType] || BUSINESS_CATEGORIES['Other'];
@@ -205,7 +205,7 @@ export const LeadFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initia
       <div className="bg-slate-900 border border-slate-800 rounded-md shadow-md w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
         <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-950/80 text-indigo-400 border border-indigo-800/80 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-primary-950/80 text-primary-400 border border-primary-800/80 flex items-center justify-center">
               <span className="font-bold text-lg">LE</span>
             </div>
             <div>
@@ -369,7 +369,7 @@ export const LeadFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initia
                 <label className="flex items-center cursor-pointer gap-2 group">
                   <div className="relative flex items-center">
                     <input type="checkbox" name="responseReceived" checked={formData.responseReceived} onChange={handleChange} className="peer sr-only" />
-                    <div className="w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                    <div className="w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
                   </div>
                   <span className="text-sm font-semibold text-slate-300 group-hover:text-white transition-colors">Response Received?</span>
                 </label>
@@ -399,7 +399,7 @@ export const LeadFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initia
                 <label className="flex items-center cursor-pointer gap-2 group">
                   <div className="relative flex items-center">
                     <input type="checkbox" name="proposalSent" checked={formData.proposalSent} onChange={handleChange} className="peer sr-only" />
-                    <div className="w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                    <div className="w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
                   </div>
                   <span className="text-sm font-semibold text-slate-300 group-hover:text-white transition-colors">Proposal Sent?</span>
                 </label>
@@ -446,7 +446,7 @@ export const LeadFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initia
           <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 hover:text-white transition-colors">
             Cancel
           </button>
-          <button type="submit" form="lead-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-50 transition-colors flex items-center shadow-md shadow-indigo-950">
+          <button type="submit" form="lead-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors flex items-center shadow-md shadow-primary-950">
             {isSubmitting ? 'Saving...' : 'Save Lead'}
           </button>
         </div>

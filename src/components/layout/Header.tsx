@@ -66,51 +66,51 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="no-print bg-white border-b border-slate-200 sticky top-0 z-40">
+    <header className="no-print bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Tier: Logo, Date Navigator, Cloud Sync, & User Profile */}
-        <div className="flex flex-wrap items-center justify-between py-3.5 gap-3 border-b border-slate-100">
+        <div className="flex flex-wrap items-center justify-between py-3.5 gap-3 border-b border-slate-100 dark:border-slate-800/50">
           <div
             onClick={onNavigateHome}
             className="flex items-center gap-3 cursor-pointer group"
             title="Go to Home"
           >
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:bg-indigo-700 transition-colors">
+            <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-md shadow-primary-200 group-hover:bg-primary-700 transition-colors">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-slate-900 tracking-tight leading-none group-hover:text-indigo-600 transition-colors">
-                DailyPulse
+              <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-none group-hover:text-primary-600 transition-colors">
+                Apnar
               </h1>
               <p className="text-[11px] font-medium text-slate-400 mt-1">
-                Goal & EOD Automation Hub
+                Software v1
               </p>
             </div>
           </div>
 
           {/* Date Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl">
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
             <button
               onClick={handlePrevDay}
-              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-white rounded-xl transition-colors"
+              className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-white dark:bg-slate-900 rounded-xl transition-colors"
               title="Previous Day"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-2 px-2">
-              <CalendarIcon className="w-4 h-4 text-indigo-600" />
+              <CalendarIcon className="w-4 h-4 text-primary-600" />
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-800 focus:outline-hidden cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-hidden cursor-pointer"
               />
             </div>
 
             <button
               onClick={handleNextDay}
-              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-white rounded-xl transition-colors"
+              className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-white dark:bg-slate-900 rounded-xl transition-colors"
               title="Next Day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -118,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={handleToday}
-              className="text-[11px] font-medium px-2 py-1 bg-white hover:bg-slate-200 text-slate-700 rounded-xl transition-colors shadow-2xs ml-1"
+              className="text-[11px] font-medium px-2 py-1 bg-white dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition-colors shadow-2xs ml-1"
             >
               Today
             </button>
@@ -131,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                 isFirebaseConnected
                   ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                  : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                  : "bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800"
               }`}
               title="Click to configure Firebase Firestore"
             >
@@ -141,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={onOpenPrintModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all active:scale-95"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>PDF</span>
@@ -149,9 +149,9 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* User Profile / Logout */}
             {user ? (
-              <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-700">
                 <div
-                  className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center border border-indigo-200"
+                  className="w-8 h-8 rounded-xl bg-primary-100 text-primary-700 font-bold text-xs flex items-center justify-center border border-primary-200"
                   title={user.email || "Logged in"}
                 >
                   {user.displayName
@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
                     : "U"}
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-xs font-semibold text-slate-800 leading-tight max-w-[120px] truncate">
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight max-w-[120px] truncate">
                     {user.displayName || user.email?.split("@")[0]}
                   </p>
                   <p className="text-[10px] text-slate-400 leading-tight truncate max-w-[120px]">
@@ -177,11 +177,11 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center">
+              <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-700">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center">
                   <UserIcon className="w-4 h-4" />
                 </div>
-                <span className="text-xs text-slate-500 font-medium">Guest</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Guest</span>
               </div>
             )}
           </div>
@@ -193,14 +193,14 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab("goal")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "goal"
-                ? "bg-indigo-50 text-indigo-600 shadow-2xs border border-indigo-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "bg-primary-50 text-primary-600 shadow-2xs border border-primary-200"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-slate-950"
             }`}
           >
             <Target className="w-4 h-4" />
             <span>Morning Goal</span>
             {hasMorningGoal && (
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-primary-600"></span>
             )}
           </button>
 
@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "eod"
                 ? "bg-emerald-50 text-emerald-700 shadow-2xs border border-emerald-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-slate-950"
             }`}
           >
             <FileCheck className="w-4 h-4" />
@@ -223,8 +223,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab("analytics")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "analytics"
-                ? "bg-indigo-50 text-indigo-600 shadow-2xs border border-indigo-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "bg-primary-50 text-primary-600 shadow-2xs border border-primary-200"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-50 dark:bg-slate-950"
             }`}
           >
             <BarChart2 className="w-4 h-4" />

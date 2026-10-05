@@ -5,11 +5,13 @@ import { X, User, Briefcase, Phone, Mail, Percent } from 'lucide-react';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (partner: Omit<Partner, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'totalInvested' | 'totalDividends'>) => Promise<void>;
+  onSave: (partner: Omit<Partner, 'id' | 'companyId' | 'createdAt' | 'updatedAt' | 'totalInvested' | 'totalDividends'>) => Promise<void>;
   initialData?: Partner | null;
+  currentTotalEquity?: number;
 }
 
-export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialData }) => {
+export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, initialData, currentTotalEquity = 0 }) => {
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     role: 'Active Partner' as PartnerRole,
@@ -56,6 +58,14 @@ export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, ini
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
+    const maxAllowed = 100 - currentTotalEquity + (initialData?.equityShare || 0);
+    if (formData.equityShare > maxAllowed) {
+      setError(`Total equity cannot exceed 100%. You can assign up to ${maxAllowed.toFixed(1)}%.`);
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       await onSave(formData);
@@ -67,7 +77,7 @@ export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, ini
     }
   };
 
-  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5 flex items-center gap-1.5";
 
   return (
@@ -75,7 +85,7 @@ export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, ini
       <div className="bg-slate-900 border border-slate-800 rounded-md shadow-md w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Briefcase className="w-5 h-5 text-indigo-400" />
+            <Briefcase className="w-5 h-5 text-primary-400" />
             <h2 className="text-base font-bold text-white">
               {initialData ? 'Edit Partner' : 'Add New Partner'}
             </h2>
@@ -87,6 +97,11 @@ export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, ini
 
         <div className="p-6 overflow-y-auto">
           <form id="partner-form" onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-md text-xs font-semibold text-rose-400">
+                {error}
+              </div>
+            )}
             <div>
               <label className={labelClasses}><User className="w-3.5 h-3.5" /> Full Name</label>
               <input type="text" name="name" value={formData.name} onChange={handleChange} className={inputClasses} placeholder="e.g. John Doe" required />
@@ -138,7 +153,7 @@ export const PartnerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, ini
           <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 transition-colors">
             Cancel
           </button>
-          <button type="submit" form="partner-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-50 transition-colors shadow-md">
+          <button type="submit" form="partner-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors shadow-md">
             {isSubmitting ? 'Saving...' : 'Save Partner'}
           </button>
         </div>

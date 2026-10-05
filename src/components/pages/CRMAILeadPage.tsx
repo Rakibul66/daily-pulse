@@ -183,7 +183,7 @@ export const CRMAILeadPage: React.FC<Props> = ({ showToast }) => {
   if (!aiEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <Sparkles className="w-12 h-12 text-slate-700" />
+        <Sparkles className="w-12 h-12 text-slate-700 dark:text-slate-300" />
         <h2 className="text-xl font-bold text-white">AI Prospecting Disabled</h2>
         <p className="text-slate-400 text-sm max-w-md">Please go to Settings & AI, enable the AI Assistant, and provide your Gemini API Key to use this feature.</p>
       </div>
@@ -210,20 +210,20 @@ export const CRMAILeadPage: React.FC<Props> = ({ showToast }) => {
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md p-5">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <Search className="w-4 h-4 text-indigo-400" /> Custom Search
+              <Search className="w-4 h-4 text-primary-400" /> Custom Search
             </h3>
             <div className="space-y-3">
               <textarea 
                 value={customPrompt}
                 onChange={e => setCustomPrompt(e.target.value)}
                 rows={3} 
-                className="w-full text-sm font-medium text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600 resize-none"
+                className="w-full text-sm font-medium text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600 resize-none"
                 placeholder="E.g., Find me 10 boutique clothing shops in Dhanmondi..."
               />
               <button 
                 onClick={() => handleGenerate(customPrompt)}
                 disabled={isGenerating || !customPrompt.trim()}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-2.5 bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 {isGenerating ? 'Generating...' : 'Generate Custom Leads'}
@@ -294,13 +294,13 @@ export const CRMAILeadPage: React.FC<Props> = ({ showToast }) => {
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <p className="text-slate-400"><span className="text-slate-500">Owner:</span> {lead.ownerName || 'N/A'}</p>
-                        <p className="text-slate-400"><span className="text-slate-500">Phone:</span> {lead.phone || 'N/A'}</p>
-                        <p className="text-slate-400"><span className="text-slate-500">Location:</span> {lead.locationArea || 'N/A'}</p>
-                        <p className="text-slate-400"><span className="text-slate-500">Sub-type:</span> {lead.businessSubType || 'N/A'}</p>
+                        <p className="text-slate-400"><span className="text-slate-500 dark:text-slate-400">Owner:</span> {lead.ownerName || 'N/A'}</p>
+                        <p className="text-slate-400"><span className="text-slate-500 dark:text-slate-400">Phone:</span> {lead.phone || 'N/A'}</p>
+                        <p className="text-slate-400"><span className="text-slate-500 dark:text-slate-400">Location:</span> {lead.locationArea || 'N/A'}</p>
+                        <p className="text-slate-400"><span className="text-slate-500 dark:text-slate-400">Sub-type:</span> {lead.businessSubType || 'N/A'}</p>
                       </div>
                       {lead.painPoint && (
-                        <p className="text-xs text-indigo-300 mt-1 bg-indigo-950/30 p-2 rounded border border-indigo-900/50">
+                        <p className="text-xs text-primary-300 mt-1 bg-primary-950/30 p-2 rounded border border-primary-900/50">
                           <span className="font-bold">Pain Point:</span> {lead.painPoint}
                         </p>
                       )}
@@ -310,9 +310,9 @@ export const CRMAILeadPage: React.FC<Props> = ({ showToast }) => {
               ) : (
                 <div className="h-full flex flex-col items-center justify-center space-y-3">
                   <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center">
-                    <Sparkles className="w-8 h-8 text-slate-600" />
+                    <Sparkles className="w-8 h-8 text-slate-600 dark:text-slate-400" />
                   </div>
-                  <p className="text-sm text-slate-500 font-medium max-w-xs text-center">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xs text-center">
                     Select a category from the left or type a custom prompt to generate potential leads.
                   </p>
                 </div>

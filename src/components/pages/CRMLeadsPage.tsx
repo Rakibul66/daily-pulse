@@ -108,7 +108,7 @@ export const CRMLeadsPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">All Leads</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage and update all your sales leads.</p>
@@ -124,8 +124,8 @@ export const CRMLeadsPage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-indigo-900 border-t-indigo-500 animate-spin"></div>
-          <p className="text-xs text-slate-500 font-medium">Loading leads data...</p>
+          <div className="w-8 h-8 rounded-full border-4 border-primary-900 border-t-primary-500 animate-spin"></div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading leads data...</p>
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">

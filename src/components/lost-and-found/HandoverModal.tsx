@@ -31,7 +31,7 @@ export const HandoverModal: React.FC<Props> = ({ isOpen, onClose, item, onConfir
     }
   };
 
-  const inputClasses = "w-full text-sm font-medium text-white bg-slate-950 px-3 py-2.5 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-medium text-white bg-slate-950 px-3 py-2.5 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5";
 
   return (

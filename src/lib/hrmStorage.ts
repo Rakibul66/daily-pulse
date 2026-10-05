@@ -1,6 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, orderBy } from 'firebase/firestore';
-import { Employee, AttendanceRecord, SalaryPayment, HRMSettings } from '@/types/hrm';
+import { Employee, AttendanceRecord, SalaryPayment, HRMSettings, EmployeeLoan, EmployeeOvertime } from '@/types/hrm';
 
 const EMPLOYEES_COLLECTION = 'employees';
 const ATTENDANCE_COLLECTION = 'attendance';
@@ -9,13 +9,13 @@ const PAYROLL_COLLECTION = 'payroll';
 // ========================
 // EMPLOYEES
 // ========================
-export const getEmployees = async (userId: string): Promise<Employee[]> => {
+export const getEmployees = async (companyId: string): Promise<Employee[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   const q = query(
     collection(db, EMPLOYEES_COLLECTION),
-    where('userId', '==', userId)
+    where('companyId', '==', companyId)
   );
 
   const snapshot = await getDocs(q);
@@ -42,7 +42,7 @@ export const addEmployee = async (employee: Omit<Employee, 'id' | 'createdAt'>):
   return docRef.id;
 };
 
-export const updateEmployee = async (id: string, updates: Partial<Omit<Employee, 'id' | 'userId' | 'createdAt'>>): Promise<void> => {
+export const updateEmployee = async (id: string, updates: Partial<Omit<Employee, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   
@@ -60,14 +60,14 @@ export const deleteEmployee = async (id: string): Promise<void> => {
 // ========================
 // ATTENDANCE
 // ========================
-export const getAttendanceByMonth = async (userId: string, yearMonth: string): Promise<AttendanceRecord[]> => {
+export const getAttendanceByMonth = async (companyId: string, yearMonth: string): Promise<AttendanceRecord[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   // Prefix matching for date YYYY-MM
   const q = query(
     collection(db, ATTENDANCE_COLLECTION),
-    where('userId', '==', userId)
+    where('companyId', '==', companyId)
   );
 
   const snapshot = await getDocs(q);
@@ -97,7 +97,7 @@ export const saveAttendance = async (record: Omit<AttendanceRecord, 'id' | 'crea
   return docRef.id;
 };
 
-export const updateAttendance = async (id: string, updates: Partial<Omit<AttendanceRecord, 'id' | 'userId' | 'createdAt'>>): Promise<void> => {
+export const updateAttendance = async (id: string, updates: Partial<Omit<AttendanceRecord, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   
@@ -115,13 +115,13 @@ export const deleteAttendance = async (id: string): Promise<void> => {
 // ========================
 // PAYROLL
 // ========================
-export const getPayrollByMonth = async (userId: string, month: string): Promise<SalaryPayment[]> => {
+export const getPayrollByMonth = async (companyId: string, month: string): Promise<SalaryPayment[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   const q = query(
     collection(db, PAYROLL_COLLECTION),
-    where('userId', '==', userId),
+    where('companyId', '==', companyId),
     where('month', '==', month)
   );
 
@@ -161,13 +161,13 @@ export const deleteSalaryPayment = async (id: string): Promise<void> => {
 // ========================
 const SETTINGS_COLLECTION = 'hrm_settings';
 
-export const getHRMSettings = async (userId: string): Promise<HRMSettings | null> => {
+export const getHRMSettings = async (companyId: string): Promise<HRMSettings | null> => {
   const { db } = getFirebaseServices();
   if (!db) return null;
   
   const q = query(
     collection(db, SETTINGS_COLLECTION),
-    where('userId', '==', userId)
+    where('companyId', '==', companyId)
   );
 
   const snapshot = await getDocs(q);
@@ -177,13 +177,13 @@ export const getHRMSettings = async (userId: string): Promise<HRMSettings | null
   return null;
 };
 
-export const updateHRMSettings = async (userId: string, updates: Partial<Omit<HRMSettings, 'userId'>>): Promise<void> => {
+export const updateHRMSettings = async (companyId: string, updates: Partial<Omit<HRMSettings, 'companyId'>>): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   const q = query(
     collection(db, SETTINGS_COLLECTION),
-    where('userId', '==', userId)
+    where('companyId', '==', companyId)
   );
 
   const snapshot = await getDocs(q);
@@ -193,10 +193,149 @@ export const updateHRMSettings = async (userId: string, updates: Partial<Omit<HR
   } else {
     const docRef = doc(collection(db, SETTINGS_COLLECTION));
     await setDoc(docRef, {
-      userId,
+      companyId,
       weekendDays: [],
       ...updates,
       updatedAt: new Date().toISOString(),
     });
   }
+};
+
+// --- LOANS ---
+const LOANS_COLLECTION = 'hrm_loans';
+
+export const getEmployeeLoans = async (companyId: string): Promise<EmployeeLoan[]> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const q = query(collection(db, LOANS_COLLECTION), where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  const items: EmployeeLoan[] = [];
+  snapshot.forEach((docSnap) => items.push(docSnap.data() as EmployeeLoan));
+  
+  items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return items;
+};
+
+export const addEmployeeLoan = async (loan: Omit<EmployeeLoan, "id" | "createdAt" | "updatedAt">): Promise<string> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const docRef = doc(collection(db, LOANS_COLLECTION));
+  const newLoan = {
+    ...loan,
+    id: docRef.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  await setDoc(docRef, newLoan);
+  return docRef.id;
+};
+
+export const updateEmployeeLoan = async (id: string, updates: Partial<Omit<EmployeeLoan, "id" | "companyId" | "createdAt">>): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  const docRef = doc(db, LOANS_COLLECTION, id);
+  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+};
+
+export const deleteEmployeeLoan = async (id: string): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  await deleteDoc(doc(db, LOANS_COLLECTION, id));
+};
+
+// --- OVERTIME ---
+const OVERTIME_COLLECTION = 'hrm_overtimes';
+
+export const getEmployeeOvertimes = async (companyId: string): Promise<EmployeeOvertime[]> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const q = query(collection(db, OVERTIME_COLLECTION), where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  const items: EmployeeOvertime[] = [];
+  snapshot.forEach((docSnap) => items.push(docSnap.data() as EmployeeOvertime));
+  
+  items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return items;
+};
+
+export const addEmployeeOvertime = async (overtime: Omit<EmployeeOvertime, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const docRef = doc(collection(db, OVERTIME_COLLECTION));
+  const newOvertime = {
+    ...overtime,
+    id: docRef.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  await setDoc(docRef, newOvertime);
+  return docRef.id;
+};
+
+export const updateEmployeeOvertime = async (id: string, updates: Partial<Omit<EmployeeOvertime, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  const docRef = doc(db, OVERTIME_COLLECTION, id);
+  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+};
+
+export const deleteEmployeeOvertime = async (id: string): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  await deleteDoc(doc(db, OVERTIME_COLLECTION, id));
+};
+
+// ========================
+// DAILY WORK REPORTS
+// ========================
+const DAILY_REPORTS_COLLECTION = 'daily_work_reports';
+
+export const getDailyWorkReports = async (companyId: string, dateStr?: string): Promise<any[]> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const conditions: any[] = [where('companyId', '==', companyId)];
+  if (dateStr) {
+    conditions.push(where('date', '==', dateStr));
+  }
+
+  const q = query(collection(db, DAILY_REPORTS_COLLECTION), ...conditions);
+  const snapshot = await getDocs(q);
+  const items: any[] = [];
+  snapshot.forEach((docSnap) => items.push(docSnap.data()));
+  
+  items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return items;
+};
+
+export const addDailyWorkReport = async (reportData: any): Promise<string> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+
+  const docRef = doc(collection(db, DAILY_REPORTS_COLLECTION));
+  const newReport = {
+    ...reportData,
+    id: docRef.id,
+    createdAt: new Date().toISOString(),
+  };
+
+  await setDoc(docRef, newReport);
+  return docRef.id;
+};
+
+export const deleteDailyWorkReport = async (id: string): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  await deleteDoc(doc(db, DAILY_REPORTS_COLLECTION, id));
 };

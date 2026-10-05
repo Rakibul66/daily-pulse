@@ -94,9 +94,9 @@ export const CustomerLoyaltyModal: React.FC<Props> = ({ isOpen, onClose, custome
 
   const tierColors = {
     Member: 'bg-slate-700 text-slate-200',
-    Silver: 'bg-slate-300 text-slate-800 shadow-md shadow-slate-200/50',
+    Silver: 'bg-slate-300 text-slate-800 dark:text-slate-200 shadow-md shadow-slate-200/50',
     Gold: 'bg-amber-400 text-amber-950 shadow-md shadow-amber-400/50',
-    Platinum: 'bg-indigo-300 text-indigo-950 shadow-md shadow-indigo-300/50',
+    Platinum: 'bg-primary-300 text-primary-950 shadow-md shadow-primary-300/50',
   };
 
   return (
@@ -139,7 +139,7 @@ export const CustomerLoyaltyModal: React.FC<Props> = ({ isOpen, onClose, custome
           <div className="flex gap-2 mb-6 border-b border-slate-800 pb-2">
             <button 
               onClick={() => { setMode('VIEW'); resetForm(); }}
-              className={`text-xs font-bold px-4 py-2 rounded-md transition-colors ${mode === 'VIEW' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+              className={`text-xs font-bold px-4 py-2 rounded-md transition-colors ${mode === 'VIEW' ? 'bg-primary-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
             >
               History
             </button>
@@ -166,7 +166,7 @@ export const CustomerLoyaltyModal: React.FC<Props> = ({ isOpen, onClose, custome
               {isLoading ? (
                 <p className="text-sm text-slate-400">Loading history...</p>
               ) : transactions.length === 0 ? (
-                <p className="text-sm text-slate-500 py-4 text-center">No transactions found.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 py-4 text-center">No transactions found.</p>
               ) : (
                 <div className="space-y-2">
                   {transactions.map(tx => (
@@ -177,14 +177,14 @@ export const CustomerLoyaltyModal: React.FC<Props> = ({ isOpen, onClose, custome
                         </div>
                         <div>
                           <p className="text-sm font-bold text-white">{tx.description}</p>
-                          <p className="text-[10px] text-slate-500">{new Date(tx.date).toLocaleDateString()}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400">{new Date(tx.date).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className={`text-sm font-bold ${tx.type === 'EARN' ? 'text-emerald-400' : 'text-rose-400'}`}>
                           {tx.type === 'EARN' ? '+' : '-'}{tx.points} pts
                         </p>
-                        {tx.amount && <p className="text-[10px] text-slate-500">৳{tx.amount.toLocaleString()}</p>}
+                        {tx.amount && <p className="text-[10px] text-slate-500 dark:text-slate-400">৳{tx.amount.toLocaleString()}</p>}
                       </div>
                     </div>
                   ))}

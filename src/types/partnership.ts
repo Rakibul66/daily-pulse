@@ -3,7 +3,7 @@ export type TransactionType = 'INVESTMENT' | 'WITHDRAWAL' | 'DIVIDEND';
 
 export interface Partner {
   id: string;
-  userId: string;
+  companyId: string;
   name: string;
   role: PartnerRole;
   phone: string;
@@ -19,7 +19,7 @@ export interface Partner {
 
 export interface PartnerTransaction {
   id: string;
-  userId: string;
+  companyId: string;
   partnerId: string;
   type: TransactionType;
   amount: number;

@@ -5,7 +5,7 @@ export const LeadStatusBadge: React.FC<{ status: LeadStatus }> = ({ status }) =>
   const getStyle = () => {
     switch (status) {
       case 'NEW': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'CONTACTED': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'CONTACTED': return 'bg-primary-100 text-primary-800 border-primary-200';
       case 'REPLIED': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'QUALIFIED': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
       case 'DEMO BOOKED': return 'bg-yellow-100 text-yellow-800 border-yellow-200';

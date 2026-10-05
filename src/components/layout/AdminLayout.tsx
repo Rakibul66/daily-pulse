@@ -18,7 +18,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex text-slate-900 dark:text-slate-100">
       {/* Sidebar */}
       <Sidebar
         activePage={activePage}

@@ -35,7 +35,7 @@ export const AttendanceModal: React.FC<Props> = ({
     setIsSubmitting(true);
     try {
       await onSave({
-        userId: '', // populated in page
+        companyId: '', // populated in page
         employeeId: formData.employeeId,
         date: formData.date,
         status: formData.status,
@@ -48,7 +48,7 @@ export const AttendanceModal: React.FC<Props> = ({
     }
   };
 
-  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500";
+  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500";
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -87,7 +87,7 @@ export const AttendanceModal: React.FC<Props> = ({
               </div>
             )}
             <div className="flex justify-end pt-4">
-              <button disabled={isSubmitting} type="submit" className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-bold hover:bg-indigo-500 disabled:opacity-50">
+              <button disabled={isSubmitting} type="submit" className="w-full px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-bold hover:bg-primary-500 disabled:opacity-50">
                 {isSubmitting ? 'Saving...' : 'Save Entry'}
               </button>
             </div>

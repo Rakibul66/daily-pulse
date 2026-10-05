@@ -123,7 +123,7 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
 
         <button 
           onClick={() => setIsLogModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors text-xs font-bold shadow-md shadow-indigo-950"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
         >
           <Plus className="w-4 h-4" /> Log item
         </button>
@@ -133,13 +133,13 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
       <div className="flex gap-2 border-b border-slate-800 pb-px">
         <button 
           onClick={() => setActiveTab('Register')}
-          className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'Register' ? 'bg-slate-800 text-white border-b-2 border-indigo-500' : 'text-slate-400 hover:text-slate-200'}`}
+          className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'Register' ? 'bg-slate-800 text-white border-b-2 border-primary-500' : 'text-slate-400 hover:text-slate-200'}`}
         >
           Register ({items.length})
         </button>
         <button 
           onClick={() => setActiveTab('Claims')}
-          className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'Claims' ? 'bg-slate-800 text-white border-b-2 border-indigo-500' : 'text-slate-400 hover:text-slate-200'}`}
+          className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'Claims' ? 'bg-slate-800 text-white border-b-2 border-primary-500' : 'text-slate-400 hover:text-slate-200'}`}
         >
           Claims ({returnedCount})
         </button>
@@ -150,31 +150,31 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-md shadow-sm flex items-center gap-4">
           <div className="p-2.5 bg-slate-800 rounded-lg text-slate-300"><Package className="w-5 h-5" /></div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">In Store</p>
+            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">In Store</p>
             <p className="text-xl font-black text-white">{inStoreCount}</p>
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-md shadow-sm flex items-center gap-4">
           <div className="p-2.5 bg-amber-500/10 rounded-lg text-amber-500"><Archive className="w-5 h-5" /></div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Claims Waiting</p>
+            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Claims Waiting</p>
             <p className="text-xl font-black text-white">0</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Nothing to review</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Nothing to review</p>
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-md shadow-sm flex items-center gap-4">
           <div className="p-2.5 bg-emerald-500/10 rounded-lg text-emerald-400"><CheckCircle className="w-5 h-5" /></div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Returned</p>
+            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Returned</p>
             <p className="text-xl font-black text-white">{returnedCount}</p>
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-md shadow-sm flex items-center gap-4">
           <div className="p-2.5 bg-rose-500/10 rounded-lg text-rose-400"><AlertTriangle className="w-5 h-5" /></div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Held 30+ Days</p>
+            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Held 30+ Days</p>
             <p className="text-xl font-black text-white">{held30DaysCount}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Due for disposal review</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Due for disposal review</p>
           </div>
         </div>
       </div>
@@ -182,13 +182,13 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
           <input 
             type="text" 
             placeholder="Search title, colour, reference code..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 text-white text-sm rounded-md pl-9 pr-3 py-2 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-slate-900 border border-slate-800 text-white text-sm rounded-md pl-9 pr-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
         </div>
         
@@ -204,7 +204,7 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
       {/* List */}
       <div className="bg-slate-900 border border-slate-800 rounded-md shadow-md overflow-hidden">
         <div className="px-5 py-3 border-b border-slate-800 bg-slate-900/50">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {activeTab === 'Register' ? 'REGISTER' : 'OWNERSHIP CLAIMS'} {filteredItems.length} listings
           </p>
         </div>
@@ -219,7 +219,7 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
 
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="text-xs font-mono text-slate-500">{item.refNumber}</span>
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400">{item.refNumber}</span>
                   <span className="text-sm font-bold text-white truncate">{item.itemName}</span>
                   <span className="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded uppercase tracking-wider">{item.category}</span>
                   {item.status === 'In store' ? (
@@ -235,7 +235,7 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
                   <p className="text-sm text-slate-300 mb-2">Claimed by: <span className="font-bold text-white">{item.claimantName} ({item.claimantPhone})</span></p>
                 )}
 
-                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500">
+                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400">
                   <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.locationFound || 'Unknown'}</span>
                   <span className="flex items-center gap-1"><Lock className="w-3.5 h-3.5" /> {item.storageNote || 'No storage note'}</span>
                   {activeTab === 'Register' ? (
@@ -249,10 +249,10 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
               <div className="flex items-center gap-2 shrink-0 md:opacity-0 group-hover:opacity-100 transition-opacity">
                 {item.status === 'In store' && (
                   <>
-                    <button onClick={() => { setHandoverItem(item); setIsHandoverOpen(true); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-900 hover:bg-slate-200 text-xs font-bold rounded-md transition-colors">
+                    <button onClick={() => { setHandoverItem(item); setIsHandoverOpen(true); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-900 dark:text-white hover:bg-slate-200 dark:bg-slate-700 text-xs font-bold rounded-md transition-colors">
                       Handover <ArrowRight className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950 rounded-md transition-colors border border-transparent hover:border-rose-900/50">
+                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-rose-400 hover:bg-rose-950 rounded-md transition-colors border border-transparent hover:border-rose-900/50">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </>
@@ -268,7 +268,7 @@ export const LostAndFoundPage: React.FC<Props> = ({ showToast }) => {
           
           {filteredItems.length === 0 && !isLoading && (
             <div className="p-12 text-center flex flex-col items-center">
-              <Archive className="w-8 h-8 text-slate-600 mb-3" />
+              <Archive className="w-8 h-8 text-slate-600 dark:text-slate-400 mb-3" />
               <p className="text-sm font-medium text-slate-400">No items found matching your criteria.</p>
             </div>
           )}

@@ -101,8 +101,8 @@ export const CRMRecentLeadsPage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-indigo-900 border-t-indigo-500 animate-spin"></div>
-          <p className="text-xs text-slate-500 font-medium">Loading leads data...</p>
+          <div className="w-8 h-8 rounded-full border-4 border-primary-900 border-t-primary-500 animate-spin"></div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading leads data...</p>
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">

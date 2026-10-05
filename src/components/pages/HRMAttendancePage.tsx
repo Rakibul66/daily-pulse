@@ -12,7 +12,7 @@ interface Props {
 const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
 
 export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [weekendDays, setWeekendDays] = useState<string[]>([]);
@@ -27,17 +27,21 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
   const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
 
   useEffect(() => {
-    if (user) {
-      loadData(user.uid, yearMonth);
+    if (user && userProfile?.companyId) {
+      loadData(yearMonth);
     }
   }, [user, yearMonth]);
 
-  const loadData = async (uid: string, ym: string) => {
+  const loadData = async (ym?: string) => {
+    const uid = userProfile?.companyId;
+    if (!uid) return;
+    const yearMonth = ym || (currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0'));
+    if (!uid) return;
     setIsLoading(true);
     try {
       const [emps, recs, settings] = await Promise.all([
         getEmployees(uid),
-        getAttendanceByMonth(uid, ym),
+        getAttendanceByMonth(uid, yearMonth),
         getHRMSettings(uid)
       ]);
       setEmployees(emps.filter((e: any) => e.isActive));
@@ -55,11 +59,11 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
 
   const handleSaveRecord = async (record: Omit<AttendanceRecord, 'id' | 'createdAt'>) => {
-    if (!user) return;
+    if (!user || !userProfile?.companyId) return;
     try {
-      await saveAttendance({ ...record, userId: user.uid });
+      await saveAttendance({ ...record, companyId: userProfile?.companyId });
       showToast('Attendance recorded', 'success');
-      loadData(user.uid, yearMonth);
+      loadData(yearMonth);
     } catch (err) {
       console.error(err);
       showToast('Error saving attendance', 'error');
@@ -71,7 +75,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
     try {
       await deleteAttendance(id);
       showToast('Record deleted', 'success');
-      loadData(user!.uid, yearMonth);
+      loadData(yearMonth);
     } catch (err) {
       console.error(err);
       showToast('Error deleting record', 'error');
@@ -90,7 +94,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">Attendance Register</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Track employee attendance for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.</p>
@@ -105,7 +109,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors text-xs font-bold shadow-md shadow-indigo-950"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
           >
             <Plus className="w-3.5 h-3.5" />
             Manual Entry
@@ -115,7 +119,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-indigo-900 border-t-indigo-500 animate-spin"></div>
+          <div className="w-8 h-8 rounded-full border-4 border-primary-900 border-t-primary-500 animate-spin"></div>
         </div>
       ) : (
         <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md overflow-hidden">
@@ -127,7 +131,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
                   {daysArray.map(d => (
                     <th key={d.dayNum} className="px-2 py-2 border-r border-b border-slate-800 min-w-[40px]">
                       <div className="font-bold text-white">{d.dayNum}</div>
-                      <div className={`text-[9px] font-semibold ${['SAT','SUN'].includes(d.dayStr) ? 'text-rose-400' : 'text-slate-500'}`}>{d.dayStr}</div>
+                      <div className={`text-[9px] font-semibold ${['SAT','SUN'].includes(d.dayStr) ? 'text-rose-400' : 'text-slate-500 dark:text-slate-400'}`}>{d.dayStr}</div>
                     </th>
                   ))}
                   <th className="px-3 py-3 border-r border-b border-slate-800 text-emerald-400 font-bold sticky right-[120px] bg-slate-950/90">P</th>
@@ -159,7 +163,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
                     if (status === 'L') lCount++;
                     if (status === 'LV') lvCount++;
 
-                    let cellColor = 'text-slate-500';
+                    let cellColor = 'text-slate-500 dark:text-slate-400';
                     if (status === 'P') cellColor = 'text-emerald-400 font-bold bg-emerald-500/10';
                     if (status === 'A') cellColor = 'text-rose-400 font-bold bg-rose-500/10';
                     if (status === 'L') cellColor = 'text-amber-400 font-bold bg-amber-500/10';
@@ -177,7 +181,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
                     <tr key={emp.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
                       <td className="px-4 py-3 font-bold text-white text-left sticky left-0 z-10 bg-slate-900 border-r border-slate-800">
                         {emp.name}
-                        <div className="text-[10px] text-slate-500 font-normal">{emp.department}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">{emp.department}</div>
                       </td>
                       {rowCells}
                       <td className="font-bold text-emerald-400 border-r border-slate-800 sticky right-[120px] bg-slate-900">{pCount}</td>
@@ -189,7 +193,7 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
                 })}
                 {employees.length === 0 && (
                   <tr>
-                    <td colSpan={daysInMonth + 5} className="py-10 text-slate-500">No active employees found.</td>
+                    <td colSpan={daysInMonth + 5} className="py-10 text-slate-500 dark:text-slate-400">No active employees found.</td>
                   </tr>
                 )}
               </tbody>

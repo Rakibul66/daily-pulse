@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,12 +23,14 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
   });
 
   useEffect(() => {
-    if (user) {
-      loadData(user.uid);
+    if (user && userProfile?.companyId) {
+      loadData();
     }
-  }, [user]);
+  }, [user, userProfile?.companyId]);
 
-  const loadData = async (uid: string) => {
+  const loadData = async () => {
+    const uid = userProfile?.companyId;
+    if (!uid) return;
     setIsLoading(true);
     try {
       const data = await getEmployees(uid);
@@ -60,7 +62,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !userProfile?.companyId) return;
     
     try {
       if (editingEmployee) {
@@ -68,7 +70,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
         showToast('Employee updated', 'success');
       } else {
         await addEmployee({
-          userId: user.uid,
+          companyId: userProfile?.companyId,
           name: formData.name,
           department: formData.department,
           baseSalary: formData.baseSalary,
@@ -78,7 +80,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
         showToast('Employee added', 'success');
       }
       setIsModalOpen(false);
-      loadData(user.uid);
+      loadData();
     } catch (err) {
       console.error(err);
       showToast('Error saving employee', 'error');
@@ -90,7 +92,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
     try {
       await deleteEmployee(id);
       showToast('Employee deleted', 'success');
-      loadData(user!.uid);
+      loadData();
     } catch (err) {
       console.error(err);
       showToast('Error deleting employee', 'error');
@@ -102,14 +104,14 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">Employees</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage your team members and their basic details.</p>
         </div>
         <button
           onClick={openNewModal}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors text-xs font-bold shadow-md shadow-indigo-950"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Employee
@@ -118,7 +120,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-indigo-900 border-t-indigo-500 animate-spin"></div>
+          <div className="w-8 h-8 rounded-full border-4 border-primary-900 border-t-primary-500 animate-spin"></div>
         </div>
       ) : (
         <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md overflow-hidden">
@@ -147,7 +149,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
               ))}
               {employees.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-slate-500">No employees found.</td>
+                  <td colSpan={5} className="px-5 py-10 text-center text-slate-500 dark:text-slate-400">No employees found.</td>
                 </tr>
               )}
             </tbody>
@@ -180,7 +182,7 @@ export const HRMEmployeesPage: React.FC<Props> = ({ showToast }) => {
               
               <div className="flex justify-end gap-3 pt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm text-slate-300 bg-slate-800 rounded-md hover:bg-slate-700">Cancel</button>
-                <button type="submit" className="px-4 py-2 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Save</button>
+                <button type="submit" className="px-4 py-2 text-sm text-white bg-primary-600 rounded-md hover:bg-primary-500">Save</button>
               </div>
             </form>
           </div>

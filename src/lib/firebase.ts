@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getFirestore, initializeFirestore, Firestore } from "firebase/firestore";
+import { getFirestore, initializeFirestore, Firestore, persistentLocalCache } from "firebase/firestore";
 import { getAuth, Auth, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseConfig } from "@/types/report";
 
@@ -80,6 +80,7 @@ export const getFirebaseServices = (): {
     try {
       db = initializeFirestore(app, {
         experimentalAutoDetectLongPolling: true,
+        localCache: typeof window !== "undefined" ? persistentLocalCache() : undefined
       });
     } catch {
       // If already initialized, get existing instance

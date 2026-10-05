@@ -38,7 +38,7 @@ export const TransactionModal: React.FC<Props> = ({ isOpen, onClose, partner, on
     setIsSubmitting(true);
     try {
       await onProcess({
-        userId: partner.userId,
+        companyId: partner.companyId,
         partnerId: partner.id,
         type,
         amount: numAmount,
@@ -58,7 +58,7 @@ export const TransactionModal: React.FC<Props> = ({ isOpen, onClose, partner, on
     }
   };
 
-  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5";
 
   return (
@@ -69,7 +69,7 @@ export const TransactionModal: React.FC<Props> = ({ isOpen, onClose, partner, on
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               Financial Transaction
             </h2>
-            <p className="text-xs font-semibold text-indigo-400 mt-0.5">{partner.name}</p>
+            <p className="text-xs font-semibold text-primary-400 mt-0.5">{partner.name}</p>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-white rounded-md transition-colors">
             <X className="w-5 h-5" />
@@ -99,7 +99,7 @@ export const TransactionModal: React.FC<Props> = ({ isOpen, onClose, partner, on
               <button
                 type="button"
                 onClick={() => setType('DIVIDEND')}
-                className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-md border transition-all ${type === 'DIVIDEND' ? 'bg-indigo-500/10 border-indigo-500/50 text-indigo-400' : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-900'}`}
+                className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-md border transition-all ${type === 'DIVIDEND' ? 'bg-primary-500/10 border-primary-500/50 text-primary-400' : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-900'}`}
               >
                 <Gift className="w-5 h-5" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Dividend</span>
@@ -140,7 +140,7 @@ export const TransactionModal: React.FC<Props> = ({ isOpen, onClose, partner, on
           <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 transition-colors">
             Cancel
           </button>
-          <button type="submit" form="tx-form" disabled={isSubmitting} className={`px-5 py-2.5 text-sm font-bold text-white rounded-md shadow-md disabled:opacity-50 transition-colors ${type === 'INVESTMENT' ? 'bg-emerald-600 hover:bg-emerald-500' : type === 'WITHDRAWAL' ? 'bg-rose-600 hover:bg-rose-500' : 'bg-indigo-600 hover:bg-indigo-500'}`}>
+          <button type="submit" form="tx-form" disabled={isSubmitting} className={`px-5 py-2.5 text-sm font-bold text-white rounded-md shadow-md disabled:opacity-50 transition-colors ${type === 'INVESTMENT' ? 'bg-emerald-600 hover:bg-emerald-500' : type === 'WITHDRAWAL' ? 'bg-rose-600 hover:bg-rose-500' : 'bg-primary-600 hover:bg-primary-500'}`}>
             {isSubmitting ? 'Processing...' : 'Confirm Transaction'}
           </button>
         </div>

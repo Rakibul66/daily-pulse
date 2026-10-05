@@ -83,7 +83,7 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">Offers & Promotions</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Create Happy Hours, Time-based discounts, and BOGOs.</p>
@@ -91,7 +91,7 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
 
         <button 
           onClick={() => { setEditingPromo(null); setIsModalOpen(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 transition-colors text-xs font-bold shadow-md shadow-indigo-950"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
         >
           <Plus className="w-4 h-4" /> New Offer
         </button>
@@ -99,19 +99,19 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-          <p className="text-xs text-slate-500 font-medium">Loading promotions...</p>
+          <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading promotions...</p>
         </div>
       ) : promotions.length === 0 ? (
         <div className="bg-slate-900 rounded-md border border-slate-800 p-12 flex flex-col items-center justify-center text-center shadow-md">
           <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 border border-slate-700">
-            <Tag className="w-8 h-8 text-slate-500" />
+            <Tag className="w-8 h-8 text-slate-500 dark:text-slate-400" />
           </div>
           <h3 className="text-lg font-bold text-white mb-2">No Active Promotions</h3>
           <p className="text-slate-400 text-sm max-w-sm mb-6">Create a Happy Hour or discount offer to boost your sales.</p>
           <button 
             onClick={() => { setEditingPromo(null); setIsModalOpen(true); }}
-            className="px-5 py-2.5 bg-indigo-600 text-white rounded-md text-sm font-bold shadow-md shadow-indigo-950"
+            className="px-5 py-2.5 bg-primary-600 text-white rounded-md text-sm font-bold shadow-md shadow-primary-950"
           >
             Create Your First Offer
           </button>
@@ -119,7 +119,7 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {promotions.map(promo => (
-            <div key={promo.id} className={`bg-slate-900 border ${promo.isActive ? 'border-indigo-500/50 shadow-md shadow-indigo-900/20' : 'border-slate-800 opacity-75'} rounded-md overflow-hidden flex flex-col transition-all`}>
+            <div key={promo.id} className={`bg-slate-900 border ${promo.isActive ? 'border-primary-500/50 shadow-md shadow-primary-900/20' : 'border-slate-800 opacity-75'} rounded-md overflow-hidden flex flex-col transition-all`}>
               
               <div className="p-5 flex-1 border-b border-slate-800/50">
                 <div className="flex justify-between items-start mb-4">
@@ -133,28 +133,28 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
                 </div>
 
                 <h3 className="text-lg font-bold text-white mb-1">{promo.title}</h3>
-                <p className="text-xs text-indigo-400 font-bold uppercase tracking-wider mb-4">{promo.type.replace('_', ' ')}</p>
+                <p className="text-xs text-primary-400 font-bold uppercase tracking-wider mb-4">{promo.type.replace('_', ' ')}</p>
 
-                <div className="bg-indigo-950/30 border border-indigo-900/50 rounded-md p-3 mb-4 flex items-center justify-center">
-                  <span className="text-xl font-black text-indigo-300">
+                <div className="bg-primary-950/30 border border-primary-900/50 rounded-md p-3 mb-4 flex items-center justify-center">
+                  <span className="text-xl font-black text-primary-300">
                     {formatDiscount(promo.discountValue, promo.discountType)}
                   </span>
                 </div>
 
                 <div className="space-y-2.5 text-xs">
                   <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                    <Calendar className="w-4 h-4 text-slate-500" />
+                    <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                     <span>{promo.startDate} {promo.endDate ? `to ${promo.endDate}` : '(No end date)'}</span>
                   </div>
                   {(promo.type === 'HAPPY_HOUR' || promo.type === 'TIME_BASED') && (
                     <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                      <Clock className="w-4 h-4 text-slate-500" />
+                      <Clock className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                       <span>{promo.startTime} - {promo.endTime} ({promo.applicableDays.join(', ')})</span>
                     </div>
                   )}
                   {promo.type !== 'HAPPY_HOUR' && promo.type !== 'TIME_BASED' && (
                     <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                      <AlertCircle className="w-4 h-4 text-slate-500" />
+                      <AlertCircle className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                       <span>Valid: {promo.applicableDays.join(', ')}</span>
                     </div>
                   )}
@@ -165,7 +165,7 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
                 <span className="text-xs font-semibold text-slate-400">Toggle Status</span>
                 <label className="relative flex items-center cursor-pointer group">
                   <input type="checkbox" checked={promo.isActive} onChange={() => handleToggleActive(promo)} className="peer sr-only" />
-                  <div className="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white border border-slate-700 peer-checked:border-emerald-600"></div>
+                  <div className="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white dark:bg-slate-900 border border-slate-700 peer-checked:border-emerald-600"></div>
                 </label>
               </div>
             </div>

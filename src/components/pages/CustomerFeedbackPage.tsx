@@ -107,13 +107,13 @@ export const CustomerFeedbackPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 border border-slate-800 rounded-md shadow-md overflow-hidden">
         {isLoading ? (
           <div className="py-20 flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-            <p className="text-xs text-slate-500 font-medium">Loading feedback...</p>
+            <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading feedback...</p>
           </div>
         ) : feedbacks.length === 0 ? (
           <div className="p-16 text-center flex flex-col items-center">
             <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-slate-700">
-              <MessageSquareQuote className="w-8 h-8 text-slate-500" />
+              <MessageSquareQuote className="w-8 h-8 text-slate-500 dark:text-slate-400" />
             </div>
             <h3 className="text-lg font-bold text-white mb-2">No Reviews Yet</h3>
             <p className="text-slate-400 text-sm">Log your first customer feedback to see metrics.</p>
@@ -127,7 +127,7 @@ export const CustomerFeedbackPage: React.FC<Props> = ({ showToast }) => {
                     <h4 className="text-base font-bold text-white">{fb.customerName}</h4>
                     <p className="text-xs text-slate-400">{fb.customerPhone || 'No Phone Number'} • {new Date(fb.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <button onClick={() => handleDelete(fb.id)} className="p-1.5 text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => handleDelete(fb.id)} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -150,7 +150,7 @@ export const CustomerFeedbackPage: React.FC<Props> = ({ showToast }) => {
                 </div>
 
                 <div className="bg-slate-950/50 border border-slate-800 p-4 rounded-md relative">
-                  <Quote className="absolute top-3 right-3 w-5 h-5 text-slate-700/50" />
+                  <Quote className="absolute top-3 right-3 w-5 h-5 text-slate-700 dark:text-slate-300/50" />
                   <p className="text-sm text-slate-300 relative z-10">{fb.comment}</p>
                 </div>
               </div>

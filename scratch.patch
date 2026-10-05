@@ -1,9 +1,0 @@
---- src/components/layout/AdminTopBar.tsx
-+++ src/components/layout/AdminTopBar.tsx
-@@ -53,2 +53,6 @@
-   },
-+  "lost-and-found": {
-+    title: "Lost & Found",
-+    subtitle: "Manage and return found guest property",
-+  },
- };

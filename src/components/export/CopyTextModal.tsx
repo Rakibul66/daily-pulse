@@ -35,46 +35,46 @@ export const CopyTextModal: React.FC<CopyTextModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900">{title}</h3>
-              <p className="text-xs text-slate-500">
+              <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Ready to paste into WhatsApp, Slack, Telegram, or Notion
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="text-slate-400 hover:text-slate-600 dark:text-slate-400 p-1.5 rounded-lg hover:bg-slate-100 dark:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Box */}
-        <div className="p-6 overflow-y-auto flex-1 bg-slate-50/30">
+        <div className="p-6 overflow-y-auto flex-1 bg-slate-50 dark:bg-slate-950/30">
           <div className="relative">
-            <pre className="font-mono text-xs md:text-sm text-slate-800 bg-white p-5 rounded-xl border border-slate-200 whitespace-pre-wrap leading-relaxed shadow-xs selection:bg-indigo-100">
+            <pre className="font-mono text-xs md:text-sm text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-700 whitespace-pre-wrap leading-relaxed shadow-xs selection:bg-primary-100">
               {textToCopy}
             </pre>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800/50 bg-white dark:bg-slate-900">
           <span className="text-xs text-slate-400 flex items-center gap-1">
             <FileText className="w-3.5 h-3.5" /> Markdown formatted
           </span>
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors"
             >
               Close
             </button>
@@ -83,7 +83,7 @@ export const CopyTextModal: React.FC<CopyTextModalProps> = ({
               className={`flex items-center gap-2 px-5 py-2 rounded-xl font-medium text-sm text-white shadow-sm transition-all active:scale-95 ${
                 copied
                   ? "bg-emerald-600 hover:bg-emerald-700"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-primary-600 hover:bg-primary-700"
               }`}
             >
               {copied ? (

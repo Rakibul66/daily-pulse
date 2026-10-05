@@ -12,12 +12,41 @@ import { CustomersPage } from "@/components/pages/CustomersPage";
 import { PromotionsPage } from "@/components/pages/PromotionsPage";
 import { CustomerFeedbackPage } from "@/components/pages/CustomerFeedbackPage";
 import { LostAndFoundPage } from "@/components/pages/LostAndFoundPage";
+import { AssetsManagementPage } from "@/components/pages/AssetsManagementPage";
+import { InventoryPage } from "@/components/pages/InventoryPage";
+import { SalesPage } from "@/components/pages/SalesPage";
+import { PurchasesPage } from "@/components/pages/PurchasesPage";
+import { PurchaseVendorSetupPage } from "@/components/pages/PurchaseVendorSetupPage";
+import { PurchaseProductPage } from "@/components/pages/PurchaseProductPage";
+import { PurchaseReturnPage } from "@/components/pages/PurchaseReturnPage";
+import { PurchasePaymentPage } from "@/components/pages/PurchasePaymentPage";
+import { PurchaseGenerateBarcodePage } from "@/components/pages/PurchaseGenerateBarcodePage";
+
+import { AccountsPage } from "@/components/pages/AccountsPage";
+import { SalesClientSetupPage } from "@/components/pages/SalesClientSetupPage";
+import { SalesInvoicePage } from "@/components/pages/SalesInvoicePage";
+import { SalesCollectionPage } from "@/components/pages/SalesCollectionPage";
+import { SalesReturnPage } from "@/components/pages/SalesReturnPage";
+import { SalesReturnApprovalPage } from "@/components/pages/SalesReturnApprovalPage";
+import { POSSalesPage } from "@/components/pages/POSSalesPage";
+import { MainDashboardPage } from "@/components/pages/MainDashboardPage";
+import { SystemCompanyPage } from "@/components/pages/SystemCompanyPage";
+import { SystemBranchPage } from "@/components/pages/SystemBranchPage";
+import { SubscriptionPage } from "@/components/pages/SubscriptionPage";
+import { ProdMeasurementUnitPage } from "@/components/pages/ProdMeasurementUnitPage";
+import { ProdListPage } from "@/components/pages/ProdListPage";
+import { ProdSetupPage } from "@/components/pages/ProdSetupPage";
+import { ProdCategoryPage } from "@/components/pages/ProdCategoryPage";
 import { SystemPage } from "@/components/pages/SystemPage";
 import { PartnershipPage } from "@/components/pages/PartnershipPage";
 import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
 import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
 import { HRMPayrollPage } from "@/components/pages/HRMPayrollPage";
-import { HRMSettingsPage } from "@/components/pages/HRMSettingsPage";
+import { HRMLoansPage } from "@/components/pages/HRMLoansPage";
+import { HRMCateringPage } from "@/components/pages/HRMCateringPage";
+import { HRMOvertimePage } from "@/components/pages/HRMOvertimePage";
+import { HRMSettingsPage } from "@/components/pages/hrm/HRMSettingsPage";
+import { DailyWorkReportsPage } from "@/components/pages/hrm/DailyWorkReportsPage";
 import { LandingPage } from "@/components/landing/LandingPage";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { CopyTextModal } from "@/components/export/CopyTextModal";
@@ -30,16 +59,33 @@ import { getTodayDateString } from "@/lib/formatters";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, userProfile, loading: authLoading } = useAuth();
 
   // Admin Navigation State
-  const [activeAdminPage, setActiveAdminPage] = useState<AdminPageId>("crm-dashboard");
+  const [activeAdminPage, setActiveAdminPage] = useState<AdminPageId>("dashboard");
   const [selectedDate, setSelectedDate] = useState<string>(getTodayDateString);
 
   // Record State
   const [currentRecord, setCurrentRecord] = useState<DailyRecord | null>(null);
   const [isLoadingRecord, setIsLoadingRecord] = useState(false);
+
+
+  // Onboarding Routing
+  useEffect(() => {
+    if (userProfile?.companyId) {
+      const step = localStorage.getItem("dp_onboarding_step");
+      if (step === "company") {
+        setActiveAdminPage("system-company");
+        showToast("Welcome! Please set up your Company Profile first.", "info");
+      } else if (step === "branch") {
+        setActiveAdminPage("system-branch");
+        showToast("Great! Now let's add your first Branch.", "info");
+      }
+    }
+  }, [userProfile?.companyId]);
 
   // Auth Modal State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -130,11 +176,11 @@ export default function Home() {
   // 1. Auth loading spinner
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-          <p className="text-xs font-semibold text-slate-500">
-            Initializing DailyPulse Admin...
+          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Initializing ApnarSoftware Admin...
           </p>
         </div>
       </div>
@@ -153,7 +199,7 @@ export default function Home() {
           isOpen={isAuthModalOpen}
           initialMode={authModalMode}
           onClose={() => setIsAuthModalOpen(false)}
-          onSuccess={() => showToast("Welcome to DailyPulse!", "success")}
+          onSuccess={() => showToast("Welcome to ApnarSoftware!", "success")}
         />
         {toast && (
           <Toast
@@ -174,11 +220,14 @@ export default function Home() {
     >
       {isLoadingRecord && !currentRecord ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-3">
-          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-          <p className="text-xs text-slate-500 font-medium">Loading workspace data...</p>
+          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading workspace data...</p>
         </div>
       ) : (
         <>
+          {activeAdminPage === "dashboard" && (
+            <MainDashboardPage showToast={showToast} />
+          )}
 
 
           {/* CRM Pages */}
@@ -208,8 +257,51 @@ export default function Home() {
           {activeAdminPage === "lost-and-found" && (
             <LostAndFoundPage showToast={showToast} />
           )}
+          {activeAdminPage === "utilities-subscriptions" && (
+            <SubscriptionPage showToast={showToast} />
+          )}
+          {activeAdminPage === "assets-management" && (
+            <AssetsManagementPage showToast={showToast} />
+          )}
+          {activeAdminPage === "inventory" && (
+            <InventoryPage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales" && (
+            <SalesPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchases" && (
+            <PurchasesPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchase-vendor-setup" && (
+            <PurchaseVendorSetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchase-product" && (
+            <PurchaseProductPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchase-return" && (
+            <PurchaseReturnPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchase-payment" && (
+            <PurchasePaymentPage showToast={showToast} />
+          )}
+          {activeAdminPage === "purchase-generate-barcode" && (
+            <PurchaseGenerateBarcodePage showToast={showToast} />
+          )}
+
+          {activeAdminPage === "accounts" && (
+            <AccountsPage showToast={showToast} />
+          )}
           {activeAdminPage === "finance-partnership" && (
-            <PartnershipPage showToast={showToast} />
+            <PartnershipPage showToast={showToast} view="summary" />
+          )}
+          {activeAdminPage === "partnership-investors" && (
+            <PartnershipPage showToast={showToast} view="investors" />
+          )}
+          {activeAdminPage === "partnership-withdrawals" && (
+            <PartnershipPage showToast={showToast} view="withdrawals" />
+          )}
+          {activeAdminPage === "partnership-dividends" && (
+            <PartnershipPage showToast={showToast} view="dividends" />
           )}
 
           {/* HRM Pages */}
@@ -222,14 +314,48 @@ export default function Home() {
           {activeAdminPage === "hrm-payroll" && (
             <HRMPayrollPage showToast={showToast} />
           )}
-          {activeAdminPage === "settings" && (
+          {activeAdminPage === "hrm-loans" && (
+            <HRMLoansPage showToast={showToast} />
+          )}
+          {activeAdminPage === "hrm-catering" && (
+            <HRMCateringPage showToast={showToast} />
+          )}
+          {activeAdminPage === "hrm-overtime" && (
+            <HRMOvertimePage showToast={showToast} />
+          )}
+          {activeAdminPage === "hrm-daily-reports" && (
+            <DailyWorkReportsPage showToast={showToast} />
+          )}
+          {activeAdminPage === "hrm-settings" && (
             <HRMSettingsPage showToast={showToast} />
           )}
+          {activeAdminPage === "sales-clients" && (
+            <SalesClientSetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales-invoices" && (
+            <SalesInvoicePage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales-collections" && (
+            <SalesCollectionPage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales-returns" && (
+            <SalesReturnPage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales-return-approvals" && (
+            <SalesReturnApprovalPage showToast={showToast} />
+          )}
+          {activeAdminPage === "sales-pos" && (
+            <POSSalesPage showToast={showToast} />
+          )}
+
           {activeAdminPage === "system" && (
             <SystemPage showToast={showToast} />
           )}
-          {activeAdminPage === "finance-partnership" && (
-            <PartnershipPage showToast={showToast} />
+          {activeAdminPage === "system-company" && (
+            <SystemCompanyPage showToast={showToast} />
+          )}
+          {activeAdminPage === "system-branch" && (
+            <SystemBranchPage showToast={showToast} />
           )}
         </>
       )}

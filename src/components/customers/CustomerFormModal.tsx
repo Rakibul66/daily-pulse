@@ -66,7 +66,7 @@ export const CustomerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, in
     }
   };
 
-  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-slate-600";
+  const inputClasses = "w-full text-sm font-bold text-white bg-slate-950 px-3 py-2 rounded-md border border-slate-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 placeholder-slate-600";
   const labelClasses = "text-xs font-semibold text-slate-300 block mb-1.5";
 
   return (
@@ -130,7 +130,7 @@ export const CustomerFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, in
           <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 transition-colors">
             Cancel
           </button>
-          <button type="submit" form="customer-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-50 transition-colors shadow-md">
+          <button type="submit" form="customer-form" disabled={isSubmitting} className="px-5 py-2.5 text-sm font-bold text-white bg-primary-600 rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors shadow-md">
             {isSubmitting ? 'Saving...' : 'Save Customer'}
           </button>
         </div>

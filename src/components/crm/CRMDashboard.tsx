@@ -8,7 +8,7 @@ interface Props {
 export const CRMDashboard: React.FC<Props> = ({ metrics }) => {
   const metricCards = [
     { label: 'New Leads', data: metrics.newLeads, color: 'text-blue-400' },
-    { label: 'Messages', data: metrics.messages, color: 'text-indigo-400' },
+    { label: 'Messages', data: metrics.messages, color: 'text-primary-400' },
     { label: 'Calls', data: metrics.calls, color: 'text-cyan-400' },
     { label: 'Replies', data: metrics.replies, color: 'text-purple-400' },
     { label: 'Qualified', data: metrics.qualified, color: 'text-emerald-400' },
@@ -22,7 +22,7 @@ export const CRMDashboard: React.FC<Props> = ({ metrics }) => {
     <div className="bg-slate-900 rounded-md shadow-md border border-slate-800 overflow-hidden">
       <div className="px-6 py-5 border-b border-slate-800 bg-slate-900/50">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+          <span className="w-2 h-2 rounded-full bg-primary-500"></span>
           Daily Sales Dashboard
         </h2>
       </div>

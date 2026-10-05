@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [payments, setPayments] = useState<SalaryPayment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,17 +28,21 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
   });
 
   useEffect(() => {
-    if (user) {
-      loadData(user.uid, yearMonth);
+    if (user && userProfile?.companyId) {
+      loadData(yearMonth);
     }
   }, [user, yearMonth]);
 
-  const loadData = async (uid: string, ym: string) => {
+  const loadData = async (ym?: string) => {
+    const uid = userProfile?.companyId;
+    if (!uid) return;
+    const yearMonth = ym || (currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0'));
+    if (!uid) return;
     setIsLoading(true);
     try {
       const [emps, pays] = await Promise.all([
         getEmployees(uid),
-        getPayrollByMonth(uid, ym)
+        getPayrollByMonth(userProfile?.companyId || '', yearMonth)
       ]);
       setEmployees(emps.filter(e => e.isActive));
       setPayments(pays);
@@ -75,7 +79,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
     
     try {
       await addSalaryPayment({
-        userId: user.uid,
+        companyId: userProfile?.companyId || '',
         employeeId: selectedEmp.id,
         date: formData.date,
         month: yearMonth,
@@ -85,7 +89,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
       showToast('Payment recorded', 'success');
       
       // reload
-      const newPays = await getPayrollByMonth(user.uid, yearMonth);
+      const newPays = await getPayrollByMonth(userProfile?.companyId || '', yearMonth);
       setPayments(newPays);
       setSelectedEmpPayments(newPays.filter(p => p.employeeId === selectedEmp.id));
       setFormData(prev => ({ ...prev, amount: 0, note: '' }));
@@ -100,7 +104,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
     try {
       await deleteSalaryPayment(id);
       showToast('Payment deleted', 'success');
-      const newPays = await getPayrollByMonth(user.uid, yearMonth);
+      const newPays = await getPayrollByMonth(userProfile?.companyId || '', yearMonth);
       setPayments(newPays);
       setSelectedEmpPayments(newPays.filter(p => p.employeeId === selectedEmp.id));
     } catch (err) {
@@ -114,7 +118,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
             <h2 className="text-lg font-bold text-white">Payroll & Salary</h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">Manage monthly salary payouts and partial payments.</p>
@@ -131,7 +135,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
 
       {isLoading ? (
         <div className="py-20 flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-indigo-900 border-t-indigo-500 animate-spin"></div>
+          <div className="w-8 h-8 rounded-full border-4 border-primary-900 border-t-primary-500 animate-spin"></div>
         </div>
       ) : (
         <div className="bg-slate-900 rounded-md border border-slate-800 shadow-md overflow-hidden">
@@ -158,11 +162,11 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
                     </td>
                     <td className="px-5 py-4 text-right font-bold text-slate-300">৳{emp.baseSalary.toLocaleString()}</td>
                     <td className="px-5 py-4 text-right font-bold text-emerald-400">৳{paidSoFar.toLocaleString()}</td>
-                    <td className={`px-5 py-4 text-right font-bold ${due > 0 ? 'text-rose-400' : 'text-slate-500'}`}>
+                    <td className={`px-5 py-4 text-right font-bold ${due > 0 ? 'text-rose-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       ৳{due.toLocaleString()}
                     </td>
                     <td className="px-5 py-4 text-center">
-                      <button onClick={() => openPaymentModal(emp)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-lg text-xs font-bold transition-colors">
+                      <button onClick={() => openPaymentModal(emp)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-600/20 text-primary-400 hover:bg-primary-600 hover:text-white rounded-lg text-xs font-bold transition-colors">
                         <DollarSign className="w-3.5 h-3.5" />
                         Pay / History
                       </button>
@@ -172,7 +176,7 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
               })}
               {employees.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-slate-500">No active employees found.</td>
+                  <td colSpan={5} className="px-5 py-10 text-center text-slate-500 dark:text-slate-400">No active employees found.</td>
                 </tr>
               )}
             </tbody>
@@ -224,15 +228,15 @@ export const HRMPayrollPage: React.FC<Props> = ({ showToast }) => {
                     <div key={pay.id} className="flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-md">
                       <div>
                         <div className="text-sm font-bold text-emerald-400">৳{pay.amount.toLocaleString()}</div>
-                        <div className="text-[10px] text-slate-500">{pay.date} {pay.note && `- ${pay.note}`}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400">{pay.date} {pay.note && `- ${pay.note}`}</div>
                       </div>
-                      <button onClick={() => handleDeletePayment(pay.id)} className="p-1.5 text-slate-500 hover:text-rose-400">
+                      <button onClick={() => handleDeletePayment(pay.id)} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-rose-400">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                   {selectedEmpPayments.length === 0 && (
-                    <div className="text-sm text-slate-500 text-center py-4">No payments recorded yet for this month.</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">No payments recorded yet for this month.</div>
                   )}
                   
                   {/* Summary */}
