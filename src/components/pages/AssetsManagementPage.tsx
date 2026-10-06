@@ -96,19 +96,19 @@ export const AssetsManagementPage: React.FC<Props> = ({ showToast }) => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full mx-auto space-y-6 pb-20">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#0f172a] p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            <MonitorSmartphone className="w-6 h-6 text-primary-600" />
-            Assets Management
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Track and manage office equipment and properties.</p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <MonitorSmartphone className="w-5 h-5 text-primary-400" />
+            <h2 className="text-lg font-bold text-white uppercase tracking-wider">Assets Management</h2>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Track and manage office equipment and properties.</p>
         </div>
         <button
           onClick={() => { setEditingItem(undefined); setIsModalOpen(true); }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-bold shadow-xs hover:bg-primary-700 transition-all active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-bold shadow-xs hover:bg-primary-700 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           Add Asset
@@ -116,7 +116,7 @@ export const AssetsManagementPage: React.FC<Props> = ({ showToast }) => {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-xs border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-4">
+      <div className="bg-slate-900 p-4 rounded-md shadow-xs border border-slate-800 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -124,7 +124,7 @@ export const AssetsManagementPage: React.FC<Props> = ({ showToast }) => {
             placeholder="Search by name, serial, or vendor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+            className="w-full pl-9 pr-4 py-2 text-sm border border-slate-800 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
           />
         </div>
       </div>
@@ -133,16 +133,16 @@ export const AssetsManagementPage: React.FC<Props> = ({ showToast }) => {
       {isLoading ? (
         <div className="text-center py-12 text-sm text-slate-500 dark:text-slate-400">Loading assets...</div>
       ) : filteredItems.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 border-dashed">
+        <div className="text-center py-12 bg-slate-900 rounded-md border border-slate-800 border-dashed">
           <MonitorSmartphone className="w-8 h-8 text-slate-300 mx-auto mb-3" />
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">No assets found</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Add your first asset to start tracking.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs overflow-hidden">
+        <div className="bg-slate-900 rounded-md border border-slate-800 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-800 text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold">
                 <tr>
                   <th className="px-6 py-4">Asset Info</th>
                   <th className="px-6 py-4">Vendor</th>
@@ -188,14 +188,14 @@ export const AssetsManagementPage: React.FC<Props> = ({ showToast }) => {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => { setEditingItem(item); setIsModalOpen(true); }}
-                          className="p-1.5 text-slate-400 hover:text-primary-600 bg-white dark:bg-slate-900 hover:bg-primary-50 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-primary-600 bg-slate-900 hover:bg-primary-50 border border-slate-800 rounded-md transition-colors"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 bg-white dark:bg-slate-900 hover:bg-rose-50 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 bg-slate-900 hover:bg-rose-50 border border-slate-800 rounded-md transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

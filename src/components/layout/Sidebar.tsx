@@ -25,10 +25,6 @@ import { useAuth } from "@/context/AuthContext";
 
 export type AdminPageId =
   | "dashboard"
-  | "prod-category"
-  | "prod-setup"
-  | "prod-list"
-  | "prod-uom"
   | "system-company"
   | "system-branch"
   | "crm-dashboard"
@@ -63,7 +59,6 @@ export type AdminPageId =
   | "sales-pos"
   | "sales-retail-returns"
   | "settings"
-  | "system"
   | "finance-partnership"
   | "partnership-investors"
   | "partnership-withdrawals"
@@ -96,7 +91,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user, signOutUser } = useAuth();
   const [isSystemSettingOpen, setIsSystemSettingOpen] = React.useState(false);
-  const [isProductManagementOpen, setIsProductManagementOpen] = React.useState(false);
   const [isCustomersOpen, setIsCustomersOpen] = React.useState(false);
   const [isCrmOpen, setIsCrmOpen] = React.useState(false);
   const [isHrmOpen, setIsHrmOpen] = React.useState(false);
@@ -247,7 +241,93 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
+
+          {/* Sales CRM */}
+          <div className="pt-2">
+            <button
+              onClick={() => setIsCrmOpen(!isCrmOpen)}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                crmNavItems.some((item) => item.id === activePage)
+                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Search className={`w-4 h-4 transition-colors ${crmNavItems.some((item) => item.id === activePage) ? "text-white" : "group-hover:text-white text-slate-400"}`} />
+                <span>Sales CRM</span>
+              </div>
+              <ChevronRight
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isCrmOpen ? "rotate-90" : ""
+                }`}
+              />
+            </button>
+            {isCrmOpen && (
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+                {crmNavItems.map((item) => {
+                  const isActive = activePage === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-primary-500/10 text-primary-400"
+                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Customers */}
+          <div className="pt-2">
+            <button
+              onClick={() => setIsCustomersOpen(!isCustomersOpen)}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                customerNavItems.some((item) => item.id === activePage)
+                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Users className={`w-4 h-4 transition-colors ${customerNavItems.some((item) => item.id === activePage) ? "text-white" : "group-hover:text-white text-slate-400"}`} />
+                <span>Customers</span>
+              </div>
+              <ChevronRight
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isCustomersOpen ? "rotate-90" : ""
+                }`}
+              />
+            </button>
+            {isCustomersOpen && (
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+                {customerNavItems.map((item) => {
+                  const isActive = activePage === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-primary-500/10 text-primary-400"
+                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Purchase Management */}
+
           <div className="pt-2">
             <button
               onClick={() => setIsPurchaseOpen(!isPurchaseOpen)}
@@ -494,20 +574,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <Settings className={`w-4 h-4 transition-colors ${activePage === "settings" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
-              <span>Settings & AI</span>
+              <span>Settings</span>
             </button>
 
-            <button
-              onClick={() => handleSelect("system")}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group mt-1 ${
-                activePage === "system"
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
-              }`}
-            >
-              <MonitorSmartphone className={`w-4 h-4 transition-colors ${activePage === "system" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
-              <span>System Status</span>
-            </button>
           </div>
         </div>
 

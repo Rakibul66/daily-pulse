@@ -23,22 +23,6 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "Branch Setup",
     subtitle: "Manage branches for companies",
   },
-  "prod-category": {
-    title: "Product Category",
-    subtitle: "Manage product categories",
-  },
-  "prod-setup": {
-    title: "Product Setup",
-    subtitle: "Add or update products",
-  },
-  "prod-list": {
-    title: "Product List",
-    subtitle: "View all products",
-  },
-  "prod-uom": {
-    title: "Measurement Unit",
-    subtitle: "Setup units of measurement",
-  },
   "crm-dashboard": {
     title: "Sales Dashboard",
     subtitle: "Overview of your recent sales performance",
@@ -90,10 +74,6 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
   "settings": {
     title: "Settings & AI",
     subtitle: "Configure workspace preferences and AI integrations",
-  },
-  "system": {
-    title: "System Status",
-    subtitle: "Monitor workspace health and configurations",
   },
   "hrm-loans": {
     title: "Employee Loan Management",

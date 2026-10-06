@@ -83,7 +83,7 @@ export const SubscriptionPage: React.FC<Props> = ({ showToast }) => {
   };
 
   return (
-    <div className="w-full mx-auto space-y-6 pb-20 p-4">
+    <div className="w-full mx-auto space-y-6 pb-20">
       <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
@@ -102,7 +102,7 @@ export const SubscriptionPage: React.FC<Props> = ({ showToast }) => {
       </div>
 
       {subs.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-10 flex flex-col items-center justify-center text-center">
+        <div className="bg-slate-900 border border-slate-800 rounded-md p-10 flex flex-col items-center justify-center text-center">
           <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
             <Repeat className="w-8 h-8 text-slate-500" />
           </div>
@@ -117,7 +117,7 @@ export const SubscriptionPage: React.FC<Props> = ({ showToast }) => {
           const isOverdue = progress >= 100;
 
           return (
-            <div key={sub.id} className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
+            <div key={sub.id} className="bg-slate-900 border border-slate-800 rounded-md p-5 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-base font-bold text-white">{sub.name}</h3>

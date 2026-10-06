@@ -32,9 +32,17 @@ export interface SalaryPayment {
   createdAt: string;
 }
 
+
+export interface RoleTemplate {
+  id: string;
+  roleName: string;
+  responsibilities: string[];
+}
+
 export interface HRMSettings {
   companyId: string;
   weekendDays: string[]; // e.g. ['FRI', 'SAT']
+  roles?: RoleTemplate[];
   aiEnabled?: boolean;
   geminiApiKey?: string;
   updatedAt: string;

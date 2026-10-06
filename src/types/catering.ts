@@ -5,6 +5,7 @@ export interface CateringVendor {
   perMealRate: number;
   billingFrequency: 'Daily' | 'Weekly' | 'Monthly';
   createdAt: string;
+  isActive?: boolean;
 }
 
 export interface MealRecord {

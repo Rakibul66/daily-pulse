@@ -33,11 +33,7 @@ import { MainDashboardPage } from "@/components/pages/MainDashboardPage";
 import { SystemCompanyPage } from "@/components/pages/SystemCompanyPage";
 import { SystemBranchPage } from "@/components/pages/SystemBranchPage";
 import { SubscriptionPage } from "@/components/pages/SubscriptionPage";
-import { ProdMeasurementUnitPage } from "@/components/pages/ProdMeasurementUnitPage";
-import { ProdListPage } from "@/components/pages/ProdListPage";
-import { ProdSetupPage } from "@/components/pages/ProdSetupPage";
-import { ProdCategoryPage } from "@/components/pages/ProdCategoryPage";
-import { SystemPage } from "@/components/pages/SystemPage";
+import { SettingsPage } from "@/components/pages/SettingsPage";
 import { PartnershipPage } from "@/components/pages/PartnershipPage";
 import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
 import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
@@ -348,8 +344,8 @@ export default function Home() {
             <POSSalesPage showToast={showToast} />
           )}
 
-          {activeAdminPage === "system" && (
-            <SystemPage showToast={showToast} />
+          {activeAdminPage === "settings" && (
+            <SettingsPage showToast={showToast} />
           )}
           {activeAdminPage === "system-company" && (
             <SystemCompanyPage showToast={showToast} />

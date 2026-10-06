@@ -1,5 +1,5 @@
 import { getFirebaseServices } from './firebase';
-import { collection, doc, setDoc, getDocs, query, where, deleteDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc } from 'firebase/firestore';
 import { CateringVendor, MealRecord, CateringPayment } from '@/types/catering';
 
 export const getCateringVendors = async (companyId: string): Promise<CateringVendor[]> => {
@@ -81,4 +81,19 @@ export const deleteCateringPayment = async (id: string): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) return;
   await deleteDoc(doc(db, 'catering_payments', id));
+};
+
+export const updateCateringVendor = async (id: string, updates: Partial<Omit<CateringVendor, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  const docRef = doc(db, 'catering_vendors', id);
+  await updateDoc(docRef, updates);
+};
+
+export const deleteCateringVendor = async (id: string): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  
+  await deleteDoc(doc(db, 'catering_vendors', id));
 };

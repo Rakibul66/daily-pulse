@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Calendar, User, Search, FileText, Loader2, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { getEmployees, getDailyWorkReports, addDailyWorkReport, deleteDailyWorkReport } from '@/lib/hrmStorage';
-import { Employee, DailyWorkReport, ReportStatus } from '@/types/hrm';
+import { getEmployees, getDailyWorkReports, addDailyWorkReport, deleteDailyWorkReport, getHRMSettings } from '@/lib/hrmStorage';
+import { Employee, DailyWorkReport, ReportStatus, RoleTemplate } from '@/types/hrm';
 
 interface Props {
   showToast: (msg: string, type: 'success' | 'error') => void;
@@ -12,6 +12,7 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
   const { userProfile } = useAuth();
   const [reports, setReports] = useState<DailyWorkReport[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<RoleTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -40,12 +41,16 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
     if (!userProfile?.companyId) return;
     setIsLoading(true);
     try {
-      const [emps, reps] = await Promise.all([
+      const [emps, reps, settings] = await Promise.all([
         getEmployees(userProfile.companyId),
-        getDailyWorkReports(userProfile.companyId, filterDate)
+        getDailyWorkReports(userProfile.companyId, filterDate),
+        getHRMSettings(userProfile.companyId)
       ]);
       setEmployees(emps);
       setReports(reps);
+      if (settings?.roles) {
+        setRoles(settings.roles);
+      }
     } catch (err) {
       console.error(err);
       showToast('Failed to load reports', 'error');
@@ -122,8 +127,8 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
 
   if (isAdding) {
     return (
-      <div className="w-full max-w-3xl mx-auto pb-20 p-4 animate-in fade-in">
-        <div className="bg-slate-900 border border-slate-800 shadow-xl rounded-lg overflow-hidden">
+      <div className="w-full mx-auto space-y-6 pb-20 animate-in fade-in">
+        <div className="bg-slate-900 border border-slate-800 shadow-xl rounded-md overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary-400" /> 
@@ -143,6 +148,30 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
                   <option value="">Select Employee...</option>
                   {employees.map(emp => (
                     <option key={emp.id} value={emp.id}>{emp.name} ({emp.department})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-5">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Load Role Template (Optional)</label>
+                <select 
+                  onChange={e => {
+                    const role = roles.find(r => r.id === e.target.value);
+                    if (role) {
+                      const templateText = role.responsibilities.map(r => `- ${r}: `).join('\n');
+                      setFormData(prev => ({
+                        ...prev, 
+                        tasksCompleted: prev.tasksCompleted ? prev.tasksCompleted + '\n' + templateText : templateText 
+                      }));
+                    }
+                  }} 
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded px-3 py-2 text-sm focus:border-primary-500"
+                >
+                  <option value="">Select a template to auto-fill tasks...</option>
+                  {roles.map(role => (
+                    <option key={role.id} value={role.id}>{role.roleName}</option>
                   ))}
                 </select>
               </div>
@@ -200,9 +229,9 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
   }
 
   return (
-    <div className="w-full mx-auto pb-20 p-4">
+    <div className="w-full mx-auto space-y-6 pb-20">
       {/* Header */}
-      <div className="bg-[#0f172a] p-4 border-b border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4 rounded-t-lg">
+      <div className="bg-[#0f172a] p-4 border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 rounded-md">
         <div>
           <h2 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary-400" /> DAILY WORK REPORTS
@@ -243,13 +272,13 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
       </div>
 
       {/* Main Container */}
-      <div className="bg-slate-900 border border-t-0 border-slate-800 rounded-b-lg shadow-sm p-6 min-h-[400px]">
+      <div className="bg-slate-900 border border-slate-800 rounded-md shadow-sm p-6 min-h-[400px]">
         {isLoading ? (
           <div className="flex justify-center items-center h-40">
             <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-400 border-2 border-dashed border-slate-800 rounded-lg bg-slate-900/50">
+          <div className="flex flex-col items-center justify-center h-64 text-slate-400 border-2 border-dashed border-slate-800 rounded-md bg-slate-900/50">
             <FileText className="w-12 h-12 mb-4 opacity-50" />
             <p className="font-bold text-lg">No reports submitted</p>
             <p className="text-sm mt-1 text-slate-500">No work reports found for {filterDate}</p>
@@ -257,7 +286,7 @@ export const DailyWorkReportsPage: React.FC<Props> = ({ showToast }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredReports.map(report => (
-              <div key={report.id} className="bg-slate-950 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors flex flex-col h-full shadow-sm">
+              <div key={report.id} className="bg-slate-950 border border-slate-800 rounded-md p-5 hover:border-slate-700 transition-colors flex flex-col h-full shadow-sm">
                 
                 <div className="flex justify-between items-start mb-4 border-b border-slate-800/60 pb-4">
                   <div>
