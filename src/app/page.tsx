@@ -1,52 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import dynamicImport from "next/dynamic";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { AdminPageId } from "@/components/layout/Sidebar";
-
-import { CRMDashboardPage } from "@/components/pages/CRMDashboardPage";
-import { CRMLeadsPage } from "@/components/pages/CRMLeadsPage";
-import { CRMRecentLeadsPage } from "@/components/pages/CRMRecentLeadsPage";
-import { CRMAILeadPage } from "@/components/pages/CRMAILeadPage";
-import { CustomersPage } from "@/components/pages/CustomersPage";
-import { PromotionsPage } from "@/components/pages/PromotionsPage";
-import { CustomerFeedbackPage } from "@/components/pages/CustomerFeedbackPage";
-import { LostAndFoundPage } from "@/components/pages/LostAndFoundPage";
-import { AssetsManagementPage } from "@/components/pages/AssetsManagementPage";
-import { InventoryPage } from "@/components/pages/InventoryPage";
-import { SalesPage } from "@/components/pages/SalesPage";
-import { PurchasesPage } from "@/components/pages/PurchasesPage";
-import { PurchaseVendorSetupPage } from "@/components/pages/PurchaseVendorSetupPage";
-import { PurchaseProductPage } from "@/components/pages/PurchaseProductPage";
-import { PurchaseReturnPage } from "@/components/pages/PurchaseReturnPage";
-import { PurchasePaymentPage } from "@/components/pages/PurchasePaymentPage";
-import { PurchaseGenerateBarcodePage } from "@/components/pages/PurchaseGenerateBarcodePage";
-
-import { AccountsPage } from "@/components/pages/AccountsPage";
-import { SalesClientSetupPage } from "@/components/pages/SalesClientSetupPage";
-import { SalesInvoicePage } from "@/components/pages/SalesInvoicePage";
-import { SalesCollectionPage } from "@/components/pages/SalesCollectionPage";
-import { SalesReturnPage } from "@/components/pages/SalesReturnPage";
-import { SalesReturnApprovalPage } from "@/components/pages/SalesReturnApprovalPage";
-import { POSSalesPage } from "@/components/pages/POSSalesPage";
-import { MainDashboardPage } from "@/components/pages/MainDashboardPage";
-import { SystemCompanyPage } from "@/components/pages/SystemCompanyPage";
-import { SystemBranchPage } from "@/components/pages/SystemBranchPage";
-import { SubscriptionPage } from "@/components/pages/SubscriptionPage";
-import { SettingsPage } from "@/components/pages/SettingsPage";
-import { PartnershipPage } from "@/components/pages/PartnershipPage";
-import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
-import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
-import { HRMPayrollPage } from "@/components/pages/HRMPayrollPage";
-import { HRMLoansPage } from "@/components/pages/HRMLoansPage";
-import { HRMCateringPage } from "@/components/pages/HRMCateringPage";
-import { HRMOvertimePage } from "@/components/pages/HRMOvertimePage";
-import { HRMSettingsPage } from "@/components/pages/hrm/HRMSettingsPage";
-import { DailyWorkReportsPage } from "@/components/pages/hrm/DailyWorkReportsPage";
 import { LandingPage } from "@/components/landing/LandingPage";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { CopyTextModal } from "@/components/export/CopyTextModal";
-import { PrintReportView } from "@/components/export/PrintReportView";
 import { Toast } from "@/components/ui/Toast";
 import { DailyRecord, MorningGoal, EODReport } from "@/types/report";
 import { getRecordForDate } from "@/lib/storage";
@@ -54,6 +14,55 @@ import { createDefaultMorningGoal, createDefaultEODReport } from "@/lib/defaultD
 import { getTodayDateString } from "@/lib/formatters";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
+
+const PageLoader = () => (
+  <div className="flex flex-col items-center justify-center py-20 space-y-3">
+    <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading page module...</p>
+  </div>
+);
+
+// Dynamic component sharding for minimal bundle & fast caching
+const CRMDashboardPage = dynamicImport(() => import("@/components/pages/CRMDashboardPage").then(m => m.CRMDashboardPage), { loading: PageLoader });
+const CRMLeadsPage = dynamicImport(() => import("@/components/pages/CRMLeadsPage").then(m => m.CRMLeadsPage), { loading: PageLoader });
+const CRMRecentLeadsPage = dynamicImport(() => import("@/components/pages/CRMRecentLeadsPage").then(m => m.CRMRecentLeadsPage), { loading: PageLoader });
+const CRMAILeadPage = dynamicImport(() => import("@/components/pages/CRMAILeadPage").then(m => m.CRMAILeadPage), { loading: PageLoader });
+const CustomersPage = dynamicImport(() => import("@/components/pages/CustomersPage").then(m => m.CustomersPage), { loading: PageLoader });
+const PromotionsPage = dynamicImport(() => import("@/components/pages/PromotionsPage").then(m => m.PromotionsPage), { loading: PageLoader });
+const CustomerFeedbackPage = dynamicImport(() => import("@/components/pages/CustomerFeedbackPage").then(m => m.CustomerFeedbackPage), { loading: PageLoader });
+const LostAndFoundPage = dynamicImport(() => import("@/components/pages/LostAndFoundPage").then(m => m.LostAndFoundPage), { loading: PageLoader });
+const AssetsManagementPage = dynamicImport(() => import("@/components/pages/AssetsManagementPage").then(m => m.AssetsManagementPage), { loading: PageLoader });
+const InventoryPage = dynamicImport(() => import("@/components/pages/InventoryPage").then(m => m.InventoryPage), { loading: PageLoader });
+const SalesPage = dynamicImport(() => import("@/components/pages/SalesPage").then(m => m.SalesPage), { loading: PageLoader });
+const PurchasesPage = dynamicImport(() => import("@/components/pages/PurchasesPage").then(m => m.PurchasesPage), { loading: PageLoader });
+const PurchaseVendorSetupPage = dynamicImport(() => import("@/components/pages/PurchaseVendorSetupPage").then(m => m.PurchaseVendorSetupPage), { loading: PageLoader });
+const PurchaseProductPage = dynamicImport(() => import("@/components/pages/PurchaseProductPage").then(m => m.PurchaseProductPage), { loading: PageLoader });
+const PurchaseReturnPage = dynamicImport(() => import("@/components/pages/PurchaseReturnPage").then(m => m.PurchaseReturnPage), { loading: PageLoader });
+const PurchasePaymentPage = dynamicImport(() => import("@/components/pages/PurchasePaymentPage").then(m => m.PurchasePaymentPage), { loading: PageLoader });
+const PurchaseGenerateBarcodePage = dynamicImport(() => import("@/components/pages/PurchaseGenerateBarcodePage").then(m => m.PurchaseGenerateBarcodePage), { loading: PageLoader });
+
+const AccountsPage = dynamicImport(() => import("@/components/pages/AccountsPage").then(m => m.AccountsPage), { loading: PageLoader });
+const SalesClientSetupPage = dynamicImport(() => import("@/components/pages/SalesClientSetupPage").then(m => m.SalesClientSetupPage), { loading: PageLoader });
+const SalesInvoicePage = dynamicImport(() => import("@/components/pages/SalesInvoicePage").then(m => m.SalesInvoicePage), { loading: PageLoader });
+const SalesCollectionPage = dynamicImport(() => import("@/components/pages/SalesCollectionPage").then(m => m.SalesCollectionPage), { loading: PageLoader });
+const SalesReturnPage = dynamicImport(() => import("@/components/pages/SalesReturnPage").then(m => m.SalesReturnPage), { loading: PageLoader });
+const SalesReturnApprovalPage = dynamicImport(() => import("@/components/pages/SalesReturnApprovalPage").then(m => m.SalesReturnApprovalPage), { loading: PageLoader });
+const POSSalesPage = dynamicImport(() => import("@/components/pages/POSSalesPage").then(m => m.POSSalesPage), { loading: PageLoader });
+const MainDashboardPage = dynamicImport(() => import("@/components/pages/MainDashboardPage").then(m => m.MainDashboardPage), { loading: PageLoader });
+const SystemCompanyPage = dynamicImport(() => import("@/components/pages/SystemCompanyPage").then(m => m.SystemCompanyPage), { loading: PageLoader });
+const SystemBranchPage = dynamicImport(() => import("@/components/pages/SystemBranchPage").then(m => m.SystemBranchPage), { loading: PageLoader });
+const SubscriptionPage = dynamicImport(() => import("@/components/pages/SubscriptionPage").then(m => m.SubscriptionPage), { loading: PageLoader });
+const SettingsPage = dynamicImport(() => import("@/components/pages/SettingsPage").then(m => m.SettingsPage), { loading: PageLoader });
+const PartnershipPage = dynamicImport(() => import("@/components/pages/PartnershipPage").then(m => m.PartnershipPage), { loading: PageLoader });
+const HRMAttendancePage = dynamicImport(() => import("@/components/pages/HRMAttendancePage").then(m => m.HRMAttendancePage), { loading: PageLoader });
+const HRMEmployeesPage = dynamicImport(() => import("@/components/pages/HRMEmployeesPage").then(m => m.HRMEmployeesPage), { loading: PageLoader });
+const HRMPayrollPage = dynamicImport(() => import("@/components/pages/HRMPayrollPage").then(m => m.HRMPayrollPage), { loading: PageLoader });
+const HRMLoansPage = dynamicImport(() => import("@/components/pages/HRMLoansPage").then(m => m.HRMLoansPage), { loading: PageLoader });
+const HRMCateringPage = dynamicImport(() => import("@/components/pages/HRMCateringPage").then(m => m.HRMCateringPage), { loading: PageLoader });
+const HRMOvertimePage = dynamicImport(() => import("@/components/pages/HRMOvertimePage").then(m => m.HRMOvertimePage), { loading: PageLoader });
+const HRMSettingsPage = dynamicImport(() => import("@/components/pages/hrm/HRMSettingsPage").then(m => m.HRMSettingsPage), { loading: PageLoader });
+const DailyWorkReportsPage = dynamicImport(() => import("@/components/pages/hrm/DailyWorkReportsPage").then(m => m.DailyWorkReportsPage), { loading: PageLoader });
+const PrintReportView = dynamicImport(() => import("@/components/export/PrintReportView").then(m => m.PrintReportView), { loading: PageLoader });
 
 export const dynamic = 'force-dynamic';
 
@@ -67,7 +76,6 @@ export default function Home() {
   // Record State
   const [currentRecord, setCurrentRecord] = useState<DailyRecord | null>(null);
   const [isLoadingRecord, setIsLoadingRecord] = useState(false);
-
 
   // Onboarding Routing
   useEffect(() => {
@@ -103,9 +111,9 @@ export default function Home() {
     type?: "success" | "error" | "info";
   } | null>(null);
 
-  const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
+  const showToast = useCallback((message: string, type: "success" | "error" | "info" = "success") => {
     setToast({ message, type });
-  };
+  }, []);
 
   const openAuth = (mode: "login" | "register" | "forgot") => {
     setAuthModalMode(mode);
@@ -129,45 +137,13 @@ export default function Home() {
     } finally {
       setIsLoadingRecord(false);
     }
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     if (user) {
       loadRecord(selectedDate, user.uid);
     }
   }, [selectedDate, user, loadRecord]);
-
-  const handleGoalUpdated = (updatedGoal: MorningGoal) => {
-    if (!currentRecord) return;
-    setCurrentRecord({
-      ...currentRecord,
-      morningGoal: updatedGoal,
-      hasMorningGoal: true,
-      updatedAt: new Date().toISOString(),
-    });
-  };
-
-  const handleReportUpdated = (updatedReport: EODReport) => {
-    if (!currentRecord) return;
-    setCurrentRecord({
-      ...currentRecord,
-      eodReport: updatedReport,
-      hasEODReport: true,
-      updatedAt: new Date().toISOString(),
-    });
-  };
-
-  const handleRecordUpdated = (updatedRecord: DailyRecord) => {
-    setCurrentRecord(updatedRecord);
-  };
-
-  const handleOpenCopyModal = (title: string, text: string) => {
-    setCopyModalState({
-      isOpen: true,
-      title,
-      text,
-    });
-  };
 
   // 1. Auth loading spinner
   if (authLoading) {
@@ -224,7 +200,6 @@ export default function Home() {
           {activeAdminPage === "dashboard" && (
             <MainDashboardPage showToast={showToast} />
           )}
-
 
           {/* CRM Pages */}
           {activeAdminPage === "crm-dashboard" && (
