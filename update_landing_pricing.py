@@ -1,188 +1,114 @@
-import React, { useState } from 'react';
-import Image from "next/image";
-import { 
-  ArrowRight, 
-  Play, 
-  Star, 
-  Zap, 
-  Code, 
-  Clock, 
-  Check, 
-  ShieldCheck, 
-  Sparkles, 
-  Terminal, 
-  Database, 
-  ChevronDown,
-  BookOpen,
-  FileText
-} from 'lucide-react';
+import re
 
-interface Props {
-  onGetStarted: () => void;
-  onSignIn?: () => void;
-}
+with open("src/components/landing/LandingPage.tsx", "r") as f:
+    content = f.read()
 
-export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
-  const [selectedShortCategory, setSelectedShortCategory] = useState<string>('ALL CATEGORIES');
+# 1. Update Navigation Links in Header
+old_nav = """            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center gap-8 font-display font-black text-sm tracking-wider uppercase">
+              <a href="/about" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">ABOUT</a>
+              <a href="/contact" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">CONTACT</a>
+              <a href="/#industries" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">INDUSTRIES</a>
+              <a href="#shorts" className="px-3 py-1 bg-black text-white border-2 border-black shadow-[2px_2px_0px_#4F46E5] flex items-center gap-1">
+                SHORTS
+              </a>
+              <a href="#blog" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">BLOG</a>
+              <a href="#why-us" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">QUESTIONS</a>
+            </nav>"""
 
-  // Official LWHH 2x2 Square Logo Component
-  const LWHHLogo = () => (
-    <div className="flex items-center gap-3 cursor-pointer" onClick={onGetStarted}>
-      <Image src="/somporko.webp" alt="Shomporko CRM Logo" width={40} height={40} className="object-contain" />
-      <span className="font-display font-black text-2xl tracking-tighter text-black">
-        SHOMPORKO
-      </span>
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-white font-sans text-black selection:bg-red-600 selection:text-white">
-      
-      {/* 1. Header Navbar */}
-      <header className="sticky top-0 z-50 bg-white border-b-4 border-black shadow-[0_4px_0px_#000]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            
-            <LWHHLogo />
-
-            {/* Navigation Links */}
+new_nav = """            {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-8 font-display font-black text-sm tracking-wider uppercase">
               <a href="/about" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">ABOUT</a>
               <a href="/pricing" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">PRICING</a>
               <a href="/contact" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">CONTACT</a>
-            </nav>
+            </nav>"""
 
-            {/* Auth Action Buttons */}
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={onSignIn || onGetStarted}
-                className="hidden sm:block px-4 py-2 text-sm font-black uppercase tracking-wider bg-white hover:bg-slate-100 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
-              >
-                LOG IN / SIGN UP
-              </button>
-              <button 
-                onClick={onGetStarted}
-                className="px-5 py-2.5 text-sm font-black uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white border-3 border-black shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center gap-1.5"
-              >
-                GET STARTED
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+content = content.replace(old_nav, new_nav)
 
-      {/* 2. Hero Section */}
-      <section className="relative overflow-hidden border-b-4 border-black">
-        <div className="grid lg:grid-cols-12 min-h-[580px]">
+# 2. Update Section 3: "Built for Modern Businesses"
+old_section3 = """      {/* 3. Built for Modern Learners (Image 1 of Latest Batch) */}
+      <section className="py-20 sm:py-28 bg-red-600 border-b-4 border-black text-white relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Left Column: Headline & Social Proof */}
-          <div className="lg:col-span-7 bg-gradient-to-tr from-slate-900 to-indigo-900 text-white p-6 sm:p-12 lg:p-16 flex flex-col justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-black relative">
-            
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-15 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+          {/* Main Section Title */}
+          <div className="text-center max-w-4xl mx-auto mb-6">
+            <h2 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl uppercase tracking-tight text-white drop-shadow-[5px_5px_0px_#000]">
+              BUILT FOR MODERN LEARNERS
+            </h2>
+          </div>
 
-            <div className="relative z-10 max-w-2xl">
-
-              <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl tracking-tight leading-[0.9] text-white mb-6 uppercase">
-                THE ULTIMATE POS & ERP SOFTWARE <br/><span className="text-indigo-400">FOR YOUR BUSINESS.</span>
-              </h1>
-
-              <p className="font-medium text-lg sm:text-xl text-indigo-100 leading-relaxed mb-8 max-w-xl">
-                Fast, reliable, and user-friendly tools that empower businesses to operate efficiently, manage inventory flawlessly, and maximize profits in real-time.
-              </p>
-
-              {/* Main Call to Action Button */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10">
-                <button 
-                  onClick={onGetStarted}
-                  className="px-8 py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[6px_6px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#000] transition-all flex items-center justify-center gap-3 group"
-                >
-                  GET STARTED <ArrowRight className="w-5 h-5 stroke-[3] group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                <button 
-                  onClick={() => {
-                    const el = document.getElementById('pricing');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="px-6 py-4 bg-white hover:bg-slate-100 text-black font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[6px_6px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#000] transition-all text-center"
-                >
-                  VIEW PRICING
-                </button>
-              </div>
-
-              {/* Social Proof Row */}
-              <div className="pt-6 border-t-2 border-black/20 flex flex-wrap items-center gap-4 sm:gap-6">
-                <div className="flex items-center -space-x-3">
-                  {['👨‍💻', '👩‍💻', '🧑‍🏫', '👨‍🔬'].map((emoji, idx) => (
-                    <div key={idx} className="w-10 h-10 rounded-full bg-amber-100 border-2 border-black flex items-center justify-center text-lg shadow-[2px_2px_0px_#000]">
-                      {emoji}
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full bg-red-600 border-2 border-black flex items-center justify-center font-black text-xs text-white shadow-[2px_2px_0px_#000]">
-                    +10K
-                  </div>
-                </div>
-
-                <div className="flex flex-col">
-                  <span className="text-xs font-extrabold text-white uppercase tracking-wider">
-                    Join 10,000+ businesses growing their profits
-                  </span>
-                  <div className="flex items-center gap-1 text-amber-500 text-xs font-bold mt-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 stroke-black stroke-[1.5]" />
-                    ))}
-                    <span className="text-white font-black ml-1">5</span>
-                    <span className="text-indigo-200 font-medium">(countless reviews)</span>
-                  </div>
-                </div>
-              </div>
+          {/* Subtitle Banner Box */}
+          <div className="max-w-2xl mx-auto mb-16">
+            <div className="bg-white text-black font-display font-extrabold text-base sm:text-lg border-4 border-black shadow-[6px_6px_0px_#000] px-6 sm:px-8 py-4 text-center transform -rotate-1">
+              Everything you need to advance your career. No friction, pure skills.
             </div>
           </div>
 
-          {/* Right Column: Premium & Free Courses Hero Card */}
-          <div className="lg:col-span-5 bg-indigo-500 p-8 sm:p-12 lg:p-14 flex items-center justify-center relative overflow-hidden">
+          {/* 3 Column Feature Cards */}
+          <div className="grid md:grid-cols-3 gap-8 sm:gap-10">
             
-            {/* Neo-brutalist Floating White Card */}
-            <div className="w-full max-w-md bg-[#FFFDF0] border-4 border-black shadow-[10px_10px_0px_#000] p-6 sm:p-8 relative transform sm:rotate-1 hover:rotate-0 transition-transform">
-              
-              {/* Star Badge Top Left */}
-              <div className="absolute -top-5 -left-5 w-12 h-12 bg-indigo-600 border-3 border-black rounded-full flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                <Sparkles className="w-6 h-6 text-white stroke-[2.5]" />
+            {/* Feature 1: EXPERT INSTRUCTORS */}
+            <div className="bg-[#FFFBEB] text-black border-4 border-black shadow-[8px_8px_0px_#000] p-8 relative flex flex-col justify-between">
+              <div className="absolute -top-4 -right-4 w-10 h-10 bg-black text-white font-display font-black text-lg border-2 border-white flex items-center justify-center shadow-[3px_3px_0px_#000]">
+                1
               </div>
-
-              <h2 className="font-display font-black text-3xl sm:text-4xl text-black uppercase tracking-tight leading-tight mt-2 mb-4">
-                ULTIMATE <br />
-                <span className="text-indigo-600">POS & ERP</span>
-              </h2>
-
-              <div className="w-full h-1 bg-black mb-6" />
-
-              {/* 2 Stat Cards */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white border-3 border-black p-4 text-center shadow-[4px_4px_0px_#000]">
-                  <div className="font-display font-black text-3xl sm:text-4xl text-black">100%</div>
-                  <div className="text-[11px] font-black tracking-widest text-indigo-600 uppercase mt-1">RELIABLE</div>
+              <div>
+                <div className="w-14 h-14 bg-white border-3 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center mb-6">
+                  <span className="text-2xl font-black">👨‍🏫</span>
                 </div>
-
-                <div className="bg-white border-3 border-black p-4 text-center shadow-[4px_4px_0px_#000]">
-                  <div className="font-display font-black text-3xl sm:text-4xl text-black">24/7</div>
-                  <div className="text-[11px] font-black tracking-widest text-indigo-600 uppercase mt-1">SUPPORT</div>
-                </div>
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-3">
+                  EXPERT INSTRUCTORS
+                </h3>
+                <div className="w-full h-1 bg-black mb-4" />
+                <p className="text-slate-800 font-medium text-base leading-relaxed">
+                  Learn from industry professionals with real-world experience. Get insights you won't find in textbooks.
+                </p>
               </div>
-
-              <button 
-                onClick={onGetStarted}
-                className="w-full mt-6 py-3 bg-black hover:bg-slate-900 text-white font-display font-black text-xs uppercase tracking-widest border-2 border-black shadow-[3px_3px_0px_#4F46E5] transition-all flex items-center justify-center gap-2"
-              >
-                VIEW FEATURES <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
+
+            {/* Feature 2: SELF-PACED */}
+            <div className="bg-[#E0F2FE] text-black border-4 border-black shadow-[8px_8px_0px_#000] p-8 relative flex flex-col justify-between">
+              <div className="absolute -top-4 -right-4 w-10 h-10 bg-black text-white font-display font-black text-lg border-2 border-white flex items-center justify-center shadow-[3px_3px_0px_#000]">
+                2
+              </div>
+              <div>
+                <div className="w-14 h-14 bg-white border-3 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center mb-6">
+                  <Clock className="w-7 h-7 text-black stroke-[2.5]" />
+                </div>
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-3">
+                  SELF-PACED
+                </h3>
+                <div className="w-full h-1 bg-black mb-4" />
+                <p className="text-slate-800 font-medium text-base leading-relaxed">
+                  Learn at your own speed with lifetime access. Pause, rewind, and re-watch as many times as you need.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 3: HANDS-ON PROJECTS */}
+            <div className="bg-[#DCFCE7] text-black border-4 border-black shadow-[8px_8px_0px_#000] p-8 relative flex flex-col justify-between">
+              <div className="absolute -top-4 -right-4 w-10 h-10 bg-black text-white font-display font-black text-lg border-2 border-white flex items-center justify-center shadow-[3px_3px_0px_#000]">
+                3
+              </div>
+              <div>
+                <div className="w-14 h-14 bg-white border-3 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center mb-6">
+                  <Code className="w-7 h-7 text-black stroke-[2.5]" />
+                </div>
+                <h3 className="font-display font-black text-2xl text-black uppercase tracking-tight mb-3">
+                  HANDS-ON PROJECTS
+                </h3>
+                <div className="w-full h-1 bg-black mb-4" />
+                <p className="text-slate-800 font-medium text-base leading-relaxed">
+                  Build real projects that showcase your skills. Stop watching and start building a portfolio that stands out.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
-      </section>
+      </section>"""
 
-      {/* 3. Built for Modern Businesses */}
+new_section3 = """      {/* 3. Built for Modern Businesses */}
       <section className="py-20 sm:py-28 bg-indigo-600 border-b-4 border-black text-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -260,34 +186,14 @@ export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
               </div>
             </div>
 
-            {/* Hardware Compatibility Strip */}
-            <div className="mt-12 md:col-span-3 bg-black text-white p-6 border-4 border-black shadow-[8px_8px_0px_#000] flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-300 text-black border-2 border-black flex items-center justify-center font-black text-xl shrink-0">
-                  ⚙️
-                </div>
-                <div>
-                  <h4 className="font-display font-black text-base sm:text-lg uppercase tracking-tight text-white">
-                    PLUG-AND-PLAY POS HARDWARE INTEGRATION
-                  </h4>
-                  <p className="text-xs sm:text-sm font-medium text-slate-300">
-                    Works seamlessly with USB Wired/Wireless Barcode Scanners, 80mm/58mm Thermal Receipt Printers, Electric Cash Drawers & Sticker Printers.
-                  </p>
-                </div>
-              </div>
-              <a
-                href="/pricing"
-                className="px-5 py-2.5 bg-amber-300 hover:bg-amber-400 text-black font-display font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_#000] shrink-0"
-              >
-                VIEW HARDWARE PRICING →
-              </a>
-            </div>
-
           </div>
         </div>
-      </section>
+      </section>"""
 
-      {/* 4. Pricing Plans Overview Section */}
+content = content.replace(old_section3, new_section3)
+
+# 3. Replace industries and blog sections with a dedicated Neo-Brutalist Pricing Section on the homepage!
+pricing_section_homepage = """      {/* 4. Pricing Plans Overview Section */}
       <section id="pricing" className="py-20 sm:py-28 bg-[#FAF8F0] border-b-4 border-black relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
@@ -475,74 +381,47 @@ export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
           </div>
 
         </div>
-      </section>
+      </section>"""
 
-      {/* 6. Footer Section */}
-      <footer className="bg-[#FAF8F0] text-black pt-16 pb-10 border-t-4 border-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="grid md:grid-cols-12 gap-10 mb-16">
-            
-            <div className="md:col-span-5">
-              <div className="mb-6">
-                <LWHHLogo />
-              </div>
+# Replace from section id="industries" all the way through end of section id="blog"
+pattern = r'<section id="industries".*?</section>\s*<section id="blog".*?</section>'
+content = re.sub(pattern, pricing_section_homepage, content, flags=re.DOTALL)
 
-              <div className="border-l-4 border-red-600 pl-4 py-1">
-                <p className="font-display font-black text-sm text-black leading-relaxed max-w-md">
-                  Empowering retail, fashion, supermarket, and wholesale businesses across Bangladesh with cutting-edge POS and ERP software automation.
-                </p>
-              </div>
-            </div>
+# 4. Update Footer Links
+old_footer_links = """              <ul className="space-y-3 font-display font-black text-xs uppercase tracking-wider">
+                <li><a href="/about" className="hover:text-indigo-600 transition-colors">ABOUT</a></li>
+                <li><a href="/contact" className="hover:text-indigo-600 transition-colors">CONTACT</a></li>
+                <li><a href="/#industries" className="hover:text-indigo-600 transition-colors">INDUSTRIES</a></li>
+                <li><a href="#shorts" className="hover:text-indigo-600 transition-colors">SHORTS</a></li>
+                <li><a href="#blog" className="hover:text-indigo-600 transition-colors">BLOG</a></li>
+                <li><a href="#why-us" className="hover:text-indigo-600 transition-colors">QUESTIONS</a></li>
+              </ul>"""
 
-            <div className="md:col-span-3">
-              <h4 className="font-display font-black text-xs uppercase tracking-widest text-black underline decoration-black decoration-2 underline-offset-4 mb-6">
-                PLATFORM
-              </h4>
-              <ul className="space-y-3 font-display font-black text-xs uppercase tracking-wider">
+new_footer_links = """              <ul className="space-y-3 font-display font-black text-xs uppercase tracking-wider">
                 <li><a href="/about" className="hover:text-indigo-600 transition-colors">ABOUT</a></li>
                 <li><a href="/pricing" className="hover:text-indigo-600 transition-colors">PRICING</a></li>
                 <li><a href="/contact" className="hover:text-indigo-600 transition-colors">CONTACT</a></li>
-              </ul>
-            </div>
+              </ul>"""
 
-            <div className="md:col-span-4">
-              <h4 className="font-display font-black text-xs uppercase tracking-widest text-black underline decoration-black decoration-2 underline-offset-4 mb-6">
-                LEGAL
-              </h4>
-              <ul className="space-y-3 font-display font-black text-xs uppercase tracking-wider">
-                <li><a href="#" className="hover:text-red-600 transition-colors">PRIVACY POLICY</a></li>
-                <li><a href="#" className="hover:text-red-600 transition-colors">TERMS OF SERVICE</a></li>
-                <li><a href="#" className="hover:text-red-600 transition-colors">REFUND POLICY</a></li>
-              </ul>
-            </div>
+content = content.replace(old_footer_links, new_footer_links)
 
-          </div>
+# Footer company description and copyright
+content = content.replace(
+    'Empowering students worldwide with expert-led courses and hands-on projects. Learn at your own pace, build real skills.',
+    'Empowering retail, fashion, supermarket, and wholesale businesses across Bangladesh with cutting-edge POS and ERP software automation.'
+)
 
-          <div className="w-full h-1 bg-black mb-8" />
+content = content.replace(
+    '© 2026 LWHH. ALL RIGHTS RESERVED.',
+    '© 2026 SHOMPORKO CRM. ALL RIGHTS RESERVED.'
+)
 
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="font-display font-black text-xs uppercase tracking-wider text-black">
-              © 2026 SHOMPORKO CRM. ALL RIGHTS RESERVED.
-            </div>
+content = content.replace(
+    'BUILT FOR LIFELONG LEARNERS',
+    'BUILT FOR MODERN BUSINESSES'
+)
 
-            <div className="flex items-center gap-2 flex-wrap justify-center">
-              <span className="text-[10px] font-black text-slate-500 uppercase mr-1">Pay With</span>
-              {['VISA', 'MasterCard', 'AMEX', 'bKash', 'Nagad', 'Rocket', 'Upay'].map((pay, i) => (
-                <span key={i} className="px-2 py-0.5 bg-white border border-black text-[9px] font-black uppercase shadow-[1px_1px_0px_#000]">
-                  {pay}
-                </span>
-              ))}
-            </div>
+with open("src/components/landing/LandingPage.tsx", "w") as f:
+    f.write(content)
 
-            <div className="px-4 py-2 bg-red-600 text-white font-display font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_#000]">
-              BUILT FOR MODERN BUSINESSES
-            </div>
-          </div>
-
-        </div>
-      </footer>
-
-    </div>
-  );
-};
+print("Updated LandingPage.tsx successfully")

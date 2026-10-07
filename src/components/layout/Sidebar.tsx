@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import {
   FileCheck,
   Search,
@@ -149,37 +150,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Shell */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 text-white ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r-4 border-black shadow-[4px_0px_0px_#000] flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 text-black ${
           isOpenMobile ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-md shadow-primary-950">
-              <Sparkles className="w-5 h-5" />
-            </div>
+        <div className="h-16 px-5 border-b-4 border-black flex items-center justify-between bg-white">
+          <div className="flex items-center gap-2.5">
+            <Image
+              src="/somporko.webp"
+              alt="Shomporko Logo"
+              width={34}
+              height={34}
+              className="object-contain"
+            />
             <div>
-              <h1 className="text-base font-bold text-white leading-none">
-                Apnar
+              <h1 className="font-display font-black text-sm tracking-tight text-black leading-none uppercase">
+                SHOMPORKO
               </h1>
-              <span className="text-[10px] font-semibold text-primary-400 tracking-wider uppercase">
-                Software v1
+              <span className="text-[9px] font-black text-indigo-600 tracking-widest uppercase">
+                CRM & POS
               </span>
             </div>
           </div>
 
           <button
             onClick={onCloseMobile}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white lg:hidden"
+            className="p-1 bg-white hover:bg-red-600 hover:text-white border-2 border-black shadow-[2px_2px_0px_#000] text-black lg:hidden cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Navigation Menu */}
         <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
-          <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="px-3 pb-2 text-[10px] font-black uppercase tracking-widest text-black">
             Workspace Menus
           </div>
 
@@ -187,10 +192,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="pt-2">
             <button
               onClick={() => handleSelect('dashboard')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+              className={`w-full flex items-center justify-between px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border-2 ${
                 activePage === 'dashboard'
-                  ? "bg-[#20B2AA] text-white shadow-md"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-black shadow-[3px_3px_0px_#000]"
+                  : "text-black border-transparent hover:border-black hover:bg-amber-300 hover:shadow-[2px_2px_0px_#000]"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -209,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="pt-2">
             <button
               onClick={() => setIsSystemSettingOpen(!isSystemSettingOpen)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all group"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black transition-all group font-bold"
             >
               <div className="flex items-center gap-3">
                 <Settings className="w-4 h-4 transition-colors group-hover:text-white text-slate-400" />
@@ -220,7 +225,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isSystemSettingOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {[
                   { id: 'system-company', label: 'Company Setup' },
                   { id: 'system-branch', label: 'Branch Setup' },
@@ -230,8 +235,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => handleSelect(item.id as AdminPageId)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       activePage === item.id
-                        ? "bg-primary-500/10 text-primary-400"
-                        : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                        ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                        : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                     }`}
                   >
                     {item.label}
@@ -248,8 +253,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setIsCrmOpen(!isCrmOpen)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 crmNavItems.some((item) => item.id === activePage)
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -263,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isCrmOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {crmNavItems.map((item) => {
                   const isActive = activePage === item.id;
                   return (
@@ -272,8 +277,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={() => handleSelect(item.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                         isActive
-                          ? "bg-primary-500/10 text-primary-400"
-                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                          ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                          : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                       }`}
                     >
                       {item.label}
@@ -290,8 +295,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setIsCustomersOpen(!isCustomersOpen)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 customerNavItems.some((item) => item.id === activePage)
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -305,7 +310,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isCustomersOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {customerNavItems.map((item) => {
                   const isActive = activePage === item.id;
                   return (
@@ -314,8 +319,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={() => handleSelect(item.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                         isActive
-                          ? "bg-primary-500/10 text-primary-400"
-                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                          ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                          : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                       }`}
                     >
                       {item.label}
@@ -331,7 +336,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="pt-2">
             <button
               onClick={() => setIsPurchaseOpen(!isPurchaseOpen)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all group"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black transition-all group font-bold"
             >
               <div className="flex items-center gap-3">
                 <Truck className="w-4 h-4 transition-colors group-hover:text-white" />
@@ -343,10 +348,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
             
             {isPurchaseOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 <button
                   onClick={() => setIsPurchaseTxOpen(!isPurchaseTxOpen)}
-                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center justify-between transition-all"
+                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:text-black flex items-center justify-between transition-all"
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full border border-slate-700 flex items-center justify-center">
@@ -358,7 +363,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 
                 {isPurchaseTxOpen && (
-                  <div className="pl-6 space-y-1 relative before:content-[''] before:absolute before:left-[0.8rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800/50">
+                  <div className="pl-6 space-y-1 relative before:content-[''] before:absolute before:left-[0.8rem] before:top-2 before:bottom-2 before:w-px before:bg-black/50">
                     {[
                       { id: 'purchase-vendor-setup', label: 'Vendor Setup' },
                       { id: 'purchase-product', label: 'Product Purchase' },
@@ -373,8 +378,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           onClick={() => handleSelect(item.id as AdminPageId)}
                           className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                             isActive
-                              ? "bg-primary-500/10 text-primary-400"
-                              : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                              ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                              : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                           }`}
                         >
                           {item.label}
@@ -391,7 +396,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="pt-2">
             <button
               onClick={() => setIsSalesOpen(!isSalesOpen)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all group"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black transition-all group font-bold"
             >
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-4 h-4 transition-colors group-hover:text-white" />
@@ -403,7 +408,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
             
             {isSalesOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {[
                   { id: 'sales-clients', label: 'Client Setup' },
                   { id: 'sales-invoices', label: 'Invoice' },
@@ -420,8 +425,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={() => handleSelect(item.id as AdminPageId)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                         isActive
-                          ? "bg-primary-500/10 text-primary-400"
-                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                          ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                          : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                       }`}
                     >
                       {item.label}
@@ -438,8 +443,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setIsHrmOpen(!isHrmOpen)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 hrmNavItems.some((item) => item.id === activePage)
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -453,7 +458,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isHrmOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {hrmNavItems.map((item) => {
                   const isActive = activePage === item.id;
                   return (
@@ -462,8 +467,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={() => handleSelect(item.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                         isActive
-                          ? "bg-primary-500/10 text-primary-400"
-                          : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                          ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                          : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                       }`}
                     >
                       {item.label}
@@ -480,8 +485,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setIsUtilitiesOpen(!isUtilitiesOpen)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 ["lost-and-found", "hrm-catering", "utilities-subscriptions"].includes(activePage)
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -495,7 +500,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isUtilitiesOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {[
                   { id: 'lost-and-found', label: 'Lost & Found' },
                   { id: 'hrm-catering', label: 'Food & Catering' },
@@ -506,8 +511,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => handleSelect(item.id as AdminPageId)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       activePage === item.id
-                        ? "bg-primary-500/10 text-primary-400"
-                        : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                        ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                        : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                     }`}
                   >
                     {item.label}
@@ -525,8 +530,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setIsPartnershipsOpen(!isPartnershipsOpen)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 ["finance-partnership", "partnership-investors", "partnership-withdrawals", "partnership-dividends"].includes(activePage)
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -540,7 +545,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </button>
             {isPartnershipsOpen && (
-              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div className="pl-9 pr-3 py-1 mt-1 space-y-1 relative before:content-[''] before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-black">
                 {[
                   { id: 'finance-partnership', label: 'Summary' },
                   { id: 'partnership-investors', label: 'Investors & Partners' },
@@ -552,8 +557,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => handleSelect(item.id as AdminPageId)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       activePage === item.id
-                        ? "bg-primary-500/10 text-primary-400"
-                        : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
+                        ? "bg-amber-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black"
+                        : "text-slate-800 hover:text-black hover:bg-amber-100 font-bold"
                     }`}
                   >
                     {item.label}
@@ -564,13 +569,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {/* Global Settings */}
-          <div className="pt-4 mt-4 border-t border-slate-800/50">
+          <div className="pt-4 mt-4 border-t border-black">
             <button
               onClick={() => handleSelect("settings")}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                 activePage === "settings"
-                  ? "bg-primary-600 text-white shadow-md shadow-primary-900/40 font-bold"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                  ? "bg-indigo-600 text-white border-2 border-black shadow-[3px_3px_0px_#000] font-black uppercase tracking-wider"
+                  : "text-black hover:bg-slate-100 hover:text-black border-2 border-transparent hover:border-black"
               }`}
             >
               <Settings className={`w-4 h-4 transition-colors ${activePage === "settings" ? "text-white" : "group-hover:text-white text-slate-400"}`} />
@@ -581,8 +586,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Card & Sign Out */}
-        <div className="p-3 border-t border-slate-800 bg-slate-950/40">
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 shadow-2xs">
+        <div className="p-3 border-t border-black bg-slate-950/40">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-black shadow-2xs">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-xl bg-primary-950 text-primary-300 font-bold text-xs flex items-center justify-center border border-primary-800 shrink-0">
                 {user?.displayName

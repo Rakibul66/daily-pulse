@@ -68,6 +68,11 @@ export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const { user, userProfile, loading: authLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Admin Navigation State
   const [activeAdminPage, setActiveAdminPage] = useState<AdminPageId>("dashboard");
@@ -120,6 +125,16 @@ export default function Home() {
     setIsAuthModalOpen(true);
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const authParam = params.get("auth");
+      if (authParam === "login" || authParam === "register" || authParam === "forgot") {
+        openAuth(authParam);
+      }
+    }
+  }, []);
+
   const loadRecord = useCallback(async (date: string, userId?: string | null) => {
     setIsLoadingRecord(true);
     try {
@@ -145,14 +160,25 @@ export default function Home() {
     }
   }, [selectedDate, user, loadRecord]);
 
-  // 1. Auth loading spinner
-  if (authLoading) {
+  // During SSR and initial client hydration, always render LandingPage
+  // so server HTML matches client hydration HTML identically.
+  if (!mounted) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-            Initializing ApnarSoftware Admin...
+      <LandingPage
+        onGetStarted={() => openAuth("register")}
+        onSignIn={() => openAuth("login")}
+      />
+    );
+  }
+
+  // 1. Once mounted, if restoring an existing user session, show loading spinner
+  if (authLoading && typeof window !== "undefined" && localStorage.getItem("dp_auth") === "true") {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 p-8 border-4 border-black bg-white shadow-[8px_8px_0px_#000]">
+          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin stroke-[3]" />
+          <p className="text-xs font-black text-black uppercase tracking-wider">
+            Initializing Shomporko CRM...
           </p>
         </div>
       </div>
@@ -171,7 +197,7 @@ export default function Home() {
           isOpen={isAuthModalOpen}
           initialMode={authModalMode}
           onClose={() => setIsAuthModalOpen(false)}
-          onSuccess={() => showToast("Welcome to ApnarSoftware!", "success")}
+          onSuccess={() => showToast("Welcome to Shomporko CRM!", "success")}
         />
         {toast && (
           <Toast

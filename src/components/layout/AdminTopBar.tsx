@@ -178,58 +178,58 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
   const current = PAGE_TITLES[activePage] || PAGE_TITLES["crm-dashboard"];
 
   return (
-    <header className="no-print h-16 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 text-white">
+    <header className="no-print h-16 bg-white border-b-4 border-black shadow-[0_4px_0px_#000] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 text-black">
       {/* Left: Mobile Toggle & Page Title */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileSidebar}
-          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
+          className="p-1.5 bg-white hover:bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all lg:hidden cursor-pointer"
           title="Toggle Navigation Menu"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1 bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] font-display font-black text-xs uppercase tracking-wider text-black">
+            {current.title}
+          </span>
+          <span className="hidden sm:inline-block text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+            {current.subtitle}
+          </span>
+        </div>
       </div>
 
       {/* Right side: Quick actions & profile */}
       <div className="hidden lg:flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-        
-        
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors shadow-sm">
-          <span className="text-slate-400">+</span> Product
+        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+          <span className="font-black text-indigo-600">+</span> PRODUCT
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors shadow-sm">
-          <span className="text-slate-400">+</span> Customer
+        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+          <span className="font-black text-indigo-600">+</span> CUSTOMER
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors shadow-sm">
-          <span className="text-slate-400">+</span> POS
+        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+          <span className="font-black text-indigo-600">+</span> POS
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors shadow-sm">
-          <span className="text-slate-400">+</span> Invoice
+        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+          <span className="font-black text-indigo-600">+</span> INVOICE
         </button>
-        
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-semibold text-slate-300 hover:bg-slate-700 transition-colors shadow-sm">
-          <span className="text-slate-400">+</span> Purchase
+        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+          <span className="font-black text-indigo-600">+</span> PURCHASE
         </button>
-        
-        
-        
       </div>
 
-          
-        {/* Theme Toggle */}
-        <div className="ml-auto pr-4">
-          {mounted && (
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-          )}
-        </div>
+      {/* Theme Toggle */}
+      <div className="ml-auto lg:ml-2">
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-1.5 bg-white hover:bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+            title="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 stroke-[2.5]" /> : <Moon className="w-4 h-4 stroke-[2.5]" />}
+          </button>
+        )}
+      </div>
     </header>
   );
 };

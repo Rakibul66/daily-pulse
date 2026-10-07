@@ -3,9 +3,9 @@ import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 
 export const metadata: Metadata = {
-  title: "ApnarSoftware - The Ultimate POS & ERP Solution",
+  title: "Shomporko CRM - The Ultimate POS & ERP Solution",
   description:
-    "Track morning goals, end-of-day reports, competitor insights, and export beautiful PDF & formatted summaries.",
+    "Fast, reliable, and user-friendly tools that empower businesses to operate efficiently, manage inventory flawlessly, and maximize profits in real-time.",
 };
 
 export default function RootLayout({
@@ -19,11 +19,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body suppressHydrationWarning className="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen">
+      <body suppressHydrationWarning className="font-sans antialiased bg-white text-black min-h-screen selection:bg-indigo-600 selection:text-white">
         <Providers>{children}</Providers>
       </body>
     </html>

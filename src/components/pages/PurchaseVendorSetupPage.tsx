@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Edit, Trash2, Printer } from "lucide-react";
+import { Edit, Trash2, Plus, ArrowLeft, Check, Users } from "lucide-react";
 
 interface Vendor {
   id: string;
@@ -16,15 +16,14 @@ interface Vendor {
 }
 
 export const PurchaseVendorSetupPage: React.FC<{ showToast: (msg: string, type?: "success" | "error") => void }> = ({ showToast }) => {
-  const [showAddForm, setShowAddForm] = useState(false);
   const [vendors, setVendors] = useState<Vendor[]>([
-    { id: "1", code: "V0122", name: "Mesas Naz Enterprise", contactPerson: "rakin", email: "01405594148", phone: "01781814878/01892108564", address: "", account: "Mesas Naz Enterprise", status: true },
-    { id: "2", code: "V0121", name: "Mesas Brother Crokeries", contactPerson: "", email: "", phone: "01975009122/01999911982", address: "146-148 Mitford, Dhaka-1100", account: "Mesas Brother Crokeries", status: true },
-    { id: "3", code: "V0120", name: "M/S MAA Enterprice", contactPerson: "maa", email: "01408296010", phone: "", address: "22/1 Dupkhola Dhaka 1100", account: "M/S MAA Enterprice", status: true },
-    { id: "4", code: "V0119", name: "A.K TRADING CORPORATION", contactPerson: "AK TRADING", email: "", phone: "01915603765/01911886341", address: "57-58 Mitford Road, Dhaka", account: "A.K TRADING CORPORATION", status: true },
-    { id: "5", code: "V0118", name: "Marico Distribution", contactPerson: "", email: "01710289602", phone: "", address: "94 Mirhajirbag, Dhaka", account: "Marico Distribution", status: true }
+    { id: "1", code: "300000000030", name: "3S Distributor", contactPerson: "", email: "", phone: "", address: "3S Distributor, Mirpur 1, Dhaka", account: "3S Distributor", status: true },
+    { id: "2", code: "300000000029", name: "A.K TRADING CORPORATION", contactPerson: "", email: "", phone: "", address: "A.K TRADING CORPORATION, Tongi", account: "A.K TRADING CORPORATION", status: true },
+    { id: "3", code: "300000000028", name: "Aarong Dairy", contactPerson: "", email: "", phone: "", address: "Aarong Dairy, Tejgaon, Dhaka", account: "Aarong Dairy", status: true },
+    { id: "4", code: "300000000027", name: "Abul Khair Consumer Point", contactPerson: "", email: "", phone: "", address: "Abul Khair, Chattogram", account: "Abul Khair Consumer Point", status: true },
   ]);
 
+  const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
     name: "",
@@ -37,7 +36,7 @@ export const PurchaseVendorSetupPage: React.FC<{ showToast: (msg: string, type?:
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.code || !formData.name) {
-      showToast("Code and Vendor Name are required", "error");
+      showToast("Please enter vendor code and name", "error");
       return;
     }
     const newVendor: Vendor = {
@@ -57,47 +56,62 @@ export const PurchaseVendorSetupPage: React.FC<{ showToast: (msg: string, type?:
     showToast("Vendor added successfully", "success");
   };
 
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this vendor?")) {
+      setVendors(vendors.filter(v => v.id !== id));
+      showToast("Vendor deleted", "success");
+    }
+  };
+
   if (showAddForm) {
     return (
-      <div className="w-full mx-auto pb-10">
-        <div className="bg-[#1a2332] rounded-md border border-slate-800 shadow-md">
-          <div className="flex justify-between items-center p-4 border-b border-slate-800">
-            <h2 className="text-white font-semibold">ADD NEW VENDOR</h2>
+      <div className="w-full mx-auto pb-20 px-2 sm:px-4">
+        <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#000]">
+          <div className="flex justify-between items-center p-4 border-b-4 border-black bg-amber-300">
+            <h2 className="text-black font-display font-black text-lg uppercase tracking-tight flex items-center gap-2">
+              <Users className="w-5 h-5" /> ADD NEW VENDOR
+            </h2>
             <div className="flex gap-2">
-              <button onClick={() => setShowAddForm(false)} className="px-4 py-1.5 bg-[#20b2aa] text-white text-xs font-bold rounded hover:bg-[#1a9a94]">GO BACK</button>
-              <button onClick={handleSave} className="px-4 py-1.5 bg-[#20b2aa] text-white text-xs font-bold rounded hover:bg-[#1a9a94]">SAVE</button>
+              <button 
+                onClick={() => setShowAddForm(false)} 
+                className="px-4 py-2 bg-white text-black text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_#000] hover:bg-slate-100 flex items-center gap-1"
+              >
+                <ArrowLeft className="w-4 h-4" /> GO BACK
+              </button>
             </div>
           </div>
           <div className="p-6">
             <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs text-white mb-2">Code <span className="text-red-500">*</span></label>
-                <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Code" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Code <span className="text-red-500">*</span></label>
+                <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="Vendor Code" required />
               </div>
               <div>
-                <label className="block text-xs text-white mb-2">Vendor Name <span className="text-red-500">*</span></label>
-                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Vendor Name" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Vendor Name <span className="text-red-500">*</span></label>
+                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="Vendor Name" required />
               </div>
               <div>
-                <label className="block text-xs text-white mb-2">Contact Person</label>
-                <input type="text" value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Contact Person" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Contact Person</label>
+                <input type="text" value={formData.contactPerson} onChange={e => setFormData({...formData, contactPerson: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="Contact Person" />
               </div>
               <div>
-                <label className="block text-xs text-white mb-2">Contact Email</label>
-                <input type="text" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Contact Email" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Contact Email</label>
+                <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="contact@vendor.com" />
               </div>
               <div>
-                <label className="block text-xs text-white mb-2">Contact Number</label>
-                <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Contact Number" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Contact Number</label>
+                <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="017XXXXXXXX" />
               </div>
               <div>
-                <label className="block text-xs text-white mb-2">Contact Address</label>
-                <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-[#111827] border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-[#20b2aa]" placeholder="Contact Address" />
+                <label className="block text-xs font-black uppercase text-black mb-1">Address</label>
+                <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-white border-3 border-black p-2.5 text-sm font-bold text-black outline-none shadow-[2px_2px_0px_#000]" placeholder="Vendor Address" />
+              </div>
+              <div className="md:col-span-3 flex justify-end mt-4">
+                <button type="submit" className="px-6 py-3 bg-black hover:bg-slate-800 text-white text-xs font-black uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_#000]">
+                  SAVE VENDOR
+                </button>
               </div>
             </form>
-            <div className="flex justify-end mt-6">
-              <button onClick={handleSave} className="px-6 py-2 bg-[#20b2aa] text-white text-xs font-bold rounded hover:bg-[#1a9a94]">SAVE</button>
-            </div>
           </div>
         </div>
       </div>
@@ -105,87 +119,52 @@ export const PurchaseVendorSetupPage: React.FC<{ showToast: (msg: string, type?:
   }
 
   return (
-    <div className="w-full mx-auto pb-10">
-      <div className="bg-[#1a2332] rounded-md border border-slate-800 shadow-md">
-        <div className="flex justify-between items-center p-4 border-b border-slate-800">
-          <h2 className="text-white font-semibold uppercase">Vendor Setup</h2>
-          <div className="flex items-center gap-3">
-            <select className="bg-[#111827] text-white text-xs border border-slate-700 rounded px-2 py-1.5 focus:outline-none">
-              <option>All</option>
-            </select>
-            <button onClick={() => setShowAddForm(true)} className="px-4 py-1.5 bg-[#20b2aa] text-white text-xs font-bold rounded hover:bg-[#1a9a94]">ADD NEW</button>
-          </div>
+    <div className="w-full mx-auto pb-20 px-2 sm:px-4">
+      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#000]">
+        <div className="flex justify-between items-center p-4 border-b-4 border-black bg-amber-300">
+          <h2 className="text-black font-display font-black text-lg uppercase tracking-tight flex items-center gap-2">
+            <Users className="w-5 h-5" /> VENDOR SETUP & SUPPLIERS
+          </h2>
+          <button 
+            onClick={() => setShowAddForm(true)} 
+            className="px-4 py-2 bg-black hover:bg-slate-800 text-white text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_#000] flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" /> ADD NEW VENDOR
+          </button>
         </div>
         
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center text-xs text-slate-300">
-              Show 
-              <select className="mx-2 bg-[#111827] border border-slate-700 rounded px-1 py-1">
-                <option>10</option>
-                <option>25</option>
-              </select>
-              entries
-            </div>
-            <div className="flex items-center text-xs text-slate-300">
-              Search:
-              <input type="text" className="ml-2 bg-[#111827] border border-slate-700 rounded px-2 py-1 text-white focus:outline-none" />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="text-xs uppercase bg-[#111827] border-b border-slate-800 text-slate-400">
+        <div className="p-6">
+          <div className="overflow-x-auto border-3 border-black shadow-[4px_4px_0px_#000]">
+            <table className="w-full text-left text-sm text-black">
+              <thead className="text-xs uppercase bg-black text-white font-black border-b-2 border-black">
                 <tr>
-                  <th className="px-4 py-3 w-10"><input type="checkbox" className="rounded border-slate-700 bg-slate-800" /></th>
-                  <th className="px-4 py-3 font-semibold">Code</th>
-                  <th className="px-4 py-3 font-semibold">Vendor Name</th>
-                  <th className="px-4 py-3 font-semibold">Contact Person</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Contact Number</th>
-                  <th className="px-4 py-3 font-semibold">Address</th>
-                  <th className="px-4 py-3 font-semibold">Account</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold text-center">Actions</th>
+                  <th className="px-4 py-3">Code</th>
+                  <th className="px-4 py-3">Vendor Name</th>
+                  <th className="px-4 py-3">Address</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y-2 divide-black bg-white">
                 {vendors.map((v) => (
-                  <tr key={v.id} className="hover:bg-slate-800/30">
-                    <td className="px-4 py-3"><input type="checkbox" className="rounded border-slate-700 bg-slate-800" /></td>
-                    <td className="px-4 py-3">{v.code}</td>
-                    <td className="px-4 py-3 text-white">{v.name}</td>
-                    <td className="px-4 py-3">{v.contactPerson}</td>
-                    <td className="px-4 py-3">{v.email}</td>
-                    <td className="px-4 py-3">{v.phone}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{v.address}</td>
-                    <td className="px-4 py-3">{v.account}</td>
+                  <tr key={v.id} className="hover:bg-amber-50 font-bold">
+                    <td className="px-4 py-3 font-mono text-xs">{v.code}</td>
+                    <td className="px-4 py-3 font-black">{v.name}</td>
+                    <td className="px-4 py-3 text-slate-700">{v.address}</td>
                     <td className="px-4 py-3">
-                      <div className={`w-10 h-5 rounded-full relative ${v.status ? 'bg-[#20b2aa]' : 'bg-slate-600'}`}>
-                        <div className={`w-3.5 h-3.5 rounded-full bg-white dark:bg-slate-900 absolute top-[3px] transition-all ${v.status ? 'left-[22px]' : 'left-[4px]'}`}></div>
-                      </div>
+                      <span className="px-2 py-0.5 bg-emerald-100 border border-black text-emerald-800 text-xs font-black">
+                        ACTIVE
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button className="p-1.5 bg-amber-500 text-white rounded hover:bg-amber-600"><Edit className="w-3.5 h-3.5" /></button>
-                        <button className="p-1.5 bg-rose-500 text-white rounded hover:bg-rose-600"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
+                      <button onClick={() => handleDelete(v.id)} className="p-1.5 text-black hover:text-rose-600 border border-black hover:bg-rose-50">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-          
-          <div className="flex justify-between items-center mt-4 text-xs text-slate-400">
-            <div>Showing 1 to {vendors.length} of {vendors.length} entries</div>
-            <div className="flex gap-1">
-              <button className="px-2 py-1 bg-[#111827] border border-slate-700 rounded">&lt;</button>
-              <button className="px-2 py-1 bg-[#20b2aa] text-white rounded">1</button>
-              <button className="px-2 py-1 bg-[#111827] border border-slate-700 rounded">2</button>
-              <button className="px-2 py-1 bg-[#111827] border border-slate-700 rounded">3</button>
-              <button className="px-2 py-1 bg-[#111827] border border-slate-700 rounded">&gt;</button>
-            </div>
           </div>
         </div>
       </div>

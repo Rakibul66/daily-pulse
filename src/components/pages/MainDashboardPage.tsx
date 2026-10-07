@@ -129,17 +129,17 @@ export const MainDashboardPage: React.FC<Props> = ({ showToast }) => {
   const scale = maxVal > 0 ? maxVal : 30;
 
   return (
-    <div className="w-full mx-auto pb-20 px-1 py-6 bg-slate-50 dark:bg-slate-950 min-h-[calc(100vh-4rem)]">
+    <div className="w-full mx-auto pb-20 px-1 py-4 bg-transparent min-h-[calc(100vh-4rem)]">
       
       {/* Grid of Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-5 flex items-center justify-between shadow-sm hover:border-primary-200 dark:hover:border-primary-800 transition-colors">
+          <div key={idx} className="bg-white border-3 border-black p-5 flex items-center justify-between shadow-[4px_4px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_#000] transition-all">
             <div>
-              <h3 className="text-[11px] font-bold text-slate-700 dark:text-slate-400 tracking-wider mb-2">{card.title}</h3>
-              <p className="text-xl font-bold text-[#20B2AA]">{card.prefix}{card.value}</p>
+              <h3 className="text-xs font-black text-black uppercase tracking-wider mb-1">{card.title}</h3>
+              <p className="text-2xl font-black font-display text-indigo-600">{card.prefix}{card.value}</p>
             </div>
-            <div className="w-10 h-10 rounded bg-[#E0F2F1] dark:bg-slate-800 flex items-center justify-center">
+            <div className="w-11 h-11 bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center text-black">
               {card.icon}
             </div>
           </div>
@@ -147,9 +147,16 @@ export const MainDashboardPage: React.FC<Props> = ({ showToast }) => {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 shadow-sm p-6 pt-5">
-        <h2 className="text-[17px] font-normal text-slate-700 dark:text-slate-200 mb-0.5">Sales & Collection Chart</h2>
-        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-8">12 Month Analytics Tracking Engine</p>
+      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#000] p-6 pt-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+          <div>
+            <h2 className="font-display font-black text-xl uppercase tracking-tight text-black">Sales & Collection Chart</h2>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-600">12 Month Analytics Tracking Engine</p>
+          </div>
+          <span className="px-3 py-1 bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] font-black text-[10px] uppercase tracking-wider text-black">
+            ANNUAL PERFORMANCE
+          </span>
+        </div>
         
         {/* Custom Bar Chart Layout */}
         <div className="w-full h-[400px] flex flex-col relative">
@@ -157,24 +164,24 @@ export const MainDashboardPage: React.FC<Props> = ({ showToast }) => {
           {/* Legend */}
           <div className="absolute top-0 w-full flex justify-center gap-6 z-10">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-3 bg-[#20B2AA]"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Sales</span>
+              <div className="w-6 h-3 bg-indigo-600 border border-black shadow-[1px_1px_0px_#000]"></div>
+              <span className="text-xs font-black uppercase tracking-wider text-black">Sales</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-3 bg-[#F59E0B]"></div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">Collection</span>
+              <div className="w-6 h-3 bg-amber-400 border border-black shadow-[1px_1px_0px_#000]"></div>
+              <span className="text-xs font-black uppercase tracking-wider text-black">Collection</span>
             </div>
           </div>
 
           {/* Grid Area */}
-          <div className="flex-1 relative mt-8 border-l border-b border-slate-300 dark:border-slate-700">
+          <div className="flex-1 relative mt-8 border-l-2 border-b-2 border-black">
             {/* Y Axis Labels and Horizontal Grid Lines */}
             {[1, 0.8, 0.6, 0.4, 0.2, 0].map((pct, i) => {
               const val = Math.round(scale * pct);
               return (
                 <div key={pct} className="absolute w-full flex items-center" style={{ bottom: `${pct * 100}%` }}>
-                  <span className="absolute -left-10 text-[10px] text-slate-400 w-8 text-right transform translate-y-[50%]">{val > 1000 ? (val/1000).toFixed(1)+'k' : val}</span>
-                  <div className="w-full border-b border-slate-200 dark:border-slate-800"></div>
+                  <span className="absolute -left-12 text-[10px] font-black text-black w-10 text-right transform translate-y-[50%]">{val > 1000 ? (val/1000).toFixed(1)+'k' : val}</span>
+                  <div className="w-full border-b border-black/10"></div>
                 </div>
               );
             })}
@@ -183,16 +190,16 @@ export const MainDashboardPage: React.FC<Props> = ({ showToast }) => {
             <div className="absolute inset-0 flex justify-between items-end px-2 sm:px-4">
               {salesData.map((d, i) => (
                 <div key={d.name} className="flex flex-col items-center h-full justify-end group flex-1">
-                  <div className="flex items-end gap-[1px] sm:gap-0.5 h-full pt-4 w-full justify-center">
+                  <div className="flex items-end gap-[2px] sm:gap-1 h-full pt-4 w-full justify-center">
                     {/* Sales Bar */}
                     <div 
-                      className="w-2 sm:w-6 bg-[#20B2AA] rounded-t-sm transition-all hover:opacity-80" 
+                      className="w-2.5 sm:w-6 bg-indigo-600 border-t-2 border-x-2 border-black shadow-[2px_2px_0px_#000] transition-all hover:bg-indigo-700" 
                       style={{ height: `${scale > 0 ? (d.Sales / scale) * 100 : 0}%` }}
                       title={`Sales: ${d.Sales.toLocaleString()}`}
                     ></div>
                     {/* Collection Bar */}
                     <div 
-                      className="w-2 sm:w-6 bg-[#F59E0B] rounded-t-sm transition-all hover:opacity-80" 
+                      className="w-2.5 sm:w-6 bg-amber-400 border-t-2 border-x-2 border-black shadow-[2px_2px_0px_#000] transition-all hover:bg-amber-500" 
                       style={{ height: `${scale > 0 ? (d.Collection / scale) * 100 : 0}%` }}
                       title={`Collection: ${d.Collection.toLocaleString()}`}
                     ></div>
@@ -203,9 +210,9 @@ export const MainDashboardPage: React.FC<Props> = ({ showToast }) => {
           </div>
 
           {/* X Axis Labels */}
-          <div className="flex justify-between px-2 sm:px-4 mt-2 border-slate-300 dark:border-slate-700 ml-[1px]">
+          <div className="flex justify-between px-2 sm:px-4 mt-2 border-black ml-[1px]">
             {salesData.map(d => (
-              <div key={d.name} className="text-[9px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex-1 text-center -ml-2 sm:-ml-0">
+              <div key={d.name} className="text-[10px] sm:text-xs font-black text-black uppercase flex-1 text-center -ml-2 sm:-ml-0">
                 {d.name.split('-')[0]}
               </div>
             ))}

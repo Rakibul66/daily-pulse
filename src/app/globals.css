@@ -3,6 +3,7 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
   --color-primary-50: #E8F5E9;
   --color-primary-100: #C8E6C9;
   --color-primary-200: #A5D6A7;
@@ -19,6 +20,33 @@
 body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Background Patterns for Neo-Brutalism */
+.bg-cream-grid {
+  background-color: #FAF8F0;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-mint-dots {
+  background-color: #E8F8F0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+.bg-dark-grid {
+  background-color: #0A0A0A;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 36px 36px;
 }
 
 /* Custom Print styles for PDF report export */
@@ -45,10 +73,169 @@ body {
     border: 1px solid #cbd5e1 !important;
     break-inside: avoid;
   }
+
+  /* Thermal Receipt Mode (80mm / 58mm) */
+  body:has(#thermal-receipt) * {
+    visibility: hidden;
+  }
+  body:has(#thermal-receipt) #thermal-receipt,
+  body:has(#thermal-receipt) #thermal-receipt * {
+    visibility: visible;
+  }
+  body:has(#thermal-receipt) #thermal-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 2mm !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Barcode Sticker Sheet Mode */
+  body:has(#barcode-sticker-sheet) * {
+    visibility: hidden;
+  }
+  body:has(#barcode-sticker-sheet) #barcode-sticker-sheet,
+  body:has(#barcode-sticker-sheet) #barcode-sticker-sheet * {
+    visibility: visible;
+  }
+  body:has(#barcode-sticker-sheet) #barcode-sticker-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
 }
 
 @media screen {
   .print-only {
     display: none !important;
   }
+}
+
+/* ==========================================================================
+   NEO-BRUTALIST ADMIN PANEL VIBE (White BG & Sharp Black Borders)
+   ========================================================================== */
+.neo-admin-wrapper {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Force cards and page containers to white with solid black borders & shadows */
+.neo-admin-wrapper .bg-slate-900:not(button):not(.badge):not([class*="bg-indigo"]):not([class*="bg-red"]),
+.neo-admin-wrapper .bg-slate-950:not(button):not(.badge) {
+  background-color: #ffffff !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+/* Table containers & borders */
+.neo-admin-wrapper table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 2px solid #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.neo-admin-wrapper th {
+  background-color: #f8fafc !important;
+  color: #000000 !important;
+  border-bottom: 2px solid #000000 !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.05em !important;
+}
+
+.neo-admin-wrapper td {
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.neo-admin-wrapper tr:hover td {
+  background-color: #fffbeb !important;
+}
+
+/* Text overrides inside white-converted containers */
+.neo-admin-wrapper .bg-slate-900 h1,
+.neo-admin-wrapper .bg-slate-900 h2,
+.neo-admin-wrapper .bg-slate-900 h3,
+.neo-admin-wrapper .bg-slate-900 h4,
+.neo-admin-wrapper .bg-slate-900 p,
+.neo-admin-wrapper .bg-slate-900 span:not(.badge):not([class*="bg-"]):not([class*="text-"]):not([class*="text-primary"]):not([class*="text-indigo"]),
+.neo-admin-wrapper .bg-slate-900 label {
+  color: #000000 !important;
+}
+
+.neo-admin-wrapper .text-slate-400,
+.neo-admin-wrapper .text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Form inputs & selects across admin pages */
+.neo-admin-wrapper input[type="text"],
+.neo-admin-wrapper input[type="email"],
+.neo-admin-wrapper input[type="password"],
+.neo-admin-wrapper input[type="number"],
+.neo-admin-wrapper input[type="date"],
+.neo-admin-wrapper input[type="search"],
+.neo-admin-wrapper select,
+.neo-admin-wrapper textarea {
+  border: 2px solid #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+  border-radius: 0px !important;
+}
+
+.neo-admin-wrapper input:focus,
+.neo-admin-wrapper select:focus,
+.neo-admin-wrapper textarea:focus {
+  background-color: #fffdf0 !important;
+  outline: none !important;
+  border-color: #4f46e5 !important;
+}
+
+/* Action and submit buttons */
+.neo-admin-wrapper button.bg-primary-600,
+.neo-admin-wrapper button.bg-primary-500,
+.neo-admin-wrapper button.bg-indigo-600 {
+  border: 2px solid #000000 !important;
+  box-shadow: 3px 3px 0px #000000 !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  border-radius: 0px !important;
+  transition: all 0.15s ease !important;
+}
+
+.neo-admin-wrapper button.bg-primary-600:hover,
+.neo-admin-wrapper button.bg-primary-500:hover,
+.neo-admin-wrapper button.bg-indigo-600:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 5px 5px 0px #000000 !important;
+}
+
+.neo-admin-wrapper button.bg-primary-600:active,
+.neo-admin-wrapper button.bg-primary-500:active,
+.neo-admin-wrapper button.bg-indigo-600:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0px #000000 !important;
+}
+
+/* Modals inside admin */
+.neo-admin-wrapper .fixed .bg-slate-900,
+.neo-admin-wrapper .fixed .bg-slate-950 {
+  background-color: #ffffff !important;
+  border: 4px solid #000000 !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  color: #000000 !important;
+  border-radius: 0px !important;
 }

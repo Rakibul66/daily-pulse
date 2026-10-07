@@ -1,117 +1,172 @@
-# DailyPulse — Daily Work Goal & End-of-Day Report Automation
+# Shomporko CRM & POS (সম্পর্ক সিআরএম ও পিওএস)
 
-A modern, streamlined web application for managing daily morning goals, end-of-day reports, competitor research tracking, and aggregated performance reporting across weekly, monthly, and custom date ranges.
-
-Built with **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Firebase Firestore** with zero-setup offline fallback.
-
----
-
-## 🌟 Key Features
-
-1. **Daily Morning Goals (`08:00 AM`)**:
-   - Pre-configured targets matching your exact workflow:
-     - **Lead Generation**: Target leads to find (15–20), qualified prospects to contact (5+), follow-ups (10–15).
-     - **Client Onboarding**: Existing prospect follow-up actions & target onboarding conversions.
-     - **Customer Support**: Planned calls/messages, pending issues to clear, customer follow-ups.
-     - **Competitor Research**: Target competitors to check, content types to monitor, organic lead-gen angles.
-   - Dynamic custom fields & items.
-   - **Save as Default Template** button to persist your preferred targets for every upcoming morning.
-
-2. **End-of-Day Work Update (`06:00 PM`)**:
-   - Side-by-side comparison with your morning targets (Target vs Actual).
-   - Actual metrics:
-     - 🎯 **Lead Generation**: Leads found, prospects contacted, follow-ups, positive responses, serious prospects, onboarding discussions.
-     - 📞 **Customer Support**: Calls handled, issues resolved, pending issues, follow-ups required.
-     - 📊 **Competitor Research**: Competitors checked, interactive tag list of observed activities (case studies, reels, promotional offers, etc.), and potential organic strategies to test.
-     - 📋 **Daily Summary & Tomorrow's Priority**: Automatic summary calculation + high-priority tomorrow focus.
-
-3. **1-Click "Beautiful Copy Text" (Emoji & Markdown)**:
-   - Formats the report with crisp typography and emojis (🎯, 📞, 📊, 📋) matching your exact structure.
-   - Ready to paste immediately into **WhatsApp**, **Slack**, **Telegram**, **Notion**, or **Email**.
-
-4. **PDF Report Export**:
-   - Clean, professional executive print view with custom print styling (`@media print`).
-   - Generates high-resolution PDF summaries with KPI metric cards, badges, and competitor findings.
-
-5. **Weekly, Monthly & Custom Date Range Analytics**:
-   - Filter by: *Today*, *Yesterday*, *This Week*, *Last 7 Days*, *This Month*, *Last 30 Days*, or any *Custom Date Range*.
-   - Calculates aggregate metrics:
-     - Total Leads Found
-     - Total Prospects Contacted
-     - Positive Response Rate (%)
-     - Onboarding Discussions & Conversion Rate (%)
-     - Customer Support Resolution Rate (%)
-     - Competitor Audits Logged
-   - Day-by-day logs with direct jump-to-edit and one-click copy buttons.
-
-6. **Firebase Firestore Database + Zero-Setup Fallback**:
-   - Connect directly to your Firebase project by clicking the **Database** button in the header or via `.env.local`.
-   - If Firebase credentials are not yet entered, the app functions immediately using local storage with initial sample data so you never hit a blocking error screen.
+> **The Ultimate POS & ERP Software for Modern Businesses in Bangladesh.**  
+> Fast, reliable, user-friendly retail automation, sales pipeline CRM, inventory management, and plug-and-play POS hardware integration.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Live Demo & Navigation Routes
 
-### 1. Install & Run Locally
+- **Homepage (`/`)**: Neo-Brutalist landing page featuring POS & ERP overview, system capabilities, hardware compatibility strip, and transparent pricing.
+- **About Us (`/about`)**: Our story, mission, why retail businesses choose Shomporko CRM, and automated architecture.
+- **Pricing & Hardware (`/pricing`)**: 
+  - Software Subscriptions: Starter POS (৳650/mo), Business Pro (৳1,450/mo), Enterprise ERP (৳2,850/mo).
+  - Compatible POS Hardware & Machines: Barcode Scanners (Wired 40% Off, Wireless 15% Off), 80mm Thermal Receipt Printers, Thermal Label Sticker Printers, and Electric Cash Drawers.
+- **Contact Us (`/contact`)**: Neo-Brutalist contact & inquiry form saving to Firebase Firestore `lead_requests` + direct WhatsApp hotline (`01315861003`).
+- **Admin Dashboard & POS Terminal (`/`)**: Authenticated admin workspace featuring 25+ modules across POS, CRM, Inventory, Purchases, Accounts, and HRM.
 
+---
+
+## 🛠️ Key Implemented Modules & Features
+
+### 1. ⚡ POS Terminal & Hardware Machine Integration
+- **USB & Wireless Barcode Scanner Engine**:
+  - Global high-speed keystroke listener detects standard HID keyboard-emulation barcode scanners (300 scans/second).
+  - Web Audio API sound synthesis produces an authentic high-frequency retail checkout beep on every scan.
+  - Automatic product lookup by Barcode (SKU) or Product ID.
+  - Repeated scans automatically increment item quantity in real time.
+- **Thermal Receipt Printing (ESC/POS 80mm & 58mm)**:
+  - Formatted for standard retail thermal printers (Xprinter, Rongta, Bixolon, Epson).
+  - Itemized layout with Store Name, Invoice Number, Date/Time, Customer Details, Item Rows, Subtotal, Discount, Net Payable, Cash Received, and Change Due.
+  - Barcode footer and auto-cash drawer kickout trigger (`RJ11`).
+  - Specialized `@media print` CSS ensures **only** the receipt paper prints with zero margins.
+- **Quick Cash Tender & Discounts**:
+  - One-click tender buttons: Exact Cash, ৳500, ৳1,000, ৳1,500, ৳2,000, ৳5,000.
+  - Flat discount (৳) or Percentage discount (%) with live net payable calculation.
+
+---
+
+### 2. 🏷️ Barcode Label & Sticker Generator (`/purchase-generate-barcode`)
+- **Direct Thermal Label Roll Printing**:
+  - Compatible with Xprinter XP-365B, XP-420B, Zebra ZD220, TSC, and standard thermal sticker printers.
+  - Formats supported:
+    - `50mm x 30mm` (1-Column Thermal Sticker Roll)
+    - `40mm x 25mm` (2-Up Column Thermal Sticker Roll)
+    - `A4 Standard Sheet` (3 Columns × 8 Rows = 24 Stickers per Page)
+- **Live SVG Vector Barcode Rendering**:
+  - High-density Code-128 barcode bars with human-readable numbers.
+  - Configurable Store Name on top and MRP Price in BDT (৳).
+  - Print Queue summary allowing bulk label generation for product inventory.
+
+---
+
+### 3. 📦 Inventory & Stock Management
+- **Centralized Product Directory**:
+  - Manage SKU, product name, category, cost price, selling price, stock on hand, and alert threshold.
+  - Real-time stock decrement upon completing POS sales.
+  - Filter by category and search by title or barcode.
+
+---
+
+### 4. 🛒 Purchases & Vendor Management
+- **Vendor Setup**: Directory of suppliers, contact persons, phone numbers, and addresses.
+- **Product Lifting & Purchases**: Track cash/credit purchases against vendor accounts.
+- **Purchase Returns**: Damaged or expired inventory returns with adjustment logs.
+- **Vendor Payments**: Record bank transfers, cash payments, and ledger balances.
+
+---
+
+### 5. 💼 Sales, Invoices & Collections
+- **Client Directory**: Customer profiles, loyalty tiers, credit limits, and contact info.
+- **Sales Invoices**: Standard wholesale/B2B invoice generation with payment status.
+- **Payment Collections**: Log collections across Cash, Bank, bKash Merchant, and Nagad.
+- **Sales Returns & Approvals**: Multistep return authorization workflow.
+
+---
+
+### 6. 👥 HRM, Attendance & Payroll
+- **Employee Directory**: Staff profiles, designations, joining dates, and departments.
+- **Daily Attendance**: Track check-in/check-out and working hours.
+- **Overtime & Loans**: Staff loan disbursements and overtime calculation.
+- **Monthly Payroll**: Automated salary slips with deductions and allowances.
+- **Catering & Meals**: Office canteen meal tracking and catering vendor management.
+
+---
+
+### 7. 🤝 CRM & Lead Pipelines
+- **CRM Dashboard**: Real-time sales conversion funnel and active opportunities.
+- **Leads & Contacts**: Pipeline tracking from prospect to qualified lead.
+- **AI Lead Prospector**: Smart recommendations for high-conversion accounts.
+- **Customer Feedback & Lost/Found**: In-store customer service management.
+
+---
+
+### 8. 🏢 System Setup & Multi-Branch Support
+- **Company Profile**: Business legal name, logo, trade license, and contact details.
+- **Branch Management**: Central sync across multiple outlets (Main Branch, Dhanmondi, Gulshan, Mirpur, Chattogram).
+- **Subscriptions & Billing**: Plan management and renewal tracking.
+
+---
+
+## 🖨️ How to Connect POS Hardware Machines
+
+### 1. Connecting Barcode Scanners (USB Wired or Wireless)
+1. **USB Wired Scanner**: Plug the USB cable into any USB port on your PC or POS terminal. The computer will automatically detect it as an HID Keyboard device.
+2. **Wireless 2.4GHz Scanner**: Insert the USB wireless dongle into the computer. Turn on the barcode scanner; it pairs instantly without software drivers.
+3. **Usage in Shomporko POS**:
+   - Open the **POS Sales** screen.
+   - Point the scanner at any product barcode and pull the trigger.
+   - You will hear the **audio beep**, and the item will instantly appear in the cart!
+
+### 2. Connecting Thermal Receipt Printers (80mm / 58mm)
+1. Plug the printer into power and connect via USB or LAN cable.
+2. In Windows / macOS printer settings, ensure the printer is set up with standard paper size:
+   - For 80mm printers: Select **80(72.1) x 297 mm** or Roll Paper.
+   - Set Margins to **None / Minimum**.
+3. In Shomporko POS, when saving a sale with **"Print Receipt"** enabled:
+   - Click **PRINT NOW**. The browser print dialog appears with the receipt styled cleanly.
+   - Select your thermal printer and click Print.
+
+### 3. Connecting Barcode Sticker / Label Printers
+1. Load a roll of thermal sticker labels (e.g. 50mm × 30mm) into your label printer (e.g. Xprinter XP-365B or Zebra).
+2. Go to **Purchase -> Generate Barcode** in the admin sidebar.
+3. Select your product and the number of stickers needed.
+4. Click **PRINT LABELS NOW**. In the print dialog, select your label printer and print directly onto thermal sticker rolls!
+
+---
+
+## 💻 Tech Stack & Architecture
+
+- **Framework**: Next.js 15 (App Router with dynamic sharding)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS (Strict Neo-Brutalist design language: crisp white bg, solid black borders `border-4 border-black`, hard shadows `shadow-[8px_8px_0px_#000]`)
+- **Icons**: Lucide React
+- **Database & Storage**: Firebase Firestore (with resilient local storage fallback for offline resilience)
+- **Authentication**: Firebase Authentication (Email/Password, Google OAuth)
+- **Audio API**: Web Audio API oscillator synthesis for hardware checkout feedback
+
+---
+
+## 🏃 Getting Started & Local Development
+
+### 1. Prerequisites
+- Node.js 18.18+ or Node.js 20+
+- npm or yarn
+
+### 2. Installation
 ```bash
-cd /Users/dev3/.gemini/antigravity/scratch/daily-report-app
+git clone https://github.com/your-username/shomporko-crm.git
+cd shomporko-crm
 npm install
+```
+
+### 3. Running Development Server
+```bash
 npm run dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 2. Connect Firebase Firestore (Optional)
-
-You can either:
-1. Click the **"Local Database" / "Database"** badge in the top-right header and paste your Firebase Project ID and API Key.
-2. OR create a `.env.local` file based on `.env.example`:
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1234567890
-NEXT_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abcdef123456
+### 4. Production Build
+```bash
+npm run build
+npm start
 ```
 
 ---
 
-## 📂 Project Architecture
+## 📞 Support & Hardware Sales Helpline
 
-```
-daily-report-app/
-├── src/
-│   ├── app/
-│   │   ├── globals.css          # Theme configuration & print styling
-│   │   ├── layout.tsx           # Google Font (Plus Jakarta Sans) & Root shell
-│   │   └── page.tsx             # Main reactive dashboard
-│   ├── components/
-│   │   ├── layout/
-│   │   │   └── Header.tsx       # Date navigator, tab switcher, DB status
-│   │   ├── goals/
-│   │   │   └── MorningGoalForm.tsx  # Dynamic morning target inputs
-│   │   ├── eod/
-│   │   │   └── EODReportForm.tsx    # Actuals entry, target vs actual comparison
-│   │   ├── analytics/
-│   │   │   └── RangeReportView.tsx  # Weekly/Monthly aggregated reporting
-│   │   ├── export/
-│   │   │   ├── CopyTextModal.tsx    # 1-click formatted copy with clipboard toast
-│   │   │   └── PrintReportView.tsx  # Printable PDF executive view
-│   │   ├── settings/
-│   │   │   └── FirebaseConfigModal.tsx # In-app Firebase Firestore setup
-│   │   └── ui/
-│   │       └── Toast.tsx        # Notification toasts
-│   ├── lib/
-│   │   ├── firebase.ts          # Firebase SDK initializers
-│   │   ├── storage.ts           # Dual-layer Firestore + LocalStorage sync
-│   │   ├── formatters.ts        # Beautiful text & date formatters
-│   │   └── defaultData.ts       # Predefined templates matching user spec
-│   └── types/
-│       └── report.ts            # Strongly-typed TypeScript data models
-├── .env.example
-├── package.json
-└── tsconfig.json
-```
+For inquiries, custom deployment, or ordering compatible POS hardware (Barcode Scanners, Printers, Cash Drawers):
+- **Phone / WhatsApp**: `+880 1315-861003`
+- **Email**: `info@shomporko.com`
+- **Location**: Dhaka, Bangladesh

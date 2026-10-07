@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import {
   X,
@@ -8,7 +9,6 @@ import {
   Lock,
   User as UserIcon,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -76,7 +76,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         );
       }
     } catch (err: unknown) {
-      // console.error(err);
       const msg =
         err instanceof Error
           ? err.message
@@ -103,9 +102,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onSuccess?.();
       onClose();
     } catch (err: unknown) {
-      // console.error(err);
       setError(
-        err instanceof Error ? err.message : "Google sign in was canceled or failed."
+        err instanceof Error
+          ? err.message
+          : "Failed to sign in with Google. Please try again."
       );
     } finally {
       setLoading(false);
@@ -113,58 +113,80 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+      {/* Modal Dialog Card */}
+      <div className="relative w-full max-w-md bg-white border-4 border-black shadow-[10px_10px_0px_#000] my-8 overflow-hidden text-black animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Top Accent Strip */}
+        <div className="h-3 bg-gradient-to-r from-indigo-600 via-amber-400 to-red-600 border-b-2 border-black" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:text-slate-400 p-2 rounded-xl hover:bg-slate-100 dark:bg-slate-800 transition-colors z-10"
+          className="absolute top-6 right-6 p-1.5 bg-white hover:bg-red-600 hover:text-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all z-10 cursor-pointer"
+          aria-label="Close"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 stroke-[2.5]" />
         </button>
 
         {/* Modal Header */}
-        <div className="p-8 pb-4 text-center bg-radial from-primary-50/50 via-transparent to-transparent">
-          <div className="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center text-white mx-auto mb-3 shadow-lg shadow-primary-200">
-            <Sparkles className="w-6 h-6" />
+        <div className="p-7 pb-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Image
+              src="/somporko.webp"
+              alt="Shomporko Logo"
+              width={36}
+              height={36}
+              className="object-contain"
+            />
+            <span className="font-display font-black text-xl tracking-tight uppercase text-black">
+              SHOMPORKO CRM
+            </span>
           </div>
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-            {mode === "login" && "Welcome Back"}
-            {mode === "register" && "Create Your Account"}
-            {mode === "forgot" && "Reset Your Password"}
+
+          <div className="inline-block px-3 py-1 bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] font-black text-[11px] uppercase tracking-wider mb-3">
+            {mode === "login" && "PORTAL LOGIN"}
+            {mode === "register" && "NEW ACCOUNT"}
+            {mode === "forgot" && "PASSWORD RECOVERY"}
+          </div>
+
+          <h3 className="font-display font-black text-2xl uppercase tracking-tight text-black">
+            {mode === "login" && "WELCOME BACK"}
+            {mode === "register" && "GET STARTED"}
+            {mode === "forgot" && "RESET PASSWORD"}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {mode === "login" && "Log in to access your personal daily reports & goals"}
-            {mode === "register" && "Start tracking your daily goals, EOD updates & analytics"}
-            {mode === "forgot" && "Enter your email to receive a password reset link"}
+          <p className="text-xs font-bold text-slate-600 mt-1 uppercase tracking-wide">
+            {mode === "login" && "Access your POS & ERP business dashboard"}
+            {mode === "register" && "Start operating efficiently with Shomporko CRM"}
+            {mode === "forgot" && "Enter your email to receive recovery instructions"}
           </p>
         </div>
 
         {/* Form Body */}
-        <div className="px-8 pb-8 space-y-4">
+        <div className="px-7 pb-7 space-y-4">
           {/* Alerts */}
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <div className="p-3 bg-red-100 border-2 border-black shadow-[3px_3px_0px_#000] text-red-950 text-xs font-bold flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-red-700 stroke-[2.5]" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <div className="p-3 bg-emerald-100 border-2 border-black shadow-[3px_3px_0px_#000] text-emerald-950 text-xs font-bold flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700 stroke-[2.5]" />
               <span>{successMsg}</span>
             </div>
           )}
 
-          {/* Google Sign-in button (for login and register) */}
+          {/* Google Sign-in button */}
           {mode !== "forgot" && (
             <>
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs active:scale-98"
+                className="w-full py-2.5 px-4 bg-white hover:bg-amber-100 border-2 border-black shadow-[3px_3px_0px_#000] text-black font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] cursor-pointer disabled:opacity-50"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -184,53 +206,53 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                Continue with Google
+                CONTINUE WITH GOOGLE
               </button>
 
               <div className="relative flex py-1 items-center">
-                <div className="grow border-t border-slate-200 dark:border-slate-700"></div>
-                <span className="shrink mx-3 text-[11px] text-slate-400 uppercase tracking-wider font-medium">
-                  Or with email
+                <div className="grow border-t-2 border-black"></div>
+                <span className="shrink mx-3 text-[10px] text-black uppercase tracking-widest font-black bg-white px-1">
+                  OR WITH EMAIL
                 </span>
-                <div className="grow border-t border-slate-200 dark:border-slate-700"></div>
+                <div className="grow border-t-2 border-black"></div>
               </div>
             </>
           )}
 
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {mode === "register" && (
               <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <UserIcon className="w-4 h-4 text-black absolute left-3 top-3" />
                   <input
                     type="text"
                     required
-                    placeholder="Jane Doe"
+                    placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs font-bold text-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] focus:bg-amber-50/50 focus:outline-none focus:border-indigo-600 transition-colors"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Mail className="w-4 h-4 text-black absolute left-3 top-3" />
                 <input
                   type="email"
                   required
-                  placeholder="you@example.com"
+                  placeholder="name@business.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                  className="w-full pl-9 pr-3 py-2.5 text-xs font-bold text-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] focus:bg-amber-50/50 focus:outline-none focus:border-indigo-600 transition-colors"
                 />
               </div>
             </div>
@@ -238,7 +260,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {mode !== "forgot" && (
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-medium text-slate-700 dark:text-slate-300">Password</label>
+                  <label className="text-xs font-black uppercase tracking-wider text-black">
+                    Password
+                  </label>
                   {mode === "login" && (
                     <button
                       type="button"
@@ -246,21 +270,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         setMode("forgot");
                         setError(null);
                       }}
-                      className="text-[11px] text-primary-600 hover:text-primary-800 font-medium"
+                      className="text-[10px] font-black text-indigo-600 hover:text-black uppercase tracking-wider underline decoration-2 underline-offset-2 cursor-pointer"
                     >
-                      Forgot password?
+                      Forgot?
                     </button>
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Lock className="w-4 h-4 text-black absolute left-3 top-3" />
                   <input
                     type="password"
                     required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs font-bold text-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] focus:bg-amber-50/50 focus:outline-none focus:border-indigo-600 transition-colors"
                   />
                 </div>
               </div>
@@ -268,18 +292,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {mode === "register" && (
               <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Lock className="w-4 h-4 text-black absolute left-3 top-3" />
                   <input
                     type="password"
                     required
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs font-bold text-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] focus:bg-amber-50/50 focus:outline-none focus:border-indigo-600 transition-colors"
                   />
                 </div>
               </div>
@@ -288,64 +312,64 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-primary-100 flex items-center justify-center gap-1.5 transition-all active:scale-98 disabled:opacity-50 mt-4"
+              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-display font-black text-xs uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 mt-4"
             >
               {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin stroke-[3]" />
               ) : (
                 <>
-                  {mode === "login" && "Sign In"}
-                  {mode === "register" && "Create Account"}
-                  {mode === "forgot" && "Send Reset Link"}
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  {mode === "login" && "SIGN IN TO DASHBOARD"}
+                  {mode === "register" && "CREATE ACCOUNT"}
+                  {mode === "forgot" && "SEND RECOVERY LINK"}
+                  <ArrowRight className="w-4 h-4 stroke-[3]" />
                 </>
               )}
             </button>
           </form>
 
           {/* Footer mode toggle */}
-          <div className="text-center pt-2">
+          <div className="text-center pt-3 border-t-2 border-black/10">
             {mode === "login" && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Don&apos;t have an account?{" "}
+              <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Need an account?{" "}
                 <button
                   onClick={() => {
                     setMode("register");
                     setError(null);
                   }}
-                  className="font-semibold text-primary-600 hover:text-primary-800"
+                  className="font-black text-indigo-600 hover:text-black underline decoration-2 underline-offset-2 cursor-pointer ml-1"
                 >
-                  Sign Up
+                  SIGN UP NOW
                 </button>
               </p>
             )}
 
             {mode === "register" && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Already have an account?{" "}
+              <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Already registered?{" "}
                 <button
                   onClick={() => {
                     setMode("login");
                     setError(null);
                   }}
-                  className="font-semibold text-primary-600 hover:text-primary-800"
+                  className="font-black text-indigo-600 hover:text-black underline decoration-2 underline-offset-2 cursor-pointer ml-1"
                 >
-                  Sign In
+                  SIGN IN HERE
                 </button>
               </p>
             )}
 
             {mode === "forgot" && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Remember your password?{" "}
+              <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Remember credentials?{" "}
                 <button
                   onClick={() => {
                     setMode("login");
                     setError(null);
                   }}
-                  className="font-semibold text-primary-600 hover:text-primary-800"
+                  className="font-black text-indigo-600 hover:text-black underline decoration-2 underline-offset-2 cursor-pointer ml-1"
                 >
-                  Back to Sign In
+                  BACK TO LOGIN
                 </button>
               </p>
             )}
