@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from "next/image";
+import Link from "next/link";
 import { 
   ArrowRight, 
   Play, 
@@ -27,12 +28,12 @@ export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
 
   // Official LWHH 2x2 Square Logo Component
   const LWHHLogo = () => (
-    <div className="flex items-center gap-3 cursor-pointer" onClick={onGetStarted}>
+    <Link href="/" className="flex items-center gap-3 cursor-pointer">
       <Image src="/somporko.webp" alt="Shomporko CRM Logo" width={40} height={40} className="object-contain" />
       <span className="font-display font-black text-2xl tracking-tighter text-black">
         SHOMPORKO
       </span>
-    </div>
+    </Link>
   );
 
   return (
@@ -47,9 +48,9 @@ export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-8 font-display font-black text-sm tracking-wider uppercase">
-              <a href="/about" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">ABOUT</a>
-              <a href="/pricing" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">PRICING</a>
-              <a href="/contact" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">CONTACT</a>
+              <Link href="/about" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">ABOUT</Link>
+              <Link href="/pricing" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">PRICING</Link>
+              <Link href="/contact" className="hover:text-indigo-600 hover:underline decoration-4 underline-offset-4 transition-all">CONTACT</Link>
             </nav>
 
             {/* Auth Action Buttons */}
@@ -500,9 +501,9 @@ export const LandingPage: React.FC<Props> = ({ onGetStarted, onSignIn }) => {
                 PLATFORM
               </h4>
               <ul className="space-y-3 font-display font-black text-xs uppercase tracking-wider">
-                <li><a href="/about" className="hover:text-indigo-600 transition-colors">ABOUT</a></li>
-                <li><a href="/pricing" className="hover:text-indigo-600 transition-colors">PRICING</a></li>
-                <li><a href="/contact" className="hover:text-indigo-600 transition-colors">CONTACT</a></li>
+                <li><Link href="/about" className="hover:text-indigo-600 transition-colors">ABOUT</Link></li>
+                <li><Link href="/pricing" className="hover:text-indigo-600 transition-colors">PRICING</Link></li>
+                <li><Link href="/contact" className="hover:text-indigo-600 transition-colors">CONTACT</Link></li>
               </ul>
             </div>
 

@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { LostItem } from '@/types/lostAndFound';
 
 const LOST_ITEMS_COLLECTION = 'lost_items';
@@ -36,7 +37,7 @@ export const addLostItem = async (item: Omit<LostItem, 'id' | 'refNumber' | 'cre
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newItem);
+  await setDoc(docRef, sanitizeForFirestore(newItem));
   return docRef.id;
 };
 
@@ -45,7 +46,7 @@ export const updateLostItem = async (id: string, updates: Partial<Omit<LostItem,
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, LOST_ITEMS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteLostItem = async (id: string): Promise<void> => {

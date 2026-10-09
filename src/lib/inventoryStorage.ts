@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, runTransaction, updateDoc, deleteDoc } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { Product, Sale } from '@/types/inventory';
 import { AccountTransaction } from '@/types/accounts';
 
@@ -25,14 +26,21 @@ export const addProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'up
   if (!db) throw new Error('Firebase not configured');
 
   const docRef = doc(collection(db, PRODUCTS_COLLECTION));
-  const newProduct: Product = {
+  const newProduct: any = {
     ...product,
     id: docRef.id,
+    userId: product.userId,
+    companyId: (product as any).companyId || product.userId,
+    name: (product.name || '').trim(),
+    price: !isNaN(Number(product.price)) && Number(product.price) >= 0 ? Number(product.price) : 0,
+    cost: !isNaN(Number(product.cost)) && Number(product.cost) >= 0 ? Number(product.cost) : 0,
+    stock: !isNaN(Number(product.stock)) && Number(product.stock) >= 0 ? Number(product.stock) : 0,
+    minStock: !isNaN(Number(product.minStock)) && Number(product.minStock) >= 0 ? Number(product.minStock) : 5,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newProduct);
+  await setDoc(docRef, sanitizeForFirestore(newProduct));
   return docRef.id;
 };
 
@@ -41,7 +49,8 @@ export const updateProduct = async (id: string, updates: Partial<Omit<Product, '
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  const { id: _id, userId: _uid, createdAt: _ca, ...cleanUpdates } = updates as any;
+  await updateDoc(docRef, sanitizeForFirestore({ ...cleanUpdates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
@@ -100,7 +109,7 @@ export const processSale = async (
       id: saleRef.id,
       createdAt: new Date().toISOString()
     };
-    transaction.set(saleRef, newSale);
+    transaction.set(saleRef, sanitizeForFirestore(newSale));
 
     // 4. Write Account Transaction (Income)
     const newTx: AccountTransaction = {
@@ -114,6 +123,6 @@ export const processSale = async (
       date: saleData.date,
       createdAt: new Date().toISOString()
     };
-    transaction.set(accountTxRef, newTx);
+    transaction.set(accountTxRef, sanitizeForFirestore(newTx));
   });
 };

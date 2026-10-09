@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDoc, getDocs, query, where, deleteDoc, updateDoc } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { CompanyProfile, Branch } from '@/types/company';
 
 const COMPANIES_COLLECTION = 'companies';
@@ -25,17 +26,17 @@ export const updateCompanyProfile = async (companyId: string, data: Partial<Comp
   const snap = await getDoc(docRef);
   if (!snap.exists()) {
     // Create if doesn't exist
-    await setDoc(docRef, {
+    await setDoc(docRef, sanitizeForFirestore({
       ...data,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    });
+    }));
   } else {
     // Update
-    await updateDoc(docRef, {
+    await updateDoc(docRef, sanitizeForFirestore({
       ...data,
       updatedAt: new Date().toISOString()
-    });
+    }));
   }
 };
 
@@ -54,12 +55,12 @@ export const addBranch = async (companyId: string, data: Omit<Branch, 'id'|'comp
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   const docRef = doc(collection(db, BRANCHES_COLLECTION));
-  await setDoc(docRef, {
+  await setDoc(docRef, sanitizeForFirestore({
     ...data,
     companyId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
-  });
+  }));
   return docRef.id;
 };
 
@@ -67,10 +68,10 @@ export const updateBranch = async (branchId: string, data: Partial<Branch>): Pro
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   const docRef = doc(db, BRANCHES_COLLECTION, branchId);
-  await updateDoc(docRef, {
+  await updateDoc(docRef, sanitizeForFirestore({
     ...data,
     updatedAt: new Date().toISOString()
-  });
+  }));
 };
 
 export const deleteBranch = async (branchId: string): Promise<void> => {

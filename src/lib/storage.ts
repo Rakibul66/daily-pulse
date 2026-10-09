@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { getFirebaseServices } from "./firebase";
+import { sanitizeForFirestore } from "./firestoreUtils";
 import { DailyRecord, MorningGoal, EODReport, AggregatedMetrics } from "@/types/report";
 import { createDefaultMorningGoal, createDefaultEODReport, getInitialDemoRecords } from "./defaultData";
 import { getTodayDateString } from "./formatters";
@@ -130,7 +131,7 @@ export const saveMorningGoal = async (
   if (db && userId) {
     try {
       await withTimeout(
-        setDoc(doc(db, "users", userId, "daily_reports", dateStr), updated, {
+        setDoc(doc(db, "users", userId, "daily_reports", dateStr), sanitizeForFirestore(updated), {
           merge: true,
         }),
         FIRESTORE_TIMEOUT_MS
@@ -167,7 +168,7 @@ export const saveEODReport = async (
   if (db && userId) {
     try {
       await withTimeout(
-        setDoc(doc(db, "users", userId, "daily_reports", dateStr), updated, {
+        setDoc(doc(db, "users", userId, "daily_reports", dateStr), sanitizeForFirestore(updated), {
           merge: true,
         }),
         FIRESTORE_TIMEOUT_MS
@@ -207,7 +208,7 @@ export const saveGoalAndReport = async (
   if (db && userId) {
     try {
       await withTimeout(
-        setDoc(doc(db, "users", userId, "daily_reports", dateStr), updated, {
+        setDoc(doc(db, "users", userId, "daily_reports", dateStr), sanitizeForFirestore(updated), {
           merge: true,
         }),
         FIRESTORE_TIMEOUT_MS

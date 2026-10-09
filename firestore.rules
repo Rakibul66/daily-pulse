@@ -1,17 +1,828 @@
 rules_version = '2';
+
+// ===============================================================
+// Assumed Data Models & Schema Overview
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (matches request.auth.uid)
+// Fields:
+//   - uid: string (required, 1-128 chars, matches auth.uid)
+//   - email: string (required, valid format, max 255 chars)
+//   - displayName: string (required, max 150 chars)
+//   - role: string ('OWNER' | 'EMPLOYEE')
+//   - companyId: string (required, 1-128 chars)
+//   - featureConfig: map (optional)
+//   - createdAt: string/timestamp (optional)
+//   - updatedAt: string/timestamp (optional)
+// Subcollections:
+//   - daily_reports/{reportId}: user self-access
+//
+// Collection: companies
+// Document ID: {companyId}
+// Fields:
+//   - name: string (required, 1-200 chars)
+//   - email: string (optional)
+//   - phone: string (optional)
+//   - address: string (optional)
+//   - createdAt, updatedAt: string (optional)
+//
+// Multi-Tenant Collections (keyed by companyId or legacy userId):
+//   - branches/{branchId}: companyId
+//   - employees/{employeeId}: companyId
+//   - attendance/{attendanceId}: companyId
+//   - payroll/{payrollId}: companyId
+//   - hrm_settings/{settingId}: companyId
+//   - hrm_loans/{loanId}: companyId
+//   - hrm_overtimes/{overtimeId}: companyId
+//   - daily_work_reports/{reportId}: companyId
+//   - catering_vendors/{vendorId}: companyId
+//   - catering_meals/{mealId}: companyId
+//   - catering_payments/{paymentId}: companyId
+//   - customers/{customerId}: userId (or companyId)
+//   - customer_feedback/{feedbackId}: userId
+//   - loyalty_transactions/{txId}: userId
+//   - promotions/{promoId}: userId
+//   - crm_leads/{leadId}, leads/{leadId}: userId
+//   - lead_requests/{reqId}: public creation with bounded fields; read/update restricted to authenticated users
+//   - sales_clients/{clientId}: userId
+//   - sales_invoices/{invoiceId}: userId
+//   - sales_collections/{collectionId}: userId or companyId
+//   - sales_returns/{returnId}: userId or companyId
+//   - sales/{saleId}: userId
+//   - products/{productId}: userId
+//   - product_categories/{categoryId}: userId or companyId
+//   - measurement_units/{unitId}: userId or companyId
+//   - product_brands/{brandId}: userId or companyId
+//   - product_tags/{tagId}: userId or companyId
+//   - delivery_men/{deliveryManId}: userId or companyId
+//   - purchase_orders/{poId}: userId
+//   - purchase_vendors/{vendorId}, purchase_products/{prodId}, purchase_returns/{retId}, purchase_payments/{payId}: companyId or userId
+//   - account_transactions/{txId}: userId
+//   - office_assets/{assetId}: companyId
+//   - lost_items/{itemId}: userId
+//   - partners/{partnerId}: companyId
+//   - partner_transactions/{txId}: companyId
+//   - subscriptions/{subId}: companyId
+//   - company_settings/{settingId}: companyId/uid
+//   - daily_records/{recordId}: userId
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read and write only their own data
-    match /leads/{leadId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Allow create if they set themselves as the owner
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
     }
-    
-    // Existing data (assuming there's a daily_records or similar)
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function userExists() {
+      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userCompanyId() {
+      return getUserData().data.companyId;
+    }
+
+    // Tenant authorization check
+    // Allows if companyId matches caller's UID (owner) or caller's profile companyId
+    function belongsToCompany(companyId) {
+      return isAuthenticated() && (
+        companyId == request.auth.uid ||
+        (userExists() && ('companyId' in getUserData().data) && companyId == userCompanyId())
+      );
+    }
+
+    // Resolves access across companyId or legacy userId fields
+    function canAccessDoc(data) {
+      return isAuthenticated() && (
+        (('companyId' in data) && data.companyId is string && belongsToCompany(data.companyId)) ||
+        (('userId' in data) && data.userId is string && (data.userId == request.auth.uid || belongsToCompany(data.userId)))
+      );
+    }
+
+    // Tenancy & identity immutability helpers on update
+    function tenancyUnchanged() {
+      return (!('companyId' in resource.data) || (('companyId' in request.resource.data) && request.resource.data.companyId == resource.data.companyId)) &&
+             (!('userId' in resource.data) || (('userId' in request.resource.data) && request.resource.data.userId == resource.data.userId));
+    }
+
+    function idUnchanged() {
+      return !('id' in resource.data) || (('id' in request.resource.data) && request.resource.data.id == resource.data.id);
+    }
+
+    function createdAtUnchanged() {
+      return !('createdAt' in resource.data) || (('createdAt' in request.resource.data) && request.resource.data.createdAt == resource.data.createdAt);
+    }
+
+    // String & field validation helpers
+    function isValidOptionalString(data, field, maxLen) {
+      return !(field in data) || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isValidOptionalNumber(data, field) {
+      return !(field in data) || (data[field] is number);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUserBase(data) {
+      return data.uid is string && data.uid == request.auth.uid &&
+             data.email is string && data.email.size() <= 255 &&
+             data.displayName is string && data.displayName.size() <= 150 &&
+             data.role is string && (data.role == 'OWNER' || data.role == 'EMPLOYEE') &&
+             data.companyId is string && data.companyId.size() > 0 && data.companyId.size() <= 128 &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64) &&
+             (!('featureConfig' in data) || data.featureConfig is map);
+    }
+
+    function isValidUserCreate(data) {
+      return isValidUserBase(data) &&
+             // A self-registering OWNER must be tied to their own UID
+             (data.role == 'OWNER' ? data.companyId == request.auth.uid : true);
+    }
+
+    function isValidUserUpdate(data) {
+      return isValidUserBase(data) &&
+             data.uid == resource.data.uid &&
+             data.role == resource.data.role &&
+             data.companyId == resource.data.companyId;
+    }
+
+    function isValidCompany(data) {
+      return (!('name' in data) || (data.name is string && data.name.size() > 0 && data.name.size() <= 200)) &&
+             isValidOptionalString(data, 'email', 255) &&
+             isValidOptionalString(data, 'phone', 50) &&
+             isValidOptionalString(data, 'website', 255) &&
+             isValidOptionalString(data, 'address', 500) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidBranch(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             isValidOptionalString(data, 'contactPerson', 150) &&
+             isValidOptionalString(data, 'phone', 50) &&
+             isValidOptionalString(data, 'address', 500) &&
+             isValidOptionalString(data, 'status', 50);
+    }
+
+    function isValidEmployee(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.department is string && data.department.size() <= 100 &&
+             data.baseSalary is number && data.baseSalary >= 0 &&
+             data.isActive is bool;
+    }
+
+    function isValidAttendance(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.date is string && data.date.size() <= 32 &&
+             data.status is string && data.status.size() <= 10 &&
+             isValidOptionalString(data, 'reason', 500);
+    }
+
+    function isValidPayroll(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.date is string && data.date.size() <= 32 &&
+             data.month is string && data.month.size() <= 16 &&
+             data.amount is number && data.amount >= 0 &&
+             isValidOptionalString(data, 'note', 500);
+    }
+
+    function isValidHRMSetting(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             (!('weekendDays' in data) || data.weekendDays is list) &&
+             (!('roles' in data) || data.roles is list) &&
+             (!('aiEnabled' in data) || data.aiEnabled is bool) &&
+             isValidOptionalString(data, 'geminiApiKey', 1000);
+    }
+
+    function isValidHRMLoan(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.loanAmount is number && data.loanAmount >= 0 &&
+             data.installmentAmount is number && data.installmentAmount >= 0 &&
+             data.status is string && data.status.size() <= 32;
+    }
+
+    function isValidHRMOvertime(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.overtimeHour is number && data.overtimeHour >= 0 &&
+             data.overtimeAmount is number && data.overtimeAmount >= 0 &&
+             data.status is string && data.status.size() <= 32;
+    }
+
+    function isValidDailyWorkReport(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.employeeId is string && data.employeeId.size() <= 128 &&
+             data.date is string && data.date.size() <= 32 &&
+             data.tasksCompleted is string && data.tasksCompleted.size() <= 5000 &&
+             data.status is string && data.status.size() <= 32;
+    }
+
+    function isValidCateringVendor(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             isValidOptionalString(data, 'phone', 50) &&
+             isValidOptionalString(data, 'address', 500);
+    }
+
+    function isValidMealRecord(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.vendorId is string && data.vendorId.size() <= 128 &&
+             data.date is string && data.date.size() <= 32 &&
+             data.mealCount is number && data.mealCount >= 0 &&
+             data.perMealRate is number && data.perMealRate >= 0 &&
+             data.totalCost is number && data.totalCost >= 0;
+    }
+
+    function isValidCateringPayment(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.vendorId is string && data.vendorId.size() <= 128 &&
+             data.date is string && data.date.size() <= 32 &&
+             data.amount is number && data.amount >= 0;
+    }
+
+    function isValidCustomer(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.phone is string && data.phone.size() <= 50 &&
+             isValidOptionalNumber(data, 'loyaltyPoints') &&
+             isValidOptionalNumber(data, 'totalSpent');
+    }
+
+    function isValidCustomerFeedback(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.feedback is string && data.feedback.size() <= 2000;
+    }
+
+    function isValidLoyaltyTransaction(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.points is number &&
+             data.amount is number;
+    }
+
+    function isValidPromotion(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200;
+    }
+
+    function isValidLead(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.businessName is string && data.businessName.size() > 0 && data.businessName.size() <= 200 &&
+             isValidOptionalString(data, 'phone', 50) &&
+             isValidOptionalString(data, 'leadStatus', 50);
+    }
+
+    function isValidLeadRequest(data) {
+      return data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 100 &&
+             data.phoneNumber is string && data.phoneNumber.size() >= 7 && data.phoneNumber.size() <= 30 &&
+             isValidOptionalString(data, 'businessType', 100) &&
+             isValidOptionalString(data, 'businessName', 100) &&
+             isValidOptionalString(data, 'message', 2000) &&
+             (!('status' in data) || data.status in ['pending', 'contacted', 'converted', 'cancelled']) &&
+             isValidOptionalString(data, 'source', 100);
+    }
+
+    function isValidSalesClient(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             isValidOptionalString(data, 'phone', 50);
+    }
+
+    function isValidSalesInvoice(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.total is number && data.total >= 0;
+    }
+
+    function isValidSalesCollection(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.amount is number && data.amount >= 0 &&
+             isValidOptionalString(data, 'paymentNo', 100);
+    }
+
+    function isValidSalesReturn(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.amount is number && data.amount >= 0 &&
+             isValidOptionalString(data, 'returnNo', 100) &&
+             isValidOptionalString(data, 'returnDate', 32) &&
+             isValidOptionalString(data, 'clientName', 200);
+    }
+
+    function isValidSale(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.items is list && data.items.size() <= 500 &&
+             data.total is number && data.total >= 0;
+    }
+
+    function isValidProduct(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             data.price is number && data.price >= 0 &&
+             isValidOptionalNumber(data, 'stock');
+    }
+
+    function isValidProductCategory(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             isValidOptionalString(data, 'parentCategory', 200) &&
+             isValidOptionalString(data, 'image', 1000000) &&
+             isValidOptionalString(data, 'status', 50) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidMeasurementUnit(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.code is string && data.code.size() > 0 && data.code.size() <= 50 &&
+             isValidOptionalString(data, 'status', 50) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidProductBrand(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             isValidOptionalString(data, 'id', 128) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             isValidOptionalString(data, 'code', 50) &&
+             isValidOptionalString(data, 'image', 1000000) &&
+             isValidOptionalString(data, 'website', 255) &&
+             isValidOptionalString(data, 'description', 2000) &&
+             isValidOptionalString(data, 'status', 50) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidProductTag(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             isValidOptionalString(data, 'id', 128) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             isValidOptionalString(data, 'color', 50) &&
+             isValidOptionalString(data, 'description', 1000) &&
+             isValidOptionalString(data, 'status', 50) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidDeliveryMan(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             isValidOptionalString(data, 'id', 128) &&
+             isValidOptionalString(data, 'userId', 128) &&
+             isValidOptionalString(data, 'companyId', 128) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             isValidOptionalString(data, 'store', 200) &&
+             isValidOptionalString(data, 'code', 50) &&
+             isValidOptionalString(data, 'email', 255) &&
+             isValidOptionalString(data, 'phone', 50) &&
+             isValidOptionalString(data, 'nationalId', 100) &&
+             isValidOptionalString(data, 'address', 500) &&
+             (!('status' in data) || data.status in ['ACTIVE', 'INACTIVE']) &&
+             isValidOptionalString(data, 'createdAt', 64) &&
+             isValidOptionalString(data, 'updatedAt', 64);
+    }
+
+    function isValidPurchaseOrder(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.items is list && data.items.size() <= 500 &&
+             data.totalCost is number && data.totalCost >= 0 &&
+             data.status is string && data.status.size() <= 32;
+    }
+
+    function isValidGenericPurchaseRecord(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128));
+    }
+
+    function isValidAccountTransaction(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.type is string && (data.type == 'INCOME' || data.type == 'EXPENSE') &&
+             data.amount is number && data.amount >= 0 &&
+             isValidOptionalString(data, 'category', 100);
+    }
+
+    function isValidAsset(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             isValidOptionalNumber(data, 'cost');
+    }
+
+    function isValidLostItem(data) {
+      return (('userId' in data && data.userId is string && data.userId.size() <= 128) ||
+              ('companyId' in data && data.companyId is string && data.companyId.size() <= 128)) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.status is string && data.status.size() <= 50;
+    }
+
+    function isValidPartner(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.sharePercentage is number && data.sharePercentage >= 0 && data.sharePercentage <= 100;
+    }
+
+    function isValidPartnerTransaction(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.partnerId is string && data.partnerId.size() <= 128 &&
+             data.amount is number && data.amount >= 0 &&
+             data.type is string && data.type in ['INVESTMENT', 'WITHDRAWAL', 'DIVIDEND'];
+    }
+
+    function isValidSubscription(data) {
+      return data.companyId is string && data.companyId.size() <= 128 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.cost is number && data.cost >= 0;
+    }
+
+    function isValidCompanySetting(data) {
+      return (('companyId' in data && data.companyId is string && belongsToCompany(data.companyId)) ||
+              ('uid' in data && data.uid is string && (data.uid == request.auth.uid || belongsToCompany(data.uid)))) &&
+             (!('featureConfig' in data) || data.featureConfig is map);
+    }
+
+    function isValidDailyRecord(data) {
+      return (('userId' in data && data.userId is string && data.userId == request.auth.uid) ||
+              ('companyId' in data && data.companyId is string && belongsToCompany(data.companyId))) &&
+             data.date is string && data.date.size() <= 32;
+    }
+
+    // ===============================================================
+    // Rules Definition
+    // ===============================================================
+
+    // 1. Users Collection (Self access only)
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserCreate(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserUpdate(request.resource.data);
+      allow delete: if false;
+
+      // Subcollections under users (e.g., daily_reports)
+      match /{subcollection=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // 2. Company Profile
+    match /companies/{companyId} {
+      allow read: if belongsToCompany(companyId);
+      allow create: if belongsToCompany(companyId) && isValidCompany(request.resource.data);
+      allow update: if belongsToCompany(companyId) && isValidCompany(request.resource.data) && createdAtUnchanged();
+      allow delete: if isOwner(companyId);
+    }
+
+    // 3. Branches
+    match /branches/{branchId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidBranch(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidBranch(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 4. Employees & HRM
+    match /employees/{employeeId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidEmployee(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidEmployee(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /attendance/{attendanceId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidAttendance(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidAttendance(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /payroll/{payrollId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidPayroll(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidPayroll(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /hrm_settings/{settingId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidHRMSetting(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && isValidHRMSetting(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /hrm_loans/{loanId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidHRMLoan(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidHRMLoan(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /hrm_overtimes/{overtimeId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidHRMOvertime(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidHRMOvertime(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /daily_work_reports/{reportId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidDailyWorkReport(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidDailyWorkReport(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 5. Food & Catering Utilities
+    match /catering_vendors/{vendorId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidCateringVendor(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidCateringVendor(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /catering_meals/{mealId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidMealRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidMealRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /catering_payments/{paymentId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidCateringPayment(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidCateringPayment(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 6. Customers, Loyalty & Promotions
+    match /customers/{customerId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidCustomer(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidCustomer(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /customer_feedback/{feedbackId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidCustomerFeedback(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidCustomerFeedback(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /loyalty_transactions/{txId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidLoyaltyTransaction(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && isValidLoyaltyTransaction(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /promotions/{promoId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidPromotion(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidPromotion(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 7. CRM & Leads
+    match /crm_leads/{leadId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidLead(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidLead(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /leads/{leadId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidLead(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidLead(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /lead_requests/{reqId} {
+      // Public contact form submission
+      allow create: if isValidLeadRequest(request.resource.data);
+      // Staff access only for review and modification
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // 8. Sales, Clients & Invoices
+    match /sales_clients/{clientId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSalesClient(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSalesClient(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /sales_invoices/{invoiceId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSalesInvoice(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSalesInvoice(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /sales_collections/{collectionId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSalesCollection(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSalesCollection(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /sales_returns/{returnId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSalesReturn(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSalesReturn(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /sales/{saleId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSale(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSale(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 9. Inventory, Products, Categories, Units, Brands & Tags
+    match /products/{productId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidProduct(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidProduct(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /product_categories/{categoryId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidProductCategory(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidProductCategory(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /measurement_units/{unitId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidMeasurementUnit(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidMeasurementUnit(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /product_brands/{brandId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidProductBrand(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidProductBrand(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /product_tags/{tagId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidProductTag(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidProductTag(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /delivery_men/{deliveryManId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidDeliveryMan(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidDeliveryMan(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 10. Purchase Management & Procurement
+    match /purchase_orders/{poId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidPurchaseOrder(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidPurchaseOrder(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /purchase_vendors/{vendorId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidGenericPurchaseRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidGenericPurchaseRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /purchase_products/{prodId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidGenericPurchaseRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidGenericPurchaseRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /purchase_returns/{retId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidGenericPurchaseRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidGenericPurchaseRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /purchase_payments/{payId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidGenericPurchaseRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidGenericPurchaseRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 11. Accounting & Transactions
+    match /account_transactions/{txId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidAccountTransaction(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidAccountTransaction(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 12. Office Assets
+    match /office_assets/{assetId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidAsset(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidAsset(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 13. Lost & Found Items
+    match /lost_items/{itemId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidLostItem(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidLostItem(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 14. Partnerships & Equity
+    match /partners/{partnerId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidPartner(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidPartner(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    match /partner_transactions/{txId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidPartnerTransaction(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidPartnerTransaction(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 15. Subscriptions
+    match /subscriptions/{subId} {
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidSubscription(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && idUnchanged() && createdAtUnchanged() && isValidSubscription(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // 16. Company Settings (Feature Configs)
+    match /company_settings/{settingId} {
+      allow read: if belongsToCompany(settingId) || canAccessDoc(resource.data);
+      allow create: if (belongsToCompany(settingId) || canAccessDoc(request.resource.data)) && isValidCompanySetting(request.resource.data);
+      allow update: if (belongsToCompany(settingId) || canAccessDoc(resource.data)) && isValidCompanySetting(request.resource.data);
+      allow delete: if belongsToCompany(settingId);
+    }
+
+    // 17. Daily Records (Reports/Activities)
     match /daily_records/{recordId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow read: if canAccessDoc(resource.data);
+      allow create: if canAccessDoc(request.resource.data) && isValidDailyRecord(request.resource.data);
+      allow update: if canAccessDoc(resource.data) && canAccessDoc(request.resource.data) && tenancyUnchanged() && isValidDailyRecord(request.resource.data);
+      allow delete: if canAccessDoc(resource.data);
+    }
+
+    // ===============================================================
+    // Default Deny Fallback
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

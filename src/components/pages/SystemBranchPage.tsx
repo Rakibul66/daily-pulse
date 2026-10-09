@@ -4,11 +4,14 @@ import { useAuth } from '@/context/AuthContext';
 import { getBranches, addBranch, updateBranch, deleteBranch } from '@/lib/companyStorage';
 import { Branch } from '@/types/company';
 
+import { AdminPageId } from '@/components/layout/Sidebar';
+
 interface Props {
   showToast: (msg: string, type: 'success'|'error') => void;
+  onNavigate?: (page: AdminPageId) => void;
 }
 
-export const SystemBranchPage: React.FC<Props> = ({ showToast }) => {
+export const SystemBranchPage: React.FC<Props> = ({ showToast, onNavigate }) => {
   const { userProfile } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +77,9 @@ export const SystemBranchPage: React.FC<Props> = ({ showToast }) => {
         showToast('Branch added', 'success');
       if (!editingId && localStorage.getItem("dp_onboarding_step") === "branch") {
         localStorage.removeItem("dp_onboarding_step");
-        window.location.reload(); // back to dashboard
+        if (onNavigate) {
+          onNavigate("dashboard");
+        }
       }
 
       }

@@ -8,6 +8,7 @@ export type LeadStatus =
   | 'PROPOSAL'
   | 'NEGOTIATION'
   | 'WON'
+  | 'CONVERTED'
   | 'LOST';
 
 export type LeadPriority = 'HOT' | 'WARM' | 'COLD' | 'LOST';
@@ -18,6 +19,7 @@ export interface Lead {
   businessName: string; // Name of the business
   ownerName: string; // Contact person
   phone: string; // Number
+  whatsapp?: string; // WhatsApp Number
   messenger: string; // FB profile/page
   locationArea: string; // Area
   branchCount: string; // 1/2/Multiple
@@ -45,6 +47,8 @@ export interface Lead {
   nextAction: string; // What to do
   notes: string; // Extra info
   leadPriority: LeadPriority;
+  isConverted?: boolean; // Whether converted to Customer
+  convertedCustomerId?: string; // Linked customer ID
   userId: string; // the user who owns this lead
   createdAt: string; // ISO
   updatedAt: string; // ISO

@@ -3,6 +3,7 @@ export type LoyaltyTier = 'Member' | 'Silver' | 'Gold' | 'Platinum';
 export interface Customer {
   id: string;
   userId: string;
+  companyId?: string;
   businessName: string;
   ownerName: string;
   phone: string;
@@ -10,6 +11,8 @@ export interface Customer {
   address: string;
   businessType: string;
   customerSince: string;
+  source?: 'Converted Lead' | 'Direct / Manual' | string;
+  leadId?: string;
   
   // Loyalty Program
   totalSpent: number;

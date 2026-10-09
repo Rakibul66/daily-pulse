@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, runTransaction } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { Partner, PartnerTransaction, TransactionType } from '@/types/partnership';
 
 const PARTNERS_COLLECTION = 'partners';
@@ -32,7 +33,7 @@ export const addPartner = async (partner: Omit<Partner, 'id' | 'createdAt' | 'up
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newPartner);
+  await setDoc(docRef, sanitizeForFirestore(newPartner));
   return docRef.id;
 };
 
@@ -41,7 +42,7 @@ export const updatePartner = async (id: string, updates: Partial<Omit<Partner, '
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, PARTNERS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deletePartner = async (id: string): Promise<void> => {
@@ -121,7 +122,7 @@ export const processPartnerTransaction = async (
       createdAt: new Date().toISOString()
     };
 
-    transaction.set(txRef, newTx);
+    transaction.set(txRef, sanitizeForFirestore(newTx));
     transaction.update(partnerRef, {
       totalInvested: newInvested,
       totalDividends: newDividends,

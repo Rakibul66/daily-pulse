@@ -1,5 +1,6 @@
 import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "firebase/firestore";
 import { getFirebaseServices } from "./firebase";
+import { sanitizeForFirestore } from "./firestoreUtils";
 
 export interface LeadRequest {
   id?: string;
@@ -39,10 +40,10 @@ export async function saveLeadRequest(data: Omit<LeadRequest, "id" | "createdAt"
   try {
     const { db } = getFirebaseServices();
     if (db) {
-      const docRef = await addDoc(collection(db, "lead_requests"), {
+      const docRef = await addDoc(collection(db, "lead_requests"), sanitizeForFirestore({
         ...newLead,
         serverTimestamp: serverTimestamp(),
-      });
+      }));
       return { id: docRef.id, success: true };
     }
   } catch (err) {

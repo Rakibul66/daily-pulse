@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Sidebar, AdminPageId } from "./Sidebar";
 import { AdminTopBar } from "./AdminTopBar";
+import { EmailVerificationBanner } from "@/components/auth/EmailVerificationBanner";
 
 interface AdminLayoutProps {
   activePage: AdminPageId;
@@ -34,10 +35,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         <AdminTopBar
           activePage={activePage}
+          setActivePage={setActivePage}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full relative z-10">
+        {/* Global Email Verification Alert */}
+        <EmailVerificationBanner />
+
+        <main className="flex-1 px-2 sm:px-3 py-2 sm:py-3 w-full min-w-0 relative z-10">
           {children}
         </main>
       </div>

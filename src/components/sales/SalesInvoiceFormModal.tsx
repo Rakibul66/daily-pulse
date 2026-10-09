@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DailySale, DailySaleItem, SalesClient } from '@/types/sales';
 import { Product } from '@/types/inventory';
 import { X, Trash2 } from 'lucide-react';
+import { withActionLock } from '@/lib/rateLimit';
 
 interface Props {
   isOpen: boolean;
@@ -105,39 +106,43 @@ export const SalesInvoiceFormModal: React.FC<Props> = ({ isOpen, onClose, client
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return alert('Please add at least one product');
-    setIsSubmitting(true);
+    if (isSubmitting) return;
     
     const client = clients.find(c => c.id === clientId);
     if (!client) {
-      setIsSubmitting(false);
       return;
     }
 
     const invoiceNo = initialData?.invoiceNo || `STS${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}00${Math.floor(Math.random()*1000)}`;
 
+    setIsSubmitting(true);
     try {
-      await onSave({
-        companyName: 'M/S Buyzid Rubber',
-        invoiceNo,
-        date,
-        clientId: client.id,
-        clientName: client.clientName,
-        clientCode: client.code,
-        clientPhone: client.phone,
-        clientAddress: client.address,
-        storeName,
-        type,
-        salesBy,
-        items,
-        totalAmount,
-        discountAmount,
-        netInvoiceAmount: netPayable,
-        openingBalance: 0,
-        netPayable,
+      await withActionLock('invoice_save', 2000, async () => {
+        await onSave({
+          companyName: 'M/S Buyzid Rubber',
+          invoiceNo,
+          date,
+          clientId: client.id,
+          clientName: client.clientName,
+          clientCode: client.code,
+          clientPhone: client.phone,
+          clientAddress: client.address,
+          storeName,
+          type,
+          salesBy,
+          items,
+          totalAmount,
+          discountAmount,
+          netInvoiceAmount: netPayable,
+          openingBalance: 0,
+          netPayable,
+        });
+        onClose();
       });
-      onClose();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
+      const msg = err instanceof Error ? err.message : 'Failed to save sales invoice';
+      alert(msg);
     } finally {
       setIsSubmitting(false);
     }

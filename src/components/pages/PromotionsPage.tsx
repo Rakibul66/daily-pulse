@@ -6,11 +6,11 @@ import { PromotionModal } from '../customers/PromotionModal';
 import { Plus, Tag, Clock, Calendar, Edit, Trash2, Loader2, AlertCircle } from 'lucide-react';
 
 interface Props {
-  showToast: (msg: string, type: 'success'|'error') => void;
+  showToast: (msg: string, type: 'success' | 'error') => void;
 }
 
 export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,7 +19,7 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
 
   useEffect(() => {
     if (user) loadData();
-  }, [user]);
+  }, [user, userProfile]);
 
   const loadData = async () => {
     if (!user) return;
@@ -40,10 +40,10 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
     try {
       if (editingPromo) {
         await updatePromotion(editingPromo.id, data);
-        showToast('Promotion updated', 'success');
+        showToast('Promotion updated successfully', 'success');
       } else {
         await addPromotion({ ...data, userId: user.uid });
-        showToast('Promotion created', 'success');
+        showToast('Promotion created successfully', 'success');
       }
       loadData();
     } catch (err) {
@@ -80,38 +80,46 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
 
   return (
     <div className="w-full mx-auto space-y-6 pb-20">
-      <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
+      {/* Top Banner Card */}
+      <div className="bg-white p-4 sm:p-5 border-2 sm:border-4 border-black shadow-[6px_6px_0px_#000] flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
-            <h2 className="text-lg font-bold text-white">Offers & Promotions</h2>
+            <span className="w-3 h-3 bg-amber-400 border border-black inline-block"></span>
+            <h2 className="text-lg font-black uppercase text-black tracking-wider">Offers &amp; Promotions</h2>
+            <span className="px-2 py-0.5 bg-amber-100 border border-black text-black text-xs font-black">
+              {promotions.length} OFFERS
+            </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">Create Happy Hours, Time-based discounts, and BOGOs.</p>
+          <p className="text-xs font-bold text-slate-600 uppercase mt-1">
+            Configure happy hours, time-based discounts, and special promotional offers.
+          </p>
         </div>
 
         <button 
           onClick={() => { setEditingPromo(null); setIsModalOpen(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
+          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black text-xs font-black uppercase shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" /> New Offer
+          <Plus className="w-4 h-4 stroke-[3]" /> New Offer
         </button>
       </div>
 
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading promotions...</p>
+        <div className="py-20 flex flex-col items-center justify-center gap-3 bg-white border-2 sm:border-4 border-black shadow-[6px_6px_0px_#000]">
+          <Loader2 className="w-8 h-8 text-black animate-spin" />
+          <p className="text-xs text-black font-black uppercase tracking-wider">Loading promotions...</p>
         </div>
       ) : promotions.length === 0 ? (
-        <div className="bg-slate-900 rounded-md border border-slate-800 p-12 flex flex-col items-center justify-center text-center shadow-md">
-          <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 border border-slate-700">
-            <Tag className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+        <div className="bg-white border-2 sm:border-4 border-black p-12 flex flex-col items-center justify-center text-center shadow-[6px_6px_0px_#000]">
+          <div className="w-16 h-16 bg-amber-300 border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center mb-4">
+            <Tag className="w-8 h-8 text-black stroke-[2]" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">No Active Promotions</h3>
-          <p className="text-slate-400 text-sm max-w-sm mb-6">Create a Happy Hour or discount offer to boost your sales.</p>
+          <h3 className="text-lg font-black uppercase text-black mb-1">No Active Promotions</h3>
+          <p className="text-slate-600 font-bold text-xs max-w-sm uppercase mb-5">
+            Create a Happy Hour or seasonal discount offer to attract more customers.
+          </p>
           <button 
             onClick={() => { setEditingPromo(null); setIsModalOpen(true); }}
-            className="px-5 py-2.5 bg-primary-600 text-white rounded-md text-sm font-bold shadow-md shadow-primary-950"
+            className="px-5 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black text-xs font-black uppercase shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
           >
             Create Your First Offer
           </button>
@@ -119,54 +127,78 @@ export const PromotionsPage: React.FC<Props> = ({ showToast }) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {promotions.map(promo => (
-            <div key={promo.id} className={`bg-slate-900 border ${promo.isActive ? 'border-primary-500/50 shadow-md shadow-primary-900/20' : 'border-slate-800 opacity-75'} rounded-md overflow-hidden flex flex-col transition-all`}>
-              
-              <div className="p-5 flex-1 border-b border-slate-800/50">
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase ${promo.isActive ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
-                    {promo.isActive ? 'Active' : 'Inactive'}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => { setEditingPromo(promo); setIsModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-white bg-slate-950 hover:bg-slate-800 rounded transition-colors"><Edit className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleDelete(promo.id)} className="p-1.5 text-slate-400 hover:text-rose-400 bg-slate-950 hover:bg-rose-950 rounded transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+            <div 
+              key={promo.id} 
+              className={`bg-white border-2 sm:border-4 border-black shadow-[5px_5px_0px_#000] overflow-hidden flex flex-col transition-all ${
+                promo.isActive ? '' : 'opacity-70 bg-slate-50'
+              }`}
+            >
+              <div className="p-5 flex-1 border-b-2 sm:border-b-4 border-black">
+                <div className="flex justify-between items-start mb-3">
+                  <span className={`px-2.5 py-0.5 border border-black font-black text-[10px] uppercase shadow-[1px_1px_0px_#000] ${
+                    promo.isActive ? 'bg-emerald-300 text-black' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {promo.isActive ? '● Active' : '○ Inactive'}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button 
+                      onClick={() => { setEditingPromo(promo); setIsModalOpen(true); }} 
+                      className="p-1.5 bg-white hover:bg-amber-300 border border-black shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black cursor-pointer"
+                      title="Edit Offer"
+                    >
+                      <Edit className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(promo.id)} 
+                      className="p-1.5 bg-white hover:bg-red-500 hover:text-white border border-black shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black cursor-pointer"
+                      title="Delete Offer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </button>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-white mb-1">{promo.title}</h3>
-                <p className="text-xs text-primary-400 font-bold uppercase tracking-wider mb-4">{promo.type.replace('_', ' ')}</p>
+                <h3 className="text-base font-black uppercase text-black mb-0.5">{promo.title}</h3>
+                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-3">{promo.type.replace('_', ' ')}</p>
 
-                <div className="bg-primary-950/30 border border-primary-900/50 rounded-md p-3 mb-4 flex items-center justify-center">
-                  <span className="text-xl font-black text-primary-300">
+                <div className="bg-amber-100 border-2 border-black p-3 mb-4 flex items-center justify-center shadow-[2px_2px_0px_#000]">
+                  <span className="text-2xl font-black text-black">
                     {formatDiscount(promo.discountValue, promo.discountType)}
                   </span>
                 </div>
 
-                <div className="space-y-2.5 text-xs">
-                  <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                    <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                    <span>{promo.startDate} {promo.endDate ? `to ${promo.endDate}` : '(No end date)'}</span>
+                <div className="space-y-2 text-xs font-bold text-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-black shrink-0" />
+                    <span>{promo.startDate} {promo.endDate ? `to ${promo.endDate}` : '(No expiry date)'}</span>
                   </div>
                   {(promo.type === 'HAPPY_HOUR' || promo.type === 'TIME_BASED') && (
-                    <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                      <Clock className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                      <span>{promo.startTime} - {promo.endTime} ({promo.applicableDays.join(', ')})</span>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-black shrink-0" />
+                      <span>{promo.startTime} – {promo.endTime} ({promo.applicableDays.join(', ')})</span>
                     </div>
                   )}
                   {promo.type !== 'HAPPY_HOUR' && promo.type !== 'TIME_BASED' && (
-                    <div className="flex flex-wrap items-center gap-2 text-slate-300">
-                      <AlertCircle className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-black shrink-0" />
                       <span>Valid: {promo.applicableDays.join(', ')}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="px-5 py-3 bg-slate-950 flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400">Toggle Status</span>
-                <label className="relative flex items-center cursor-pointer group">
-                  <input type="checkbox" checked={promo.isActive} onChange={() => handleToggleActive(promo)} className="peer sr-only" />
-                  <div className="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white dark:bg-slate-900 border border-slate-700 peer-checked:border-emerald-600"></div>
-                </label>
+              {/* Status Toggle Bar */}
+              <div className="px-5 py-3 bg-slate-50 flex items-center justify-between">
+                <span className="text-xs font-black uppercase text-black">Status</span>
+                <button
+                  type="button"
+                  onClick={() => handleToggleActive(promo)}
+                  className={`px-3 py-1 border border-black font-black text-xs uppercase shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer ${
+                    promo.isActive ? 'bg-emerald-300 text-black' : 'bg-slate-200 text-black'
+                  }`}
+                >
+                  {promo.isActive ? 'Enabled' : 'Disabled'}
+                </button>
               </div>
             </div>
           ))}

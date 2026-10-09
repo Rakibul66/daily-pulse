@@ -8,6 +8,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   signOut,
   updateProfile,
 } from "firebase/auth";
@@ -30,6 +34,9 @@ interface AuthContextType {
   signUpWithEmail: (email: string, pass: string, name?: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
+  reloadUser: () => Promise<boolean>;
+  changeUserPassword: (currentPassword: string, newPassword: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 }
 
@@ -44,13 +51,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     let isMounted = true;
-    
-    // Quick escape for first-time visitors to avoid long loading screen
-    if (typeof window !== "undefined" && localStorage.getItem("dp_auth") !== "true") {
-      setTimeout(() => {
-        if (isMounted) setLoading(false);
-      }, 0);
-    }
 
     const { auth } = getFirebaseServices();
     
@@ -59,8 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    // Sometimes Firebase auth hangs on initial Next.js dev compile.
-    // This safety timeout ensures we never show an infinite spinner.
+    // Safety timeout ensures we never show an infinite spinner if network hangs
     const safetyTimeout = setTimeout(() => {
       if (isMounted) {
         setLoading(false);
@@ -72,40 +71,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       
       if (currentUser) {
         localStorage.setItem("dp_auth", "true");
-        setUser(currentUser);
         
         // Fetch or create SaaS UserProfile
         const { db } = getFirebaseServices();
+        let profile: UserProfile | null = null;
         if (db) {
           try {
             const userRef = doc(db, 'users', currentUser.uid);
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
-              setUserProfile(userSnap.data() as UserProfile);
+              profile = userSnap.data() as UserProfile;
             } else {
-              // Create default OWNER profile with companyId = uid (for backward compatibility)
-              const newProfile: UserProfile = {
+              // Create default OWNER profile with companyId = uid
+              profile = {
                 uid: currentUser.uid,
                 email: currentUser.email || '',
                 displayName: currentUser.displayName || 'User',
                 role: 'OWNER',
-                companyId: currentUser.uid // Default to user ID as company ID initially
+                companyId: currentUser.uid
               };
-              await setDoc(userRef, newProfile);
-              setUserProfile(newProfile);
+              await setDoc(userRef, profile);
             }
           } catch (err) {
             console.error("Failed to load user profile:", err);
+            // Fallback profile if offline/permission issue
+            profile = {
+              uid: currentUser.uid,
+              email: currentUser.email || '',
+              displayName: currentUser.displayName || 'User',
+              role: 'OWNER',
+              companyId: currentUser.uid
+            };
           }
+        }
+        
+        if (isMounted) {
+          setUserProfile(profile);
+          setUser(currentUser);
+          setLoading(false);
+          clearTimeout(safetyTimeout);
         }
       } else {
         localStorage.removeItem("dp_auth");
-        setUser(null);
-        setUserProfile(null);
+        if (isMounted) {
+          setUser(null);
+          setUserProfile(null);
+          setLoading(false);
+          clearTimeout(safetyTimeout);
+        }
       }
-      
-      setLoading(false);
-      clearTimeout(safetyTimeout);
     });
 
     return () => {
@@ -131,6 +145,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await updateProfile(cred.user, { displayName: name });
       setUser({ ...cred.user, displayName: name });
     }
+    // Automatically send verification email on registration
+    try {
+      if (cred.user) {
+        await sendEmailVerification(cred.user);
+      }
+    } catch (e) {
+      console.warn("Could not dispatch initial email verification:", e);
+    }
   };
 
   const signInWithGoogle = async () => {
@@ -145,6 +167,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const { auth } = getFirebaseServices();
     if (!auth) throw new Error("Firebase Auth is not initialized.");
     await sendPasswordResetEmail(auth, email);
+  };
+
+  const sendVerificationEmail = async () => {
+    const { auth } = getFirebaseServices();
+    if (!auth || !auth.currentUser) throw new Error("No signed-in user found.");
+    await sendEmailVerification(auth.currentUser);
+  };
+
+  const reloadUser = async (): Promise<boolean> => {
+    const { auth } = getFirebaseServices();
+    if (!auth || !auth.currentUser) return false;
+    await auth.currentUser.reload();
+    setUser(auth.currentUser);
+    return auth.currentUser.emailVerified;
+  };
+
+  const changeUserPassword = async (currentPassword: string, newPassword: string) => {
+    const { auth } = getFirebaseServices();
+    if (!auth || !auth.currentUser) {
+      throw new Error("No authenticated user found.");
+    }
+    const currentUser = auth.currentUser;
+    const userEmail = currentUser.email;
+    if (!userEmail) {
+      throw new Error("User does not have an associated email address.");
+    }
+    // Re-authenticate before sensitive password change
+    const credential = EmailAuthProvider.credential(userEmail, currentPassword);
+    await reauthenticateWithCredential(currentUser, credential);
+    await updatePassword(currentUser, newPassword);
   };
 
   const signOutUser = async () => {
@@ -166,6 +218,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         signUpWithEmail,
         signInWithGoogle,
         resetPassword,
+        sendVerificationEmail,
+        reloadUser,
+        changeUserPassword,
         signOutUser,
       }}
     >

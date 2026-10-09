@@ -14,6 +14,9 @@ export interface MealRecord {
   vendorId: string;
   date: string;
   mealCount: number;
+  perMealRate?: number; // Custom rate for that day (e.g. 130 default, 150 for meat)
+  totalCost?: number;   // Calculated mealCount * perMealRate
+  menuItem?: string;    // e.g. "Beef / Meat Day", "Regular Chicken", "Special"
   notes?: string;
   createdAt: string;
 }

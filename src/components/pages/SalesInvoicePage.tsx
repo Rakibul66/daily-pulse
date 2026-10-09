@@ -1,258 +1,411 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { DailySale, DailySaleItem } from "@/types/sales";
 import { Product } from "@/types/inventory";
+import { Customer } from "@/types/customer";
+import { 
+  getSalesInvoices, 
+  addSalesInvoice, 
+  updateSalesInvoice, 
+  deleteSalesInvoice 
+} from "@/lib/salesStorage";
 import { getProducts } from "@/lib/inventoryStorage";
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { DailySale, SalesClient } from '@/types/sales';
-import { getSalesInvoices, addSalesInvoice, updateSalesInvoice, deleteSalesInvoice, getSalesClients } from '@/lib/salesStorage';
-import { SalesInvoiceFormModal } from '../sales/SalesInvoiceFormModal';
-import { PrintChalanModal } from '../sales/PrintChalanModal';
-import { PrintInvoiceModal } from '../sales/PrintInvoiceModal';
-import { Plus, Search, Loader2, Edit, Trash2, ChevronLeft, ChevronRight, Printer, FileText } from 'lucide-react';
+import { getCustomers } from "@/lib/customerStorage";
+import { DeleteConfirmModal } from "../ui/DeleteConfirmModal";
+import { 
+  SalesInvoiceFormData, 
+  DEFAULT_STORES 
+} from "../sales/invoice/types";
+import { SalesInvoiceForm } from "../sales/invoice/SalesInvoiceForm";
+import { SalesInvoiceTable } from "../sales/invoice/SalesInvoiceTable";
 
 interface Props {
-  showToast: (msg: string, type: 'success'|'error') => void;
+  showToast: (msg: string, type?: "success" | "error" | "info") => void;
 }
 
 export const SalesInvoicePage: React.FC<Props> = ({ showToast }) => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
+
+  // View state: 'LIST' or 'FORM' (in-page, avoids modal clipping)
+  const [viewMode, setViewMode] = useState<"LIST" | "FORM">("LIST");
+  const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null);
+
+  // Data sources
   const [invoices, setInvoices] = useState<DailySale[]>([]);
-  const [clients, setClients] = useState<SalesClient[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [entriesPerPage, setEntriesPerPage] = useState(10);
-  
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingInvoice, setEditingInvoice] = useState<DailySale | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const [printingChalan, setPrintingChalan] = useState<DailySale | null>(null);
-  const [printingInvoice, setPrintingInvoice] = useState<DailySale | null>(null);
+  // Table filters & controls
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
+  // Modals
+  const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    targetId?: string;
+    targetName?: string;
+  }>({
+    isOpen: false
+  });
 
+  // ==========================================
+  // FORM STATE
+  // ==========================================
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+
+  const [formData, setFormData] = useState<SalesInvoiceFormData>({
+    invoiceNo: "",
+    date: todayStr,
+    customerId: "",
+    customerName: "",
+    customerPhone: "",
+    customerAddress: "",
+    storeName: DEFAULT_STORES[0],
+    type: "Credit",
+    salesBy: "Admin",
+    items: [],
+    discountType: "fixed",
+    discountValue: 0,
+    remarks: ""
+  });
+
+  // Product Line Item Adder
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [selectedQty, setSelectedQty] = useState<number>(1);
+  const [selectedRate, setSelectedRate] = useState<number>(0);
+
+  // Load All Data
   const loadData = async () => {
     if (!user) return;
     setIsLoading(true);
     try {
-      const [invData, cliData, prodData] = await Promise.all([
+      const [invData, custData, prodData] = await Promise.all([
         getSalesInvoices(user.uid),
-        getSalesClients(user.uid),
-        getProducts(user.uid),
+        getCustomers(user.uid, userProfile?.companyId),
         getProducts(user.uid)
       ]);
       setInvoices(invData);
-      setClients(cliData);
+      setCustomers(custData);
       setProducts(prodData);
     } catch (err) {
-      console.error(err);
-      showToast('Failed to load data', 'error');
+      console.error("Error loading sales invoice data:", err);
+      showToast("Failed to load invoice records", "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveInvoice = async (data: Omit<DailySale, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, userProfile?.companyId]);
+
+  // Generate Next Invoice No
+  const generateNextInvoiceNo = (): string => {
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const count = invoices.length + 1;
+    const serial = String(count).padStart(6, "0");
+    return `STS${yy}${mm}${serial}`;
+  };
+
+  // Open New Sale Form
+  const handleOpenNewSale = () => {
+    setEditingInvoiceId(null);
+    setFormData({
+      invoiceNo: generateNextInvoiceNo(),
+      date: new Date().toISOString().split("T")[0],
+      customerId: "",
+      customerName: "",
+      customerPhone: "",
+      customerAddress: "",
+      storeName: DEFAULT_STORES[0],
+      type: "Credit",
+      salesBy: userProfile?.displayName || "Admin",
+      items: [],
+      discountType: "fixed",
+      discountValue: 0,
+      remarks: ""
+    });
+    setSelectedProductId("");
+    setSelectedQty(1);
+    setSelectedRate(0);
+    setViewMode("FORM");
+  };
+
+  // Open Edit Form
+  const handleOpenEdit = (inv: DailySale) => {
+    setEditingInvoiceId(inv.id);
+    setFormData({
+      invoiceNo: inv.invoiceNo,
+      date: inv.date,
+      customerId: inv.clientId || "",
+      customerName: inv.clientName || "",
+      customerPhone: inv.clientPhone || "",
+      customerAddress: inv.clientAddress || "",
+      storeName: inv.storeName || DEFAULT_STORES[0],
+      type: inv.type || "Credit",
+      salesBy: inv.salesBy || "Admin",
+      items: inv.items || [],
+      discountType: "fixed",
+      discountValue: inv.discountAmount || 0,
+      remarks: ""
+    });
+    setSelectedProductId("");
+    setSelectedQty(1);
+    setSelectedRate(0);
+    setViewMode("FORM");
+  };
+
+  // Handle Customer Selection
+  const handleCustomerChange = (cId: string) => {
+    const found = customers.find((c) => c.id === cId);
+    if (found) {
+      setFormData((prev) => ({
+        ...prev,
+        customerId: found.id,
+        customerName: found.businessName || found.ownerName,
+        customerPhone: found.phone || "",
+        customerAddress: found.address || ""
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        customerId: "",
+        customerName: cId, // Allow free-text customer name
+        customerPhone: "",
+        customerAddress: ""
+      }));
+    }
+  };
+
+  // Handle Product Selector Change
+  const handleProductSelect = (pId: string) => {
+    setSelectedProductId(pId);
+    const prod = products.find((p) => p.id === pId);
+    if (prod) {
+      setSelectedRate(prod.price || 0);
+      setSelectedQty(1);
+    } else {
+      setSelectedRate(0);
+      setSelectedQty(1);
+    }
+  };
+
+  // Add Item to List
+  const handleAddItem = () => {
+    if (!selectedProductId) {
+      showToast("Please select a product first", "error");
+      return;
+    }
+    const prod = products.find((p) => p.id === selectedProductId);
+    if (!prod) return;
+
+    if (selectedQty <= 0) {
+      showToast("Quantity must be greater than 0", "error");
+      return;
+    }
+
+    const newItem: DailySaleItem = {
+      id: Math.random().toString(36).substring(2, 9),
+      productName: prod.name,
+      itemCode: prod.sku || "",
+      quantity: Number(selectedQty),
+      unit: "Pcs",
+      rate: Number(selectedRate),
+      amount: Number(selectedRate) * Number(selectedQty)
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      items: [...prev.items, newItem]
+    }));
+
+    // Reset adder fields
+    setSelectedProductId("");
+    setSelectedQty(1);
+    setSelectedRate(0);
+  };
+
+  // Remove Item
+  const handleRemoveItem = (itemId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      items: prev.items.filter((i) => i.id !== itemId)
+    }));
+  };
+
+  // Calculations
+  const subtotal = useMemo(() => {
+    return formData.items.reduce((sum, item) => sum + (item.amount || 0), 0);
+  }, [formData.items]);
+
+  const discountAmount = useMemo(() => {
+    if (formData.discountType === "percentage") {
+      return (subtotal * Number(formData.discountValue || 0)) / 100;
+    }
+    return Number(formData.discountValue || 0);
+  }, [subtotal, formData.discountType, formData.discountValue]);
+
+  const netPayable = useMemo(() => {
+    return Math.max(0, subtotal - discountAmount);
+  }, [subtotal, discountAmount]);
+
+  // Save Invoice
+  const handleSaveInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!user) return;
+
+    if (!formData.customerName.trim()) {
+      showToast("Please specify a customer name", "error");
+      return;
+    }
+
+    if (formData.items.length === 0) {
+      showToast("Please add at least one product item to the invoice", "error");
+      return;
+    }
+
+    setIsSaving(true);
     try {
-      if (editingInvoice) {
-        await updateSalesInvoice(editingInvoice.id, data);
-        showToast('Invoice updated', 'success');
+      const payload: Omit<DailySale, "id" | "userId" | "createdAt" | "updatedAt"> = {
+        companyName: userProfile?.displayName || "Shomporko ERP",
+        invoiceNo: formData.invoiceNo || generateNextInvoiceNo(),
+        date: formData.date,
+        clientId: formData.customerId,
+        clientName: formData.customerName,
+        clientCode: formData.customerId ? formData.customerId.slice(-6).toUpperCase() : "WALK-IN",
+        clientPhone: formData.customerPhone,
+        clientAddress: formData.customerAddress,
+        storeName: formData.storeName,
+        type: formData.type,
+        salesBy: formData.salesBy,
+        items: formData.items,
+        totalAmount: subtotal,
+        discountAmount: discountAmount,
+        netInvoiceAmount: netPayable,
+        openingBalance: 0,
+        netPayable: netPayable
+      };
+
+      if (editingInvoiceId) {
+        await updateSalesInvoice(editingInvoiceId, payload);
+        showToast("Invoice updated successfully", "success");
       } else {
-        await addSalesInvoice({ ...data, userId: user.uid });
-        showToast('Invoice created', 'success');
+        await addSalesInvoice({
+          ...payload,
+          userId: user.uid
+        });
+        showToast("Invoice created successfully", "success");
       }
-      loadData();
+
+      await loadData();
+      setViewMode("LIST");
     } catch (err) {
-      console.error(err);
-      showToast('Error saving invoice', 'error');
+      console.error("Error saving sales invoice:", err);
+      showToast("Failed to save invoice", "error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this invoice?")) return;
+  // Confirm Delete
+  const handleConfirmDelete = async () => {
+    if (!deleteModalState.targetId) return;
     try {
-      await deleteSalesInvoice(id);
-      showToast('Invoice deleted', 'success');
-      loadData();
+      await deleteSalesInvoice(deleteModalState.targetId);
+      showToast("Invoice deleted successfully", "success");
+      setDeleteModalState({ isOpen: false });
+      await loadData();
     } catch (err) {
-      console.error(err);
-      showToast('Error deleting invoice', 'error');
+      console.error("Error deleting invoice:", err);
+      showToast("Failed to delete invoice", "error");
     }
   };
 
-  const filteredInvoices = invoices.filter(i => 
-    i.invoiceNo.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    i.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    i.companyName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtered Invoices
+  const filteredInvoices = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return invoices;
+    return invoices.filter(
+      (inv) =>
+        inv.invoiceNo.toLowerCase().includes(q) ||
+        inv.clientName.toLowerCase().includes(q) ||
+        (inv.storeName && inv.storeName.toLowerCase().includes(q)) ||
+        (inv.clientPhone && inv.clientPhone.includes(q))
+    );
+  }, [invoices, searchQuery]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredInvoices.length / pageSize) || 1;
+  const paginatedInvoices = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredInvoices.slice(start, start + pageSize);
+  }, [filteredInvoices, currentPage, pageSize]);
 
   return (
-    <div className="w-full mx-auto pb-20">
-      
-      {/* Header */}
-      <div className="bg-slate-900 p-4 border-b border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4 rounded-t-lg">
-        <h2 className="text-lg font-bold text-white uppercase tracking-wider">DAILY SALES</h2>
-        
-        <div className="flex items-center gap-2">
-          <input type="text" placeholder="Invoice No." className="border border-slate-700 rounded px-3 py-1.5 text-sm bg-slate-950 text-white focus:outline-none focus:border-[#20B2AA] w-32" />
-          <button className="p-1.5 bg-[#FFC107] text-white hover:bg-[#E0A800] rounded transition-colors"><Edit className="w-4 h-4" /></button>
-          <input type="date" className="border border-slate-700 rounded px-3 py-1.5 text-sm bg-slate-950 text-white focus:outline-none focus:border-[#20B2AA]" />
-          <select className="border border-slate-700 rounded px-3 py-1.5 text-sm bg-slate-950 text-white focus:outline-none">
-            <option>All</option>
-          </select>
-          <button 
-            onClick={() => { setEditingInvoice(null); setIsFormOpen(true); }} 
-            className="px-4 py-1.5 bg-[#20B2AA] text-white rounded text-sm font-bold shadow hover:bg-[#1A9C96] transition-colors uppercase tracking-wider ml-2"
-          >
-            ADD NEW
-          </button>
-        </div>
-      </div>
+    <div className="space-y-6">
+      {viewMode === "FORM" ? (
+        <SalesInvoiceForm
+          editingInvoiceId={editingInvoiceId}
+          formData={formData}
+          setFormData={setFormData}
+          customers={customers}
+          products={products}
+          selectedProductId={selectedProductId}
+          selectedQty={selectedQty}
+          selectedRate={selectedRate}
+          setSelectedQty={setSelectedQty}
+          setSelectedRate={setSelectedRate}
+          subtotal={subtotal}
+          discountAmount={discountAmount}
+          netPayable={netPayable}
+          isSaving={isSaving}
+          onCustomerChange={handleCustomerChange}
+          onProductSelect={handleProductSelect}
+          onAddItem={handleAddItem}
+          onRemoveItem={handleRemoveItem}
+          onSaveInvoice={handleSaveInvoice}
+          onCancel={() => setViewMode("LIST")}
+        />
+      ) : (
+        <SalesInvoiceTable
+          invoices={paginatedInvoices}
+          isLoading={isLoading}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+          totalFilteredCount={filteredInvoices.length}
+          onOpenNewSale={handleOpenNewSale}
+          onOpenEdit={handleOpenEdit}
+          onDeleteInvoice={(id, invoiceNo) =>
+            setDeleteModalState({
+              isOpen: true,
+              targetId: id,
+              targetName: invoiceNo
+            })
+          }
+        />
+      )}
 
-      {/* Main Container */}
-      <div className="bg-slate-900 border border-t-0 border-slate-800 rounded-b-lg shadow-sm overflow-hidden">
-        
-        <div className="p-4 flex flex-wrap justify-between items-center gap-4 border-b border-slate-800">
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span>Show</span>
-            <select 
-              value={entriesPerPage}
-              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-              className="border border-slate-700 rounded px-2 py-1 bg-slate-950 text-white focus:outline-none"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-            <span>entries</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-400">Search:</span>
-            <input 
-              type="text" 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-              className="w-48 bg-slate-950 border border-slate-700 text-white text-sm rounded px-3 py-1 focus:outline-none focus:border-[#20B2AA]" 
-            />
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="py-20 flex justify-center">
-            <Loader2 className="w-8 h-8 text-[#20B2AA] animate-spin" />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300 whitespace-nowrap">
-              <thead className="text-xs text-slate-200 bg-slate-800/80 font-bold border-b border-slate-700">
-                <tr>
-                  <th className="px-4 py-3 w-10 text-center">
-                    <input type="checkbox" className="rounded border-slate-300 dark:border-slate-600" />
-                  </th>
-                  <th className="px-4 py-3">Company</th>
-                  <th className="px-4 py-3">Invoice</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Client</th>
-                  <th className="px-4 py-3">Client Code</th>
-                  <th className="px-4 py-3">Store</th>
-                  <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Sales By</th>
-                  <th className="px-4 py-3 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                {filteredInvoices.map((i) => (
-                  <tr key={i.id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-4 py-3 text-center">
-                      <input type="checkbox" className="rounded border-slate-300 dark:border-slate-600" />
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">{i.companyName}</td>
-                    <td className="px-4 py-3">{i.invoiceNo}</td>
-                    <td className="px-4 py-3">{new Date(i.date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-')}</td>
-                    <td className="px-4 py-3 font-medium">{i.clientName}</td>
-                    <td className="px-4 py-3">{i.clientCode}</td>
-                    <td className="px-4 py-3">{i.storeName}</td>
-                    <td className="px-4 py-3">{i.totalAmount.toFixed(2)}</td>
-                    <td className="px-4 py-3">{i.type}</td>
-                    <td className="px-4 py-3">{i.salesBy}</td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-1.5">
-                      <button onClick={() => { setEditingInvoice(i); setIsFormOpen(true); }} className="p-1.5 bg-[#FFC107] text-white hover:bg-[#E0A800] rounded">
-                        <Edit className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setPrintingChalan(i)} className="p-1.5 bg-[#00BFFF] text-white hover:bg-[#009ACD] rounded">
-                        <Printer className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setPrintingInvoice(i)} className="p-1.5 bg-[#AB82FF] text-white hover:bg-[#8968CD] rounded">
-                        <FileText className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(i.id)} className="p-1.5 bg-[#DC3545] text-white hover:bg-[#C82333] rounded">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                
-                {filteredInvoices.length > 0 && (
-                  <tr className="bg-slate-900/30">
-                    <td className="px-4 py-3 text-center border-t border-slate-800">
-                      <input type="checkbox" className="rounded border-slate-300 dark:border-slate-600" />
-                    </td>
-                    <td colSpan={9} className="border-t border-slate-800"></td>
-                    <td className="px-4 py-3 text-center border-t border-slate-800 flex justify-center">
-                      <button className="px-3 py-1 bg-[#DC3545] text-white text-xs font-bold rounded shadow-sm hover:bg-[#C82333]">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                )}
-                
-                {filteredInvoices.length === 0 && (
-                  <tr>
-                    <td colSpan={11} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-                      No invoices found matching your criteria.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="p-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-          <span>Showing 1 to {filteredInvoices.length} of {filteredInvoices.length} entries</span>
-          <div className="flex items-center gap-1">
-            <button className="p-1.5 border border-slate-700 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-50" disabled><ChevronLeft className="w-4 h-4" /></button>
-            <button className="px-3 py-1.5 bg-[#20B2AA] text-white rounded font-bold">1</button>
-            <button className="p-1.5 border border-slate-700 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-50" disabled><ChevronRight className="w-4 h-4" /></button>
-          </div>
-        </div>
-
-      </div>
-
-      <SalesInvoiceFormModal 
-        isOpen={isFormOpen} 
-        onClose={() => setIsFormOpen(false)} 
-        onSave={handleSaveInvoice}
-        initialData={editingInvoice}
-        clients={clients}
-        products={products}
-      />
-
-      <PrintChalanModal 
-        isOpen={!!printingChalan}
-        onClose={() => setPrintingChalan(null)}
-        invoice={printingChalan}
-      />
-
-      <PrintInvoiceModal
-        isOpen={!!printingInvoice}
-        onClose={() => setPrintingInvoice(null)}
-        invoice={printingInvoice}
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModalState.isOpen}
+        title="Delete Sales Invoice"
+        itemName={deleteModalState.targetName ? `Invoice ${deleteModalState.targetName}` : "this invoice"}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteModalState({ isOpen: false })}
       />
     </div>
   );

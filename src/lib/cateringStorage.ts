@@ -40,11 +40,38 @@ export const addMealRecord = async (data: Omit<MealRecord, 'id' | 'createdAt'>):
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
   const docRef = doc(collection(db, 'catering_meals'));
-  await setDoc(docRef, {
-    ...data,
+  
+  const payload: Record<string, any> = {
+    companyId: data.companyId,
+    vendorId: data.vendorId,
+    date: data.date,
+    mealCount: data.mealCount,
+    perMealRate: data.perMealRate,
+    totalCost: data.totalCost,
     id: docRef.id,
     createdAt: new Date().toISOString()
-  });
+  };
+
+  if (data.menuItem && data.menuItem.trim()) {
+    payload.menuItem = data.menuItem.trim();
+  }
+
+  await setDoc(docRef, payload);
+};
+
+export const updateMealRecord = async (id: string, updates: Partial<Omit<MealRecord, 'id' | 'companyId' | 'createdAt'>>): Promise<void> => {
+  const { db } = getFirebaseServices();
+  if (!db) throw new Error('Firebase not configured');
+  const docRef = doc(db, 'catering_meals', id);
+  
+  const cleanUpdates: Record<string, any> = {};
+  for (const [key, val] of Object.entries(updates)) {
+    if (val !== undefined) {
+      cleanUpdates[key] = val;
+    }
+  }
+
+  await updateDoc(docRef, cleanUpdates);
 };
 
 export const deleteMealRecord = async (id: string): Promise<void> => {

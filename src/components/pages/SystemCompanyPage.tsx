@@ -4,11 +4,14 @@ import { useAuth } from '@/context/AuthContext';
 import { getCompanyProfile, updateCompanyProfile } from '@/lib/companyStorage';
 import { CompanyProfile } from '@/types/company';
 
+import { AdminPageId } from '@/components/layout/Sidebar';
+
 interface Props {
   showToast: (msg: string, type: 'success'|'error') => void;
+  onNavigate?: (page: AdminPageId) => void;
 }
 
-export const SystemCompanyPage: React.FC<Props> = ({ showToast }) => {
+export const SystemCompanyPage: React.FC<Props> = ({ showToast, onNavigate }) => {
   const { userProfile } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,7 +57,9 @@ export const SystemCompanyPage: React.FC<Props> = ({ showToast }) => {
       showToast('Company profile updated successfully', 'success');
       if (localStorage.getItem("dp_onboarding_step") === "company") {
         localStorage.setItem("dp_onboarding_step", "branch");
-        window.location.reload(); // trigger page effect
+        if (onNavigate) {
+          onNavigate("system-branch");
+        }
       }
 
     } catch (err) {

@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, runTransaction, updateDoc, deleteDoc } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { PurchaseOrder, AccountTransaction } from '@/types/accounts';
 import { Product } from '@/types/inventory';
 
@@ -31,7 +32,7 @@ export const addTransaction = async (tx: Omit<AccountTransaction, 'id' | 'create
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newTx);
+  await setDoc(docRef, sanitizeForFirestore(newTx));
   return docRef.id;
 };
 
@@ -67,7 +68,7 @@ export const createPurchaseOrder = async (poData: Omit<PurchaseOrder, 'id' | 'cr
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newPO);
+  await setDoc(docRef, sanitizeForFirestore(newPO));
   return docRef.id;
 };
 

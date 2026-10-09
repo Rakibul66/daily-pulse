@@ -1,17 +1,20 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getFirestore, initializeFirestore, Firestore, persistentLocalCache } from "firebase/firestore";
+import { getFirestore, initializeFirestore, Firestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 import { getAuth, Auth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
 import { FirebaseConfig } from "@/types/report";
 
 const FIREBASE_CONFIG_KEY = "daily_pulse_firebase_config";
 
 export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
-  apiKey: "AIzaSyDoRU68CDzMjf0ETBdrJcGr9UNWhWiWRdo",
-  authDomain: "crm-daily.firebaseapp.com",
-  projectId: "crm-daily",
-  storageBucket: "crm-daily.firebasestorage.app",
-  messagingSenderId: "14026117925",
-  appId: "1:14026117925:web:37e1a05a71d9ea378300cc",
+  apiKey: "AIzaSyBKmJ_ByEqlcdmKf_cSrtWM0pQWOfeOdBE",
+  authDomain: "somporko-crm.firebaseapp.com",
+  projectId: "somporko-crm",
+  storageBucket: "somporko-crm.firebasestorage.app",
+  messagingSenderId: "1031549757437",
+  appId: "1:1031549757437:web:ffdbcbe23697c334e19b94",
+  databaseURL: "https://somporko-crm-default-rtdb.asia-southeast1.firebasedatabase.app",
+  measurementId: "G-S2WZVTPYDD",
 };
 
 export const getStoredFirebaseConfig = (): FirebaseConfig => {
@@ -27,6 +30,8 @@ export const getStoredFirebaseConfig = (): FirebaseConfig => {
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || DEFAULT_FIREBASE_CONFIG.storageBucket,
       messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || DEFAULT_FIREBASE_CONFIG.messagingSenderId,
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || DEFAULT_FIREBASE_CONFIG.appId,
+      databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || DEFAULT_FIREBASE_CONFIG.databaseURL,
+      measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || DEFAULT_FIREBASE_CONFIG.measurementId,
     };
   }
 
@@ -80,7 +85,9 @@ export const getFirebaseServices = (): {
     try {
       db = initializeFirestore(app, {
         experimentalAutoDetectLongPolling: true,
-        localCache: typeof window !== "undefined" ? persistentLocalCache() : undefined
+        localCache: typeof window !== "undefined" 
+          ? persistentLocalCache({ tabManager: persistentMultipleTabManager() }) 
+          : undefined
       });
     } catch {
       // If already initialized, get existing instance
@@ -90,6 +97,16 @@ export const getFirebaseServices = (): {
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
+
+    // Optional Google Analytics for browser environment
+    if (typeof window !== "undefined" && config.measurementId) {
+      isSupported().then((supported) => {
+        if (supported) {
+          getAnalytics(app);
+        }
+      }).catch(() => {});
+    }
+
     return { app, db, auth, googleProvider };
   } catch (err) {
     console.error("Firebase init failed:", err);

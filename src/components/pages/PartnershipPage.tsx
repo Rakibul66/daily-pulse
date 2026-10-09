@@ -15,7 +15,8 @@ interface Props {
 }
 
 export const PartnershipPage: React.FC<Props> = ({ showToast, view = 'summary' }) => {
-  const { userProfile } = useAuth();
+  const { user, userProfile } = useAuth();
+  const effectiveCompanyId = userProfile?.companyId || user?.uid;
   const [partners, setPartners] = useState<Partner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,14 +30,14 @@ export const PartnershipPage: React.FC<Props> = ({ showToast, view = 'summary' }
   const [historyPartner, setHistoryPartner] = useState<Partner | null>(null);
 
   useEffect(() => {
-    if (userProfile?.companyId) loadData();
-  }, [userProfile?.companyId]);
+    if (effectiveCompanyId) loadData();
+  }, [effectiveCompanyId]);
 
   const loadData = async () => {
-    if (!userProfile?.companyId) return;
+    if (!effectiveCompanyId) return;
     setIsLoading(true);
     try {
-      const data = await getPartners(userProfile.companyId);
+      const data = await getPartners(effectiveCompanyId);
       setPartners(data);
     } catch (err) {
       console.error(err);
@@ -47,19 +48,19 @@ export const PartnershipPage: React.FC<Props> = ({ showToast, view = 'summary' }
   };
 
   const handleSavePartner = async (data: any) => {
-    if (!userProfile?.companyId) return;
+    if (!effectiveCompanyId) return;
     try {
       if (editingPartner) {
         await updatePartner(editingPartner.id, data);
-        showToast('Partner updated', 'success');
+        showToast('Partner updated successfully', 'success');
       } else {
-        await addPartner({ ...data, companyId: userProfile.companyId });
-        showToast('Partner added', 'success');
+        await addPartner({ ...data, companyId: effectiveCompanyId });
+        showToast('Partner added successfully', 'success');
       }
       loadData();
     } catch (err) {
       console.error(err);
-      showToast('Error saving partner', 'error');
+      showToast('Failed to save partner', 'error');
     }
   };
 
@@ -94,20 +95,20 @@ export const PartnershipPage: React.FC<Props> = ({ showToast, view = 'summary' }
     <div className="w-full mx-auto space-y-6 pb-20">
       
       {/* Header Actions */}
-      <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
+      <div className="bg-white border-4 border-black p-5 shadow-[6px_6px_0px_#000] flex flex-wrap items-center justify-between gap-4 text-black">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
-            <h2 className="text-lg font-bold text-white">Partnership & Investments</h2>
+            <span className="w-3 h-3 bg-amber-400 border border-black inline-block"></span>
+            <h2 className="text-xl font-display font-black text-black uppercase tracking-tight">PARTNERSHIP & CAPITAL POOL</h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1">Manage investors, capital pool, and dividend distributions.</p>
+          <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1">Manage investors, capital fund, and dividend distributions.</p>
         </div>
 
         <button 
           onClick={() => { setEditingPartner(null); setIsFormOpen(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
+          className="flex items-center gap-2 px-5 py-2.5 bg-black text-white hover:bg-slate-800 border-2 border-black shadow-[3px_3px_0px_#000] text-xs font-black uppercase tracking-wider transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" /> Add Partner
+          <Plus className="w-4 h-4 text-amber-300" /> + ADD PARTNER
         </button>
       </div>
 
@@ -122,72 +123,72 @@ export const PartnershipPage: React.FC<Props> = ({ showToast, view = 'summary' }
 
       {/* Conditional Table Views */}
       {view === "investors" && (
-      <div className="bg-slate-900 border border-slate-800 rounded-md shadow-md overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary-400" /> Stakeholders Directory
+      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#000] overflow-hidden">
+        <div className="px-6 py-4 border-b-2 border-black flex justify-between items-center bg-slate-50">
+          <h3 className="text-xs font-black text-black uppercase tracking-wider flex items-center gap-2">
+            <Users className="w-4 h-4 text-indigo-600" /> STAKEHOLDERS DIRECTORY
           </h3>
         </div>
 
         {isLoading ? (
           <div className="py-20 flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading partnership data...</p>
+            <Loader2 className="w-8 h-8 text-black animate-spin" />
+            <p className="text-xs text-slate-600 font-bold uppercase">Loading partnership data...</p>
           </div>
         ) : partners.length === 0 ? (
           <div className="p-12 text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+            <div className="w-16 h-16 bg-amber-100 border-2 border-black flex items-center justify-center mb-4 shadow-[2px_2px_0px_#000]">
+              <Users className="w-8 h-8 text-black" />
             </div>
-            <p className="text-slate-400 text-sm font-medium">No partners or investors found.</p>
+            <p className="text-black text-xs font-black uppercase">No partners or investors found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="text-xs text-slate-400 bg-slate-950/50 uppercase border-b border-slate-800">
+            <table className="w-full text-left text-sm text-black">
+              <thead className="text-xs text-white bg-black uppercase border-b-2 border-black font-black">
                 <tr>
-                  <th className="px-6 py-4 font-semibold">Partner Details</th>
-                  <th className="px-6 py-4 font-semibold">Equity Share</th>
-                  <th className="px-6 py-4 font-semibold">Total Invested</th>
-                  <th className="px-6 py-4 font-semibold">Dividends Paid</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 text-right font-semibold">Actions</th>
+                  <th className="px-6 py-3.5">Partner Details</th>
+                  <th className="px-6 py-3.5">Equity Share</th>
+                  <th className="px-6 py-3.5">Total Invested</th>
+                  <th className="px-6 py-3.5">Dividends Paid</th>
+                  <th className="px-6 py-3.5">Status</th>
+                  <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y-2 divide-black/10 bg-white">
                 {partners.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-800/30 transition-colors group">
+                  <tr key={p.id} className="hover:bg-amber-50/50 transition-colors font-bold group">
                     <td className="px-6 py-4">
-                      <p className="font-bold text-white">{p.name}</p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{p.role}</p>
+                      <p className="font-black text-black">{p.name}</p>
+                      <p className="text-[11px] text-slate-500 uppercase">{p.role}</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden w-20">
-                          <div className="h-full bg-primary-500 rounded-full" style={{ width: `${p.equityShare}%` }}></div>
+                        <div className="flex-1 h-3 bg-slate-100 border border-black overflow-hidden w-20">
+                          <div className="h-full bg-indigo-600" style={{ width: `${p.equityShare}%` }}></div>
                         </div>
-                        <span className="text-xs font-bold text-slate-300">{p.equityShare}%</span>
+                        <span className="text-xs font-black text-black">{p.equityShare}%</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-emerald-400">
+                    <td className="px-6 py-4 font-black text-emerald-800">
                       ৳ {p.totalInvested.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 font-bold text-primary-400">
+                    <td className="px-6 py-4 font-black text-indigo-700">
                       ৳ {p.totalDividends.toLocaleString()}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border ${p.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                      <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border border-black ${p.status === 'Active' ? 'bg-emerald-200 text-emerald-950' : 'bg-slate-200 text-black'}`}>
                         {p.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setTxPartner(p); setIsTxOpen(true); }} className="px-2 py-1.5 bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 border border-primary-500/20 rounded text-xs font-bold transition-colors flex items-center gap-1.5">
-                          <ArrowRightLeft className="w-3.5 h-3.5" /> Manage Funds
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => { setTxPartner(p); setIsTxOpen(true); }} className="px-2.5 py-1 bg-white hover:bg-slate-100 text-black border border-black text-xs font-black uppercase flex items-center gap-1 shadow-[1px_1px_0px_#000]">
+                          <ArrowRightLeft className="w-3.5 h-3.5" /> Funds
                         </button>
-                        <button onClick={() => { setHistoryPartner(p); setIsHistoryOpen(true); }} className="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold transition-colors flex items-center gap-1.5"><History className="w-3.5 h-3.5" /> History</button>
-                        <button onClick={() => { setEditingPartner(p); setIsFormOpen(true); }} className="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded transition-colors"><Edit className="w-4 h-4" /></button>
-                        <button onClick={() => handleDeletePartner(p.id)} className="p-1.5 text-slate-400 hover:text-rose-400 bg-slate-800 hover:bg-rose-950 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => { setHistoryPartner(p); setIsHistoryOpen(true); }} className="px-2.5 py-1 bg-white hover:bg-slate-100 text-black border border-black text-xs font-black uppercase flex items-center gap-1 shadow-[1px_1px_0px_#000]"><History className="w-3.5 h-3.5" /> History</button>
+                        <button onClick={() => { setEditingPartner(p); setIsFormOpen(true); }} className="p-1.5 text-black hover:bg-slate-100 border border-black"><Edit className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDeletePartner(p.id)} className="p-1.5 text-rose-600 hover:bg-rose-100 border border-black"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>

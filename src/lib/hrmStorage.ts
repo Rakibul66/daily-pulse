@@ -1,5 +1,7 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, orderBy } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
+import { encryptField, decryptField } from './cryptoUtils';
 import { Employee, AttendanceRecord, SalaryPayment, HRMSettings, EmployeeLoan, EmployeeOvertime } from '@/types/hrm';
 
 const EMPLOYEES_COLLECTION = 'employees';
@@ -38,7 +40,7 @@ export const addEmployee = async (employee: Omit<Employee, 'id' | 'createdAt'>):
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newEmployee);
+  await setDoc(docRef, sanitizeForFirestore(newEmployee));
   return docRef.id;
 };
 
@@ -47,7 +49,7 @@ export const updateEmployee = async (id: string, updates: Partial<Omit<Employee,
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, EMPLOYEES_COLLECTION, id);
-  await updateDoc(docRef, updates);
+  await updateDoc(docRef, sanitizeForFirestore(updates));
 };
 
 export const deleteEmployee = async (id: string): Promise<void> => {
@@ -93,7 +95,7 @@ export const saveAttendance = async (record: Omit<AttendanceRecord, 'id' | 'crea
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newRecord);
+  await setDoc(docRef, sanitizeForFirestore(newRecord));
   return docRef.id;
 };
 
@@ -102,7 +104,7 @@ export const updateAttendance = async (id: string, updates: Partial<Omit<Attenda
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, ATTENDANCE_COLLECTION, id);
-  await updateDoc(docRef, updates);
+  await updateDoc(docRef, sanitizeForFirestore(updates));
 };
 
 export const deleteAttendance = async (id: string): Promise<void> => {
@@ -145,7 +147,7 @@ export const addSalaryPayment = async (payment: Omit<SalaryPayment, 'id' | 'crea
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newRecord);
+  await setDoc(docRef, sanitizeForFirestore(newRecord));
   return docRef.id;
 };
 
@@ -172,7 +174,16 @@ export const getHRMSettings = async (companyId: string): Promise<HRMSettings | n
 
   const snapshot = await getDocs(q);
   if (!snapshot.empty) {
-    return snapshot.docs[0].data() as HRMSettings;
+    const data = snapshot.docs[0].data() as HRMSettings;
+    // Decrypt sensitive credentials if present
+    if (data.geminiApiKey) {
+      try {
+        data.geminiApiKey = await decryptField(data.geminiApiKey, companyId);
+      } catch (err) {
+        console.error('Failed to decrypt geminiApiKey:', err);
+      }
+    }
+    return data;
   }
   return null;
 };
@@ -180,6 +191,12 @@ export const getHRMSettings = async (companyId: string): Promise<HRMSettings | n
 export const updateHRMSettings = async (companyId: string, updates: Partial<Omit<HRMSettings, 'companyId'>>): Promise<void> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
+
+  // Encrypt sensitive credentials before saving to Firestore
+  const sanitizedUpdates = { ...updates };
+  if (sanitizedUpdates.geminiApiKey) {
+    sanitizedUpdates.geminiApiKey = await encryptField(sanitizedUpdates.geminiApiKey, companyId);
+  }
 
   const q = query(
     collection(db, SETTINGS_COLLECTION),
@@ -189,15 +206,15 @@ export const updateHRMSettings = async (companyId: string, updates: Partial<Omit
   const snapshot = await getDocs(q);
   if (!snapshot.empty) {
     const docRef = snapshot.docs[0].ref;
-    await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+    await updateDoc(docRef, sanitizeForFirestore({ ...sanitizedUpdates, updatedAt: new Date().toISOString() }));
   } else {
     const docRef = doc(collection(db, SETTINGS_COLLECTION));
-    await setDoc(docRef, {
+    await setDoc(docRef, sanitizeForFirestore({
       companyId,
       weekendDays: [],
-      ...updates,
+      ...sanitizedUpdates,
       updatedAt: new Date().toISOString(),
-    });
+    }));
   }
 };
 
@@ -229,7 +246,7 @@ export const addEmployeeLoan = async (loan: Omit<EmployeeLoan, "id" | "createdAt
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newLoan);
+  await setDoc(docRef, sanitizeForFirestore(newLoan));
   return docRef.id;
 };
 
@@ -238,7 +255,7 @@ export const updateEmployeeLoan = async (id: string, updates: Partial<Omit<Emplo
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, LOANS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteEmployeeLoan = async (id: string): Promise<void> => {
@@ -276,7 +293,7 @@ export const addEmployeeOvertime = async (overtime: Omit<EmployeeOvertime, 'id' 
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newOvertime);
+  await setDoc(docRef, sanitizeForFirestore(newOvertime));
   return docRef.id;
 };
 
@@ -285,7 +302,7 @@ export const updateEmployeeOvertime = async (id: string, updates: Partial<Omit<E
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, OVERTIME_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteEmployeeOvertime = async (id: string): Promise<void> => {
@@ -329,7 +346,7 @@ export const addDailyWorkReport = async (reportData: any): Promise<string> => {
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newReport);
+  await setDoc(docRef, sanitizeForFirestore(newReport));
   return docRef.id;
 };
 

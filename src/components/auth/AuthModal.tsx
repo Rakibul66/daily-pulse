@@ -14,6 +14,9 @@ import {
   Loader2,
 } from "lucide-react";
 
+import { checkRateLimit, resetRateLimit, withActionLock, RATE_LIMIT_PRESETS } from "@/lib/rateLimit";
+import { validateRegistrationEmail } from "@/lib/emailValidation";
+
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -51,11 +54,47 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
+
+    // Validate email authenticity for registration and recovery
+    if (mode === "register" || mode === "forgot") {
+      const emailValidation = validateRegistrationEmail(email);
+      if (!emailValidation.valid) {
+        setError(emailValidation.error || "Please provide a valid genuine email address.");
+        return;
+      }
+    }
+
+    // Rate limiting checks
+    if (mode === "login") {
+      const rl = checkRateLimit(
+        "auth_login",
+        RATE_LIMIT_PRESETS.AUTH_LOGIN.max,
+        RATE_LIMIT_PRESETS.AUTH_LOGIN.windowMs,
+        RATE_LIMIT_PRESETS.AUTH_LOGIN.penaltyMs
+      );
+      if (!rl.allowed) {
+        setError(rl.message || "Too many login attempts. Please wait.");
+        return;
+      }
+    } else if (mode === "forgot") {
+      const rl = checkRateLimit(
+        "auth_forgot",
+        RATE_LIMIT_PRESETS.AUTH_FORGOT_PASSWORD.max,
+        RATE_LIMIT_PRESETS.AUTH_FORGOT_PASSWORD.windowMs,
+        RATE_LIMIT_PRESETS.AUTH_FORGOT_PASSWORD.penaltyMs
+      );
+      if (!rl.allowed) {
+        setError(rl.message || "Too many password reset requests. Please wait.");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (mode === "login") {
         await signInWithEmail(email, password);
+        resetRateLimit("auth_login");
         onSuccess?.();
         onClose();
       } else if (mode === "register") {
@@ -98,9 +137,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError(null);
     setLoading(true);
     try {
-      await signInWithGoogle();
-      onSuccess?.();
-      onClose();
+      await withActionLock("google_signin", 2000, async () => {
+        await signInWithGoogle();
+        onSuccess?.();
+        onClose();
+      });
     } catch (err: unknown) {
       setError(
         err instanceof Error

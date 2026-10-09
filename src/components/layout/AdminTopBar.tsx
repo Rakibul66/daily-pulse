@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { Menu, Sun, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Menu } from "lucide-react";
 import { AdminPageId } from "./Sidebar";
 
 interface AdminTopBarProps {
   activePage: AdminPageId;
+  setActivePage?: (page: AdminPageId) => void;
   onToggleMobileSidebar: () => void;
 }
 
@@ -40,8 +40,8 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     subtitle: "Discover and generate new sales leads using AI",
   },
   "customers-list": {
-    title: "Customer Directory",
-    subtitle: "Manage customers and loyalty memberships",
+    title: "Customers",
+    subtitle: "Unified directory for converted leads & registered clients",
   },
   "customers-promotions": {
     title: "Offers & Promos",
@@ -151,11 +151,19 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
     title: "Ledger & Accounts",
     subtitle: "Track daily expenses and revenue",
   },
+  "product-category": { title: "Category Setup", subtitle: "Manage product categories and parent groups" },
+  "product-brand": { title: "Brand Setup", subtitle: "Manage manufacturers, partner brands and product labels" },
+  "product-tag": { title: "Tag Setup", subtitle: "Manage promotional tags, filters and catalog badges" },
+  "product-setup": { title: "Product Setup", subtitle: "Configure products, pricing, barcodes and stock levels" },
+  "product-list": { title: "Product List Report", subtitle: "Filter catalog, inspect pricing, export or print" },
+  "product-uom": { title: "Measurement Unit Setup", subtitle: "Manage units of measurement (UOM) for products" },
+  "delivery-man": { title: "Delivery Man Setup", subtitle: "Manage logistics staff, couriers & dispatchers" },
   "purchase-vendor-setup": { title: "Vendor Setup", subtitle: "Manage your vendors" },
   "purchase-product": { title: "Product Lifting", subtitle: "Purchase products from vendors" },
   "purchase-return": { title: "Purchase Return", subtitle: "Manage purchase returns" },
   "purchase-payment": { title: "Vendor Payment", subtitle: "Manage vendor payments" },
   "purchase-generate-barcode": { title: "Generate Barcode", subtitle: "Generate barcodes for products" },
+  "purchase-vendor-statement": { title: "Vendor Statement", subtitle: "Ledger, transactions, purchases, payments & balance report" },
   "hrm-catering": {
     title: "Food & Catering",
     subtitle: "Manage vendors, meals, and billing",
@@ -167,18 +175,14 @@ const PAGE_TITLES: Record<AdminPageId, { title: string; subtitle: string }> = {
 };
 
 export const AdminTopBar: React.FC<AdminTopBarProps> = ({
-
   activePage,
+  setActivePage,
   onToggleMobileSidebar,
 }) => {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
-
   const current = PAGE_TITLES[activePage] || PAGE_TITLES["crm-dashboard"];
 
   return (
-    <header className="no-print h-16 bg-white border-b-4 border-black shadow-[0_4px_0px_#000] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 text-black">
+    <header className="no-print h-16 bg-white border-b-4 border-black shadow-[0_4px_0px_#000] px-2 sm:px-3 flex items-center justify-between sticky top-0 z-30 text-black">
       {/* Left: Mobile Toggle & Page Title */}
       <div className="flex items-center gap-3">
         <button
@@ -201,35 +205,26 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
 
       {/* Right side: Quick actions & profile */}
       <div className="hidden lg:flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
-          <span className="font-black text-indigo-600">+</span> PRODUCT
-        </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
-          <span className="font-black text-indigo-600">+</span> CUSTOMER
-        </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
+        <button 
+          onClick={() => setActivePage?.('sales-pos')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+        >
           <span className="font-black text-indigo-600">+</span> POS
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
-          <span className="font-black text-indigo-600">+</span> INVOICE
+        <button 
+          onClick={() => setActivePage?.('hrm-daily-reports')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+        >
+          <span className="font-black text-indigo-600">+</span> DAILY REPORT
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer">
-          <span className="font-black text-indigo-600">+</span> PURCHASE
+        <button 
+          onClick={() => setActivePage?.('hrm-attendance')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-amber-200 border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black uppercase text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+        >
+          <span className="font-black text-indigo-600">+</span> ATTENDANCE
         </button>
       </div>
 
-      {/* Theme Toggle */}
-      <div className="ml-auto lg:ml-2">
-        {mounted && (
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-1.5 bg-white hover:bg-amber-300 border-2 border-black shadow-[2px_2px_0px_#000] text-black active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
-            title="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 stroke-[2.5]" /> : <Moon className="w-4 h-4 stroke-[2.5]" />}
-          </button>
-        )}
-      </div>
     </header>
   );
 };

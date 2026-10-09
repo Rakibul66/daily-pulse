@@ -21,6 +21,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { saveLeadRequest } from '@/lib/leadRequestsStorage';
+import { checkRateLimit, RATE_LIMIT_PRESETS } from '@/lib/rateLimit';
 
 const Logo = () => (
   <Link href="/" className="flex items-center gap-3 cursor-pointer">
@@ -38,6 +39,7 @@ export default function ContactPage() {
   const [businessType, setBusinessType] = useState('Fashion');
   const [businessName, setBusinessName] = useState('');
   const [message, setMessage] = useState('');
+  const [hpCompany, setHpCompany] = useState(''); // Honeypot anti-bot
 
   // Status State
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,24 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Bot detection via honeypot
+    if (hpCompany) {
+      setSubmitted(true);
+      return;
+    }
+
+    // Rate limit check
+    const rateCheck = checkRateLimit(
+      'public_contact_form',
+      RATE_LIMIT_PRESETS.CONTACT_FORM.max,
+      RATE_LIMIT_PRESETS.CONTACT_FORM.windowMs,
+      RATE_LIMIT_PRESETS.CONTACT_FORM.penaltyMs
+    );
+    if (!rateCheck.allowed) {
+      setError(rateCheck.message || 'Too many submissions. Please wait a few minutes.');
+      return;
+    }
 
     const cleanPhone = phoneNumber.replace(/[^0-9+]/g, '');
     if (cleanPhone.length < 11) {
@@ -186,6 +206,18 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Anti-bot Honeypot field (hidden from real users) */}
+                  <input
+                    type="text"
+                    name="hp_company"
+                    value={hpCompany}
+                    onChange={(e) => setHpCompany(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    className="hidden"
+                    aria-hidden="true"
+                  />
+
                   {error && (
                     <div className="p-3 bg-red-100 border-2 border-black shadow-[3px_3px_0px_#000] text-red-950 text-xs font-bold flex items-center gap-2.5">
                       <AlertCircle className="w-4 h-4 shrink-0 text-red-700 stroke-[2.5]" />

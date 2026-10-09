@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { AssetItem } from '@/types/assets';
 
 const ASSETS_COLLECTION = 'office_assets';
@@ -29,7 +30,7 @@ export const addAsset = async (item: Omit<AssetItem, 'id' | 'createdAt' | 'updat
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newItem);
+  await setDoc(docRef, sanitizeForFirestore(newItem));
   return docRef.id;
 };
 
@@ -38,7 +39,7 @@ export const updateAsset = async (id: string, updates: Partial<Omit<AssetItem, '
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, ASSETS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteAsset = async (id: string): Promise<void> => {

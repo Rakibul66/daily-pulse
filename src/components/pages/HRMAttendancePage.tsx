@@ -90,29 +90,49 @@ export const HRMAttendancePage: React.FC<Props> = ({ showToast }) => {
   });
 
   return (
-    <div className="w-full mx-auto space-y-6">
-      <div className="bg-slate-900 p-4 sm:p-5 rounded-md border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4 text-white">
+    <div className="w-full mx-auto space-y-6 pb-20 font-sans text-black">
+      {/* 1. Header Hero Card with High-Contrast Month Navigator */}
+      <div className="bg-white border-4 border-black shadow-[6px_6px_0px_#000] p-6 sm:p-7 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
-            <h2 className="text-lg font-bold text-white">Attendance Register</h2>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-300 border-2 border-black text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] mb-1.5">
+            STAFF ATTENDANCE
           </div>
-          <p className="text-xs text-slate-400 mt-1">Track employee attendance for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.</p>
+          <h1 className="font-display font-black text-2xl sm:text-3xl uppercase tracking-tight text-black leading-none">
+            ATTENDANCE REGISTER
+          </h1>
+          <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mt-1">
+            Track daily employee attendance, leaves & absences for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-md overflow-hidden">
-            <button onClick={handlePrevMonth} className="px-3 py-2 hover:bg-slate-800 text-slate-400 hover:text-white"><ChevronLeft className="w-4 h-4" /></button>
-            <div className="px-4 py-2 text-sm font-bold text-white min-w-[120px] text-center">
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* High-Contrast Month Navigator */}
+          <div className="flex items-center bg-white border-3 border-black shadow-[3px_3px_0px_#000] overflow-hidden">
+            <button 
+              onClick={handlePrevMonth} 
+              className="p-2.5 hover:bg-amber-100 text-black border-r-2 border-black transition-colors cursor-pointer active:translate-x-0.5"
+              title="Previous Month"
+            >
+              <ChevronLeft className="w-5 h-5 stroke-[3]" />
+            </button>
+            <div className="px-5 py-2 font-display font-black text-sm uppercase text-black bg-[#FFFDF0] min-w-[140px] text-center tracking-wider select-none">
               {currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
             </div>
-            <button onClick={handleNextMonth} className="px-3 py-2 hover:bg-slate-800 text-slate-400 hover:text-white"><ChevronRight className="w-4 h-4" /></button>
+            <button 
+              onClick={handleNextMonth} 
+              className="p-2.5 hover:bg-amber-100 text-black border-l-2 border-black transition-colors cursor-pointer active:translate-x-0.5"
+              title="Next Month"
+            >
+              <ChevronRight className="w-5 h-5 stroke-[3]" />
+            </button>
           </div>
+
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 transition-colors text-xs font-bold shadow-md shadow-primary-950"
+            className="flex items-center gap-2 px-5 py-3 bg-emerald-400 hover:bg-emerald-300 text-black font-display font-black text-xs uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5" />
-            Manual Entry
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>MANUAL ENTRY</span>
           </button>
         </div>
       </div>

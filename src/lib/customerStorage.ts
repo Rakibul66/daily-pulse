@@ -1,5 +1,6 @@
 import { getFirebaseServices } from './firebase';
 import { collection, doc, setDoc, getDocs, query, where, deleteDoc, updateDoc, orderBy, runTransaction } from 'firebase/firestore';
+import { sanitizeForFirestore } from './firestoreUtils';
 import { Customer, LoyaltyTransaction, LoyaltyTier, Promotion, CustomerFeedback } from '@/types/customer';
 
 const CUSTOMERS_COLLECTION = 'customers';
@@ -12,7 +13,7 @@ export const calculateTier = (totalSpent: number): LoyaltyTier => {
   return 'Member';
 };
 
-export const getCustomers = async (userId: string): Promise<Customer[]> => {
+export const getCustomers = async (userId: string, companyId?: string): Promise<Customer[]> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
@@ -23,9 +24,32 @@ export const getCustomers = async (userId: string): Promise<Customer[]> => {
 
   const snapshot = await getDocs(q);
   const items: Customer[] = [];
-  snapshot.forEach((docSnap) => items.push(docSnap.data() as Customer));
+  const seenIds = new Set<string>();
+
+  snapshot.forEach((docSnap) => {
+    seenIds.add(docSnap.id);
+    items.push(docSnap.data() as Customer);
+  });
+
+  if (companyId && companyId !== userId) {
+    try {
+      const qCompany = query(
+        collection(db, CUSTOMERS_COLLECTION),
+        where('companyId', '==', companyId)
+      );
+      const snapCompany = await getDocs(qCompany);
+      snapCompany.forEach((docSnap) => {
+        if (!seenIds.has(docSnap.id)) {
+          seenIds.add(docSnap.id);
+          items.push(docSnap.data() as Customer);
+        }
+      });
+    } catch (e) {
+      console.warn('Company customers query error:', e);
+    }
+  }
   
-  items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  items.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
   return items;
 };
 
@@ -36,12 +60,13 @@ export const addCustomer = async (customer: Omit<Customer, 'id' | 'createdAt' | 
   const docRef = doc(collection(db, CUSTOMERS_COLLECTION));
   const newCustomer: Customer = {
     ...customer,
+    source: customer.source || 'Direct / Manual',
     id: docRef.id,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newCustomer);
+  await setDoc(docRef, sanitizeForFirestore(newCustomer));
   return docRef.id;
 };
 
@@ -50,7 +75,7 @@ export const updateCustomer = async (id: string, updates: Partial<Omit<Customer,
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, CUSTOMERS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deleteCustomer = async (id: string): Promise<void> => {
@@ -60,25 +85,76 @@ export const deleteCustomer = async (id: string): Promise<void> => {
   await deleteDoc(doc(db, CUSTOMERS_COLLECTION, id));
 };
 
-export const addCustomersBulk = async (userId: string, customers: Omit<Customer, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[]): Promise<number> => {
+export const addCustomersBulk = async (
+  userId: string, 
+  customers: Omit<Customer, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[],
+  companyId?: string
+): Promise<number> => {
   const { db } = getFirebaseServices();
   if (!db) throw new Error('Firebase not configured');
 
   let count = 0;
-  // A simple loop for bulk insert. For production with thousands of records, use batched writes.
   for (const cust of customers) {
     const docRef = doc(collection(db, CUSTOMERS_COLLECTION));
     const newCustomer: Customer = {
       ...cust,
       userId,
+      companyId: companyId || userId,
+      source: cust.source || 'Bulk CSV Import',
       id: docRef.id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    await setDoc(docRef, newCustomer);
+    await setDoc(docRef, sanitizeForFirestore(newCustomer));
     count++;
   }
   return count;
+};
+
+export const exportCustomersToCSV = (customers: Customer[]) => {
+  const headers = [
+    'Business / Client Name',
+    'Owner / Contact Person',
+    'Phone',
+    'Email',
+    'Address',
+    'Business Type',
+    'Source',
+    'Customer Since',
+    'Loyalty Tier',
+    'Loyalty Points',
+    'Total Spent'
+  ];
+
+  const escapeCSV = (str: string | number | undefined | null) => {
+    if (str === undefined || str === null) return '""';
+    const s = String(str).replace(/"/g, '""');
+    return `"${s}"`;
+  };
+
+  const rows = customers.map(c => [
+    escapeCSV(c.businessName),
+    escapeCSV(c.ownerName || ''),
+    escapeCSV(c.phone),
+    escapeCSV(c.email || ''),
+    escapeCSV(c.address || ''),
+    escapeCSV(c.businessType || 'Other'),
+    escapeCSV(c.source || 'Direct / Manual'),
+    escapeCSV(c.customerSince || ''),
+    escapeCSV(c.loyaltyTier || 'Member'),
+    escapeCSV(c.loyaltyPoints || 0),
+    escapeCSV(c.totalSpent || 0)
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `customers_export_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 // Loyalty logic
@@ -184,7 +260,7 @@ export const addPromotion = async (promo: Omit<Promotion, 'id' | 'createdAt' | '
     updatedAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newPromo);
+  await setDoc(docRef, sanitizeForFirestore(newPromo));
   return docRef.id;
 };
 
@@ -193,7 +269,7 @@ export const updatePromotion = async (id: string, updates: Partial<Omit<Promotio
   if (!db) throw new Error('Firebase not configured');
   
   const docRef = doc(db, PROMOTIONS_COLLECTION, id);
-  await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
+  await updateDoc(docRef, sanitizeForFirestore({ ...updates, updatedAt: new Date().toISOString() }));
 };
 
 export const deletePromotion = async (id: string): Promise<void> => {
@@ -232,7 +308,7 @@ export const addCustomerFeedback = async (feedback: Omit<CustomerFeedback, "id" 
     createdAt: new Date().toISOString(),
   };
 
-  await setDoc(docRef, newFeedback);
+  await setDoc(docRef, sanitizeForFirestore(newFeedback));
   return docRef.id;
 };
 

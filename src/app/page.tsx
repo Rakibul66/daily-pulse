@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import dynamicImport from "next/dynamic";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { AdminPageId } from "@/components/layout/Sidebar";
 import { LandingPage } from "@/components/landing/LandingPage";
@@ -15,56 +14,57 @@ import { getTodayDateString } from "@/lib/formatters";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
-const PageLoader = () => (
-  <div className="flex flex-col items-center justify-center py-20 space-y-3">
-    <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading page module...</p>
-  </div>
-);
+import { CRMDashboardPage } from "@/components/pages/CRMDashboardPage";
+import { CRMLeadsPage } from "@/components/pages/CRMLeadsPage";
+import { CRMRecentLeadsPage } from "@/components/pages/CRMRecentLeadsPage";
+import { CRMAILeadPage } from "@/components/pages/CRMAILeadPage";
+import { CustomersPage } from "@/components/pages/CustomersPage";
+import { PromotionsPage } from "@/components/pages/PromotionsPage";
+import { CustomerFeedbackPage } from "@/components/pages/CustomerFeedbackPage";
+import { LostAndFoundPage } from "@/components/pages/LostAndFoundPage";
+import { AssetsManagementPage } from "@/components/pages/AssetsManagementPage";
+import { InventoryPage } from "@/components/pages/InventoryPage";
+import { SalesPage } from "@/components/pages/SalesPage";
+import { PurchasesPage } from "@/components/pages/PurchasesPage";
+import { PurchaseVendorSetupPage } from "@/components/pages/PurchaseVendorSetupPage";
+import { PurchaseProductPage } from "@/components/pages/PurchaseProductPage";
+import { PurchaseReturnPage } from "@/components/pages/PurchaseReturnPage";
+import { PurchasePaymentPage } from "@/components/pages/PurchasePaymentPage";
+import { PurchaseGenerateBarcodePage } from "@/components/pages/PurchaseGenerateBarcodePage";
+import { PurchaseVendorStatementPage } from "@/components/pages/PurchaseVendorStatementPage";
 
-// Dynamic component sharding for minimal bundle & fast caching
-const CRMDashboardPage = dynamicImport(() => import("@/components/pages/CRMDashboardPage").then(m => m.CRMDashboardPage), { loading: PageLoader });
-const CRMLeadsPage = dynamicImport(() => import("@/components/pages/CRMLeadsPage").then(m => m.CRMLeadsPage), { loading: PageLoader });
-const CRMRecentLeadsPage = dynamicImport(() => import("@/components/pages/CRMRecentLeadsPage").then(m => m.CRMRecentLeadsPage), { loading: PageLoader });
-const CRMAILeadPage = dynamicImport(() => import("@/components/pages/CRMAILeadPage").then(m => m.CRMAILeadPage), { loading: PageLoader });
-const CustomersPage = dynamicImport(() => import("@/components/pages/CustomersPage").then(m => m.CustomersPage), { loading: PageLoader });
-const PromotionsPage = dynamicImport(() => import("@/components/pages/PromotionsPage").then(m => m.PromotionsPage), { loading: PageLoader });
-const CustomerFeedbackPage = dynamicImport(() => import("@/components/pages/CustomerFeedbackPage").then(m => m.CustomerFeedbackPage), { loading: PageLoader });
-const LostAndFoundPage = dynamicImport(() => import("@/components/pages/LostAndFoundPage").then(m => m.LostAndFoundPage), { loading: PageLoader });
-const AssetsManagementPage = dynamicImport(() => import("@/components/pages/AssetsManagementPage").then(m => m.AssetsManagementPage), { loading: PageLoader });
-const InventoryPage = dynamicImport(() => import("@/components/pages/InventoryPage").then(m => m.InventoryPage), { loading: PageLoader });
-const SalesPage = dynamicImport(() => import("@/components/pages/SalesPage").then(m => m.SalesPage), { loading: PageLoader });
-const PurchasesPage = dynamicImport(() => import("@/components/pages/PurchasesPage").then(m => m.PurchasesPage), { loading: PageLoader });
-const PurchaseVendorSetupPage = dynamicImport(() => import("@/components/pages/PurchaseVendorSetupPage").then(m => m.PurchaseVendorSetupPage), { loading: PageLoader });
-const PurchaseProductPage = dynamicImport(() => import("@/components/pages/PurchaseProductPage").then(m => m.PurchaseProductPage), { loading: PageLoader });
-const PurchaseReturnPage = dynamicImport(() => import("@/components/pages/PurchaseReturnPage").then(m => m.PurchaseReturnPage), { loading: PageLoader });
-const PurchasePaymentPage = dynamicImport(() => import("@/components/pages/PurchasePaymentPage").then(m => m.PurchasePaymentPage), { loading: PageLoader });
-const PurchaseGenerateBarcodePage = dynamicImport(() => import("@/components/pages/PurchaseGenerateBarcodePage").then(m => m.PurchaseGenerateBarcodePage), { loading: PageLoader });
+import { CategorySetupPage } from "@/components/products/CategorySetupPage";
+import { BrandSetupPage } from "@/components/products/BrandSetupPage";
+import { TagSetupPage } from "@/components/products/TagSetupPage";
+import { ProductSetupPage } from "@/components/products/ProductSetupPage";
+import { ProductListPage } from "@/components/products/ProductListPage";
+import { MeasurementUnitPage } from "@/components/products/MeasurementUnitPage";
+import { DeliveryManSetupPage } from "@/components/products/DeliveryManSetupPage";
 
-const AccountsPage = dynamicImport(() => import("@/components/pages/AccountsPage").then(m => m.AccountsPage), { loading: PageLoader });
-const SalesClientSetupPage = dynamicImport(() => import("@/components/pages/SalesClientSetupPage").then(m => m.SalesClientSetupPage), { loading: PageLoader });
-const SalesInvoicePage = dynamicImport(() => import("@/components/pages/SalesInvoicePage").then(m => m.SalesInvoicePage), { loading: PageLoader });
-const SalesCollectionPage = dynamicImport(() => import("@/components/pages/SalesCollectionPage").then(m => m.SalesCollectionPage), { loading: PageLoader });
-const SalesReturnPage = dynamicImport(() => import("@/components/pages/SalesReturnPage").then(m => m.SalesReturnPage), { loading: PageLoader });
-const SalesReturnApprovalPage = dynamicImport(() => import("@/components/pages/SalesReturnApprovalPage").then(m => m.SalesReturnApprovalPage), { loading: PageLoader });
-const POSSalesPage = dynamicImport(() => import("@/components/pages/POSSalesPage").then(m => m.POSSalesPage), { loading: PageLoader });
-const MainDashboardPage = dynamicImport(() => import("@/components/pages/MainDashboardPage").then(m => m.MainDashboardPage), { loading: PageLoader });
-const SystemCompanyPage = dynamicImport(() => import("@/components/pages/SystemCompanyPage").then(m => m.SystemCompanyPage), { loading: PageLoader });
-const SystemBranchPage = dynamicImport(() => import("@/components/pages/SystemBranchPage").then(m => m.SystemBranchPage), { loading: PageLoader });
-const SubscriptionPage = dynamicImport(() => import("@/components/pages/SubscriptionPage").then(m => m.SubscriptionPage), { loading: PageLoader });
-const SettingsPage = dynamicImport(() => import("@/components/pages/SettingsPage").then(m => m.SettingsPage), { loading: PageLoader });
-const PartnershipPage = dynamicImport(() => import("@/components/pages/PartnershipPage").then(m => m.PartnershipPage), { loading: PageLoader });
-const HRMAttendancePage = dynamicImport(() => import("@/components/pages/HRMAttendancePage").then(m => m.HRMAttendancePage), { loading: PageLoader });
-const HRMEmployeesPage = dynamicImport(() => import("@/components/pages/HRMEmployeesPage").then(m => m.HRMEmployeesPage), { loading: PageLoader });
-const HRMPayrollPage = dynamicImport(() => import("@/components/pages/HRMPayrollPage").then(m => m.HRMPayrollPage), { loading: PageLoader });
-const HRMLoansPage = dynamicImport(() => import("@/components/pages/HRMLoansPage").then(m => m.HRMLoansPage), { loading: PageLoader });
-const HRMCateringPage = dynamicImport(() => import("@/components/pages/HRMCateringPage").then(m => m.HRMCateringPage), { loading: PageLoader });
-const HRMOvertimePage = dynamicImport(() => import("@/components/pages/HRMOvertimePage").then(m => m.HRMOvertimePage), { loading: PageLoader });
-const HRMSettingsPage = dynamicImport(() => import("@/components/pages/hrm/HRMSettingsPage").then(m => m.HRMSettingsPage), { loading: PageLoader });
-const DailyWorkReportsPage = dynamicImport(() => import("@/components/pages/hrm/DailyWorkReportsPage").then(m => m.DailyWorkReportsPage), { loading: PageLoader });
-const PrintReportView = dynamicImport(() => import("@/components/export/PrintReportView").then(m => m.PrintReportView), { loading: PageLoader });
+import { AccountsPage } from "@/components/pages/AccountsPage";
+import { SalesClientSetupPage } from "@/components/pages/SalesClientSetupPage";
+import { SalesInvoicePage } from "@/components/pages/SalesInvoicePage";
+import { SalesCollectionPage } from "@/components/pages/SalesCollectionPage";
+import { SalesReturnPage } from "@/components/pages/SalesReturnPage";
+import { SalesReturnApprovalPage } from "@/components/pages/SalesReturnApprovalPage";
+import { POSSalesPage } from "@/components/pages/POSSalesPage";
+import { MainDashboardPage } from "@/components/pages/MainDashboardPage";
+import { SystemCompanyPage } from "@/components/pages/SystemCompanyPage";
+import { SystemBranchPage } from "@/components/pages/SystemBranchPage";
+import { SubscriptionPage } from "@/components/pages/SubscriptionPage";
+import { SettingsPage } from "@/components/pages/SettingsPage";
+import { PartnershipPage } from "@/components/pages/PartnershipPage";
+import { HRMAttendancePage } from "@/components/pages/HRMAttendancePage";
+import { HRMEmployeesPage } from "@/components/pages/HRMEmployeesPage";
+import { HRMPayrollPage } from "@/components/pages/HRMPayrollPage";
+import { HRMLoansPage } from "@/components/pages/HRMLoansPage";
+import { HRMCateringPage } from "@/components/pages/HRMCateringPage";
+import { HRMOvertimePage } from "@/components/pages/HRMOvertimePage";
+import { HRMSettingsPage } from "@/components/pages/hrm/HRMSettingsPage";
+import { DailyWorkReportsPage } from "@/components/pages/hrm/DailyWorkReportsPage";
+import { PrintReportView } from "@/components/export/PrintReportView";
+import { getCompanyProfile } from "@/lib/companyStorage";
 
-export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const { user, userProfile, loading: authLoading } = useAuth();
@@ -82,19 +82,43 @@ export default function Home() {
   const [currentRecord, setCurrentRecord] = useState<DailyRecord | null>(null);
   const [isLoadingRecord, setIsLoadingRecord] = useState(false);
 
-  // Onboarding Routing
+  // Onboarding Routing & Profile Check
   useEffect(() => {
-    if (userProfile?.companyId) {
+    if (!userProfile?.companyId) return;
+
+    const checkOnboarding = async () => {
       const step = localStorage.getItem("dp_onboarding_step");
       if (step === "company") {
         setActiveAdminPage("system-company");
         showToast("Welcome! Please set up your Company Profile first.", "info");
+        return;
       } else if (step === "branch") {
         setActiveAdminPage("system-branch");
         showToast("Great! Now let's add your first Branch.", "info");
+        return;
       }
-    }
-  }, [userProfile?.companyId]);
+
+      // Check if newly signed-up owner hasn't completed their company profile yet
+      if (userProfile.role === 'OWNER') {
+        const checkedKey = `dp_onboarding_checked_${userProfile.companyId}`;
+        if (!sessionStorage.getItem(checkedKey)) {
+          sessionStorage.setItem(checkedKey, 'true');
+          try {
+            const profile = await getCompanyProfile(userProfile.companyId);
+            if (!profile || !profile.name || profile.name.trim() === '') {
+              localStorage.setItem("dp_onboarding_step", "company");
+              setActiveAdminPage("system-company");
+              showToast("Welcome! Please set up your Company Profile to get started.", "info");
+            }
+          } catch (e) {
+            console.warn("Could not check company profile onboarding status:", e);
+          }
+        }
+      }
+    };
+
+    checkOnboarding();
+  }, [userProfile?.companyId, userProfile?.role]);
 
   // Auth Modal State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -171,8 +195,13 @@ export default function Home() {
     );
   }
 
-  // 1. Once mounted, if restoring an existing user session, show loading spinner
-  if (authLoading && typeof window !== "undefined" && localStorage.getItem("dp_auth") === "true") {
+  // 1. Once mounted, check if restoring an existing user session
+  const hasSavedAuth =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("dp_auth") === "true" ||
+      Boolean(Object.keys(localStorage).find((k) => k.startsWith("firebase:authUser"))));
+
+  if (authLoading && hasSavedAuth) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 p-8 border-4 border-black bg-white shadow-[8px_8px_0px_#000]">
@@ -224,7 +253,7 @@ export default function Home() {
       ) : (
         <>
           {activeAdminPage === "dashboard" && (
-            <MainDashboardPage showToast={showToast} />
+            <MainDashboardPage showToast={showToast} onNavigate={setActiveAdminPage} />
           )}
 
           {/* CRM Pages */}
@@ -284,6 +313,32 @@ export default function Home() {
           {activeAdminPage === "purchase-generate-barcode" && (
             <PurchaseGenerateBarcodePage showToast={showToast} />
           )}
+          {activeAdminPage === "purchase-vendor-statement" && (
+            <PurchaseVendorStatementPage showToast={showToast} />
+          )}
+
+          {/* Product Management Pages */}
+          {activeAdminPage === "product-category" && (
+            <CategorySetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "product-brand" && (
+            <BrandSetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "product-tag" && (
+            <TagSetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "product-setup" && (
+            <ProductSetupPage showToast={showToast} />
+          )}
+          {activeAdminPage === "product-list" && (
+            <ProductListPage showToast={showToast} />
+          )}
+          {activeAdminPage === "product-uom" && (
+            <MeasurementUnitPage showToast={showToast} />
+          )}
+          {activeAdminPage === "delivery-man" && (
+            <DeliveryManSetupPage showToast={showToast} />
+          )}
 
           {activeAdminPage === "accounts" && (
             <AccountsPage showToast={showToast} />
@@ -335,7 +390,7 @@ export default function Home() {
           {activeAdminPage === "sales-collections" && (
             <SalesCollectionPage showToast={showToast} />
           )}
-          {activeAdminPage === "sales-returns" && (
+          {(activeAdminPage === "sales-returns" || activeAdminPage === "sales-retail-returns") && (
             <SalesReturnPage showToast={showToast} />
           )}
           {activeAdminPage === "sales-return-approvals" && (
@@ -349,10 +404,10 @@ export default function Home() {
             <SettingsPage showToast={showToast} />
           )}
           {activeAdminPage === "system-company" && (
-            <SystemCompanyPage showToast={showToast} />
+            <SystemCompanyPage showToast={showToast} onNavigate={setActiveAdminPage} />
           )}
           {activeAdminPage === "system-branch" && (
-            <SystemBranchPage showToast={showToast} />
+            <SystemBranchPage showToast={showToast} onNavigate={setActiveAdminPage} />
           )}
         </>
       )}
